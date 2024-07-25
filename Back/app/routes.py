@@ -1,18 +1,18 @@
 from fastapi import APIRouter, UploadFile, HTTPException, Depends
 from fastapi.responses import JSONResponse
 
-
-
 from .config import Config
 from .schemes import *
 from .service.upload import upload_service
 from .service.download import download_service
+from .service.user import User_service
 
 import boto3
 import uuid
 import urllib
 
 router = APIRouter()
+
 s3 = boto3.client(
     "s3",
     aws_access_key_id=Config.s3_access_key,
@@ -40,7 +40,33 @@ async def upload(file: UploadFile, directory: str):
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/test/setprofile")
+async def set_profile(userId : str, file : UploadFile, user_service : User_service = Depends()):
+    try:
+        return await user_service.set_profile(userId, file)
     
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/test/getprofile/{userId}")
+async def get_profile(userId : str, user_service : User_service = Depends()):
+    try:
+        return await user_service.get_profile(userId)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
+
+@router.post("/register/users", responses = {200 : {"model" : CommoneResponse, "description" : "사용자 등록 성공"}, 400 : {"model" : CommoneResponse, "description" : "사용자 등록 실패"}})
+async def register_user(request : User_info_request, user_service : User_service = Depends()):
+    try:
+        return await user_service.register_user(request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/upload/phone", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}})
 async def upload_phone_info(request : Phone_request, upload_service : upload_service = Depends()):
