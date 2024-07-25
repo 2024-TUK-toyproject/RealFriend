@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from .config import Config
 from .schemes import *
 from .service.upload import upload_service
+from .service.download import download_service
 
 import boto3
 import uuid
@@ -41,11 +42,26 @@ async def upload(file: UploadFile, directory: str):
         raise HTTPException(status_code=400, detail=str(e))
     
 
-
 @router.post("/upload/phone", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}})
-async def upload_phone_info(request : Phone_list, upload_service : upload_service = Depends()):
+async def upload_phone_info(request : Phone_request, upload_service : upload_service = Depends()):
     try:
         return await upload_service.upload_phone_info(request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/upload/callrecord", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}})
+async def upload_call_record(request : Call_record_request, upload_service : upload_service = Depends()):
+    try:
+        return await upload_service.upload_call_record(request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get("/get/{user_id}/lastcall", responses = {200 : {"model" : Last_call_response, "description" : "통화 기록 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "통화 기록 조회 실패"}})
+async def get_last_call(user_id : str, download_service : download_service = Depends()):
+    try:
+        return await download_service.get_last_call(user_id)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
