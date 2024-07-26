@@ -43,5 +43,5 @@ class call_record_info(Base):
     phone = Column(String(255))
     date = Column(String(255))
     time = Column(String(255))
-    duration = Column(String(255))
+    duration = Column(Integer)
     type = Column(Integer)
