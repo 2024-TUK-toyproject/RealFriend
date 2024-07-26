@@ -31,6 +31,11 @@ class Call_record_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : List[Most_friendly_list]
 
+class Register_user_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, str] = Field({"userId" : "123456"}, example = {"userId" : "123456"})
+
 # Request Model
 class Phone_list(BaseModel):
     name : str = Field(..., example = "홍길동")
