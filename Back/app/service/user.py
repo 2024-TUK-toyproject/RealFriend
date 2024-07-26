@@ -26,7 +26,7 @@ class User_service:
         self.today = datetime.now()
         self.rng = RandomNumberGenerator()
 
-    async def register_user(self, user_info : User_info_request) -> CommoneResponse:
+    async def register_user(self, user_info : User_info_request) -> Register_user_response:
         exiting_user = self.db.query(models.user_info).filter(models.user_info.phone == user_info.phone).first()
         if exiting_user is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
@@ -44,7 +44,7 @@ class User_service:
         self.db.add(new_user)
         self.db.commit()
 
-        return CommoneResponse(status = "success", message = "사용자 등록 성공")
+        return Register_user_response(status = "success", message = "사용자 등록 성공", content = {"userId" : str(new_id)})
     
     async def set_profile(self, userId : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
