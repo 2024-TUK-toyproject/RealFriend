@@ -76,7 +76,7 @@ async def upload_phone_info(request : Phone_request, upload_service : upload_ser
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.post("/upload/callrecord", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}})
+@router.post("/upload/callrecord", responses = {200 : {"model" : Call_record_response, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}}, summary = "통화 기록 동기화, 응답으로 통화 횟수와 통화 시간이 많은 순으로 정렬된 리스트를 반환합니다.")
 async def upload_call_record(request : Call_record_request, upload_service : upload_service = Depends()):
     try:
         return await upload_service.upload_call_record(request)
