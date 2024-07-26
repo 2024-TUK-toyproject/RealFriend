@@ -60,7 +60,7 @@ async def get_profile(userId : str, user_service : User_service = Depends()):
 
 
 
-@router.post("/register/users", responses = {200 : {"model" : CommoneResponse, "description" : "사용자 등록 성공"}, 400 : {"model" : CommoneResponse, "description" : "사용자 등록 실패"}})
+@router.post("/register/users", responses = {200 : {"model" : Register_user_response, "description" : "사용자 등록 성공"}, 400 : {"model" : CommoneResponse, "description" : "사용자 등록 실패"}})
 async def register_user(request : User_info_request, user_service : User_service = Depends()):
     try:
         return await user_service.register_user(request)
