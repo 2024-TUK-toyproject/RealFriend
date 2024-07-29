@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -34,7 +35,8 @@ fun PhoneOutLineTextField(text: String, updatePhone: (String) -> Unit, enabled: 
 //            .clip(shape)
             .border(width = (1.5).dp, color = borderColor, shape)
             .background(color = backgroundColor, shape = shape)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(48.dp),
         singleLine = true,
         textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),

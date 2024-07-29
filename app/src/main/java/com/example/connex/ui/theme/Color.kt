@@ -12,3 +12,9 @@ val Pink40 = Color(0xFF7D5260)
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
+val FontBlack = Color(0xFF1C1B1F)
+
+val MainBlue = Color(0xFF5076FD)
+
+val DisableBorder = Color(0xFFBFC1C6)
+val DisableBackground = Color(0xFFF3F5F7)

@@ -1,6 +1,7 @@
 package com.example.connex.ui.login.view
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,16 +31,39 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.connex.ui.component.GenerateButton
+import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.login.LoginViewModel
+import com.example.connex.ui.theme.DisableBackground
+import com.example.connex.ui.theme.DisableBorder
+import com.example.connex.ui.theme.MainBlue
 import com.example.domain.model.MobileCarrier
+
 
 @Composable
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
+
+    val loginPhoneAuthUiState by loginViewModel.loginPhoneAuthUiState.collectAsStateWithLifecycle()
+
     var isPhone by remember {
         mutableStateOf(false)
+    }
+
+    var isMobileCarrier by remember {
+        mutableStateOf(false)
+    }
+
+    var isMobileCarrierBottomSheetOpen by remember {
+        mutableStateOf(false)
+    }
+
+    val buttonEnabled by remember {
+        derivedStateOf {
+            loginPhoneAuthUiState.phoneNumber.checkValidation() && loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
+        }
     }
 
     val titleStyle = TextStyle(
@@ -48,14 +73,22 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     )
 
 
-    var text by remember {
-        mutableStateOf("010")
-    }
+
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
     ) {
+        if (isMobileCarrierBottomSheetOpen) {
+            MobileCarrierModalBottomSheet(
+                currentCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier,
+                onClose = { isMobileCarrierBottomSheetOpen = false }) {
+                loginViewModel.updateMobileCarrier(it)
+                isMobileCarrierBottomSheetOpen = false
+            }
+        }
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -74,18 +107,23 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             Spacer(modifier = Modifier.height(32.dp))
 
             if (isPhone) {
-                LoginOutLineTextField(label = "통신사") {
-                    MobileCarrierBox()
+                LoginOutLineTextField(label = "통신사", isCompleted = isMobileCarrier) {
+                    MobileCarrierBox(
+                        isCompleted = isMobileCarrier,
+                        mobileCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier.getName()
+                    ) {
+                        isMobileCarrierBottomSheetOpen = true
+                    }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
             LoginOutLineTextField(label = "휴대전화 번호", isCompleted = isPhone) {
                 PhoneOutLineTextField(
-                    text = text,
+                    text = loginPhoneAuthUiState.phoneNumber.number,
                     updatePhone = {
                         if (it.length <= 11) {
-                            text = it
+                            loginViewModel.updatePhone(it)
                         }
                     },
                     enabled = !isPhone,
@@ -96,9 +134,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         GenerateButton(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = "다음",
-            enabled = if (text.length == 11) true else false
+            enabled = buttonEnabled
         ) {
-            isPhone = true
+            if (!isPhone) {
+                loginViewModel.updateMobileCarrier(MobileCarrier.NOT)
+                isPhone = true
+            } else if (!isMobileCarrier) {
+                isMobileCarrier = true
+            }
         }
     }
 
@@ -106,9 +149,13 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
 
 @Composable
-fun LoginOutLineTextField(label: String, isCompleted: Boolean = false, textField: @Composable () -> Unit) {
+fun LoginOutLineTextField(
+    label: String,
+    isCompleted: Boolean = false,
+    textField: @Composable () -> Unit
+) {
 
-    val completedColor = Color(0xFFBFC1C6)
+    val completedColor = DisableBorder
     val notCompletedColor = Color(0xFF333333)
 
     val labelStyle = TextStyle(
@@ -126,15 +173,32 @@ fun LoginOutLineTextField(label: String, isCompleted: Boolean = false, textField
 }
 
 @Composable
-fun MobileCarrierBox(modifier: Modifier = Modifier) {
-    val borderColor = Color(0xFF5076FD)
+fun MobileCarrierBox(
+    modifier: Modifier = Modifier,
+    isCompleted: Boolean = false,
+    mobileCarrier: String,
+    onClick: () -> Unit
+) {
+    val borderColor = if (isCompleted) DisableBorder else MainBlue
+    val backgroundColor = if (isCompleted) DisableBackground else Color.White
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(width = (1.5).dp, color = borderColor),
-        colors = CardDefaults.cardColors(containerColor = Color.White, contentColor = Color.LightGray)
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = Color.LightGray
+        )
     ) {
-        Text(text = "통신사 선택", modifier = Modifier.padding(horizontal = 14.dp, vertical = 16.dp))
+        Text(
+            text = mobileCarrier,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 16.dp)
+        )
     }
 }
+

@@ -10,7 +10,7 @@ data class Phone(
         const val PHONE_NUMBER_LENGTH = 11
 
         fun default(): Phone {
-            return Phone("", MobileCarrier.SKT)
+            return Phone("010", MobileCarrier.SKT)
         }
     }
 }
