@@ -23,7 +23,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val _phone = MutableStateFlow(Phone.default())
     val phone: StateFlow<Phone> = _phone.asStateFlow()
 
-    private val _verificationCode = MutableStateFlow("")
+    private val _verificationCode = MutableStateFlow(" ")
     val verificationCode: StateFlow<String> = _verificationCode.asStateFlow()
 
     val loginPhoneAuthUiState = combine(_phone, _verificationCode) { phone, verificationCode ->

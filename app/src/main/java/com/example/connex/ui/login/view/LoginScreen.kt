@@ -1,5 +1,6 @@
 package com.example.connex.ui.login.view
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,7 +62,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
     val buttonEnabled by remember {
         derivedStateOf {
-            loginPhoneAuthUiState.phoneNumber.checkValidation() && loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
+            loginPhoneAuthUiState.phoneNumber.checkValidation() && loginPhoneAuthUiState.phoneNumber.mobileCarrier!= MobileCarrier.NOT && loginPhoneAuthUiState.verificationCode.isNotEmpty()
         }
     }
 
@@ -106,6 +106,29 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             )
             Spacer(modifier = Modifier.height(32.dp))
 
+            if (isMobileCarrier) {
+                val verificationCodeStyle = TextStyle(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 12.sp,
+                    color = MainBlue
+                )
+                LoginOutLineTextField(label = "인증번호") {
+                    PhoneOutLineTextField(
+                        text = loginPhoneAuthUiState.verificationCode,
+                        updatePhone = {
+                            if (it.length <= 6) {
+                                loginViewModel.updateVerificationCode(it)
+                            }
+                        },
+                        enabled = true,
+                        onDone = {},
+                        trailingIcon = { Text(text = "02:58", style = verificationCodeStyle) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
             if (isPhone) {
                 LoginOutLineTextField(label = "통신사", isCompleted = isMobileCarrier) {
                     MobileCarrierBox(
@@ -141,6 +164,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 isPhone = true
             } else if (!isMobileCarrier) {
                 isMobileCarrier = true
+            } else {
+                loginViewModel.updateVerificationCode("")
             }
         }
     }
@@ -197,6 +222,7 @@ fun MobileCarrierBox(
         Text(
             text = mobileCarrier,
             fontSize = 12.sp,
+            lineHeight = 12.sp,
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 16.dp)
         )
     }
