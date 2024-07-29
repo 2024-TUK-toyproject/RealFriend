@@ -20,6 +20,8 @@ s3 = boto3.client(
     aws_secret_access_key=Config.s3_secret_key
 )
 
+
+
 class User_service:
     def __init__(self, db: Session = Depends(Database().get_session)):
         self.db = db
@@ -80,3 +82,31 @@ class User_service:
             phone = user.phone,
             profile_image = user.profile_image
         )
+    
+    async def modify_profile(self, userId : str, file : UploadFile) -> Profile_only_response:
+        user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        filen_name = f"{str(uuid.uuid4())}.jpeg"
+        s3_key = f"profile/{userId}/{filen_name}"
+
+        s3.upload_fileobj(
+            file.file,
+            Config.s3_bucket,
+            s3_key
+        )
+
+        user.profile_image = f"https://%s.s3.amazonaws.com/profile/%s/%s" % (
+            Config.s3_bucket,
+            userId,
+            urllib.parse.quote(filen_name)
+        )
+
+        self.db.commit()
+
+        return Profile_only_response(profile_image = user.profile_image)
+    
+    # 인증번호 추후에 추가
+    async def certification_user(self, userId : str) -> CommoneResponse:
+        return CommoneResponse(status = "success", message = "인증 성공")
