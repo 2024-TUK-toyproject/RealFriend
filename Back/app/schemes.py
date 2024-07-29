@@ -20,6 +20,9 @@ class Profile_response(BaseModel):
     phone : str = Field(..., example = "010-1234-5678")
     profile_image : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
 
+class Profile_only_response(BaseModel):
+    profile_image : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+
 class Most_friendly_list(BaseModel):
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
@@ -59,8 +62,8 @@ class Call_record_request(BaseModel):
 class User_info_request(BaseModel):
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
+    company : str = Field(..., example="skt")
     
 class Set_profile_request(BaseModel):
     userId : str = Field(..., example = "123456")
-    
 
