@@ -63,10 +63,10 @@ async def register_user(request : User_info_request, user_service : User_service
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/register/certificate", responses = {200 : {"model" : CommoneResponse, "description" : "인증 성공"}, 400 : {"model" : CommoneResponse, "description" : "인증 실패"}}, tags = ["Register"])
-async def certification_user(userId : str, user_service : User_service = Depends()):
+@router.post("/register/certificate", responses = {200 : {"model" : Certificate_response, "description" : "인증 성공"}, 400 : {"model" : CommoneResponse, "description" : "인증 실패"}}, tags = ["Register"])
+async def certification_user(request : Certificate_request, user_service : User_service = Depends()):
     try:
-        return await user_service.certification_user(userId)
+        return await user_service.certification_user(request)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -80,7 +80,7 @@ async def set_profile(userId : str, file : UploadFile, user_service : User_servi
         raise HTTPException(status_code=400, detail=str(e))
 
 
-#User
+#User/Profile
 @router.get("/users/getprofile/{userId}", responses = {200 : {"model" : Profile_response, "description" : "프로필 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "프로필 조회 실패"}}, summary= "프로필 사진과 사용자 정보를 불러오는 api", tags = ["User/Profile"])
 async def get_profile(userId : str, user_service : User_service = Depends()):
     try:
@@ -98,7 +98,7 @@ async def modify_profile(userId : str, file : UploadFile, user_service : User_se
         raise HTTPException(status_code=400, detail=str(e))
 
 
-
+#User/Phone
 @router.post("/users/upload/phone", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : CommoneResponse, "description" : "동기화 실패"}}, tags = ["User/Phone"])
 async def upload_phone_info(request : Phone_request, upload_service : upload_service = Depends()):
     try:

@@ -37,7 +37,21 @@ class Call_record_response(BaseModel):
 class Register_user_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, str] = Field({"phone" : "010-1234-1234"}, example = {"phone" : "010-1234-1234"})
+
+class Certificate_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
     content : Dict[str, str] = Field({"userId" : "123456"}, example = {"userId" : "123456"})
+
+
+
+
+
+
+
+
+
 
 # Request Model
 class Phone_list(BaseModel):
@@ -60,6 +74,12 @@ class Call_record_request(BaseModel):
     content : List[Call_record_list]
 
 class User_info_request(BaseModel):
+    name : str = Field(..., example = "홍길동")
+    phone : str = Field(..., example = "010-1234-5678")
+    company : str = Field(..., example="skt")
+
+class Certificate_request(BaseModel):
+    code : str = Field(..., example = "123456")
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
     company : str = Field(..., example="skt")
