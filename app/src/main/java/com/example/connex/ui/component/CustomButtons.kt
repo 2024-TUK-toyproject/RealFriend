@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun GenerateButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
     val color = Color(0xFF5076FD)
-    val textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+    val textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 19.sp)
 
 
     Button(
@@ -30,7 +30,7 @@ fun GenerateButton(modifier: Modifier, text: String, enabled: Boolean, onClick: 
             containerColor = color,
         )
     ) {
-        Text(text = text, modifier = Modifier.padding(vertical = 18.dp), style = textStyle)
+        Text(text = text, style = textStyle)
     }
 
 }

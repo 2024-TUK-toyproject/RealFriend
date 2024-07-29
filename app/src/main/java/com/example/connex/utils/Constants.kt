@@ -19,6 +19,9 @@ object Constants {
     const val LOGIN_ID_PW_ROUTE = "nav-login_id_pw"
     const val SPLASH_ROUTE = "nav-splash"
 
+    const val FRIEND_SYNC_ROUTE = "nav-friend-sync"
+    const val PROFILE_INIT_ROUTE = "nav-profile-init"
+
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"
     const val SIGNIN_PHONE_VERIFY_ROUTE = "nav-signin-phone-verify"
     const val SIGNIN_USER_VERIFICATION_ROUTE = "nav-signin-user-verification"
@@ -46,6 +49,7 @@ object Constants {
     /** Graph Id */
     const val MAIN_GRAPH = "main-graph"
     const val LOGIN_GRAPH = "login-graph"
+    const val INIT_SETTING_GRAPH = "init-setting-graph"
     const val SETTING_GRAPH = "setting-graph"
     const val SIGNIN_GRAPH = "signin-graph"
     const val DETAIL_GRAPH = "detail-graph"

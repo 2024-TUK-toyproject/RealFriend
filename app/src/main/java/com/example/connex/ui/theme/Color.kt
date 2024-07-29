@@ -18,3 +18,4 @@ val MainBlue = Color(0xFF5076FD)
 
 val DisableBorder = Color(0xFFBFC1C6)
 val DisableBackground = Color(0xFFF3F5F7)
+
