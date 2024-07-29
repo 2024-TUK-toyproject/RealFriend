@@ -13,6 +13,14 @@ class user_info(Base):
     last_modified_date = Column(String(255))
     profile_image = Column(String(255))
 
+class temp_user_info(Base):
+    __tablename__ = 'temp_user_info'
+
+    num = Column(Integer, index = True,  primary_key=True)
+    name = Column(String(255))
+    phone = Column(String(255))
+    create_date = Column(String(255))
+
 class is_friend(Base):
     __tablename__ = 'is_friend'
 
