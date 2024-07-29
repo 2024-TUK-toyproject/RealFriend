@@ -33,20 +33,15 @@ class User_service:
         if exiting_user is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
 
-        for _ in range(10):
-            new_id = self.rng.generate_unique_random_number(100000, 999999)
-
-        new_user = models.user_info(
-            user_id = new_id,
+        new_temp_user = models.temp_user_info(
             name = user_info.name,
             phone = user_info.phone,
-            create_date = self.today.strftime('%Y-%m-%d'),
-            last_modified_date = self.today.strftime('%Y-%m-%d')
+            create_date = self.today.strftime('%Y-%m-%d')
         )
-        self.db.add(new_user)
+        self.db.add(new_temp_user)
         self.db.commit()
 
-        return Register_user_response(status = "success", message = "사용자 등록 성공", content = {"userId" : str(new_id)})
+        return Register_user_response(status = "success", message = "사용자 등록 성공", content = {"phone" : user_info.phone})
     
     async def set_profile(self, userId : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
@@ -107,6 +102,29 @@ class User_service:
 
         return Profile_only_response(profile_image = user.profile_image)
     
-    # 인증번호 추후에 추가
-    async def certification_user(self, userId : str) -> CommoneResponse:
-        return CommoneResponse(status = "success", message = "인증 성공")
+    # 인증번호로직 추후에 추가
+    async def certification_user(self, request : Certificate_request) -> Certificate_response:
+        if request.code:
+            pass
+
+        user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        for _ in range(10):
+            new_id = self.rng.generate_unique_random_number(100000, 999999)
+        
+        new_user = models.user_info(
+            user_id = new_id,
+            name = user.name,
+            phone = user.phone,
+            create_date = user.create_date,
+            last_modified_date = self.today.strftime('%Y-%m-%d')
+        )
+        self.db.add(new_user)
+        self.db.commit()
+
+        # temp_user_info 삭제
+        self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).delete()
+        self.db.commit()
+        return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id)})
