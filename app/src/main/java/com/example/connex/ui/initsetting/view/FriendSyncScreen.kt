@@ -55,7 +55,7 @@ fun FriendSyncScreen(
     navController: NavController,
     friendSyncViewModel: FriendSyncViewModel = hiltViewModel()
 ) {
-    val contactsUiState by friendSyncViewModel.contacts.collectAsStateWithLifecycle()
+    val contactsUiState by friendSyncViewModel.filteredContacts.collectAsStateWithLifecycle()
 
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
@@ -84,7 +84,10 @@ fun FriendSyncScreen(
             padding = Pair(20.dp, 14.dp),
             text = search,
             placeholder = "다른 친구를 추가하고 싶다면 입력해 주세요.",
-            updateText = { search = it }) {
+            updateText = {
+                search = it
+                friendSyncViewModel.search(search)
+            }) {
         }
         LazyColumn(modifier = Modifier.weight(1f)) {
             item { Spacer(modifier = Modifier.height(48.dp)) }

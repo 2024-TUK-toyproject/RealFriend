@@ -105,7 +105,7 @@ fun SearchTextField(
         textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp, lineHeight = 12.sp),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Search
         ),
         keyboardActions = KeyboardActions(onDone = { onDone() })
     ) { innerTextField ->

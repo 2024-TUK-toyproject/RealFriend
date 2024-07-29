@@ -1,10 +1,18 @@
 package com.example.connex.utils
 
 import android.content.ContentResolver
+import android.os.Build
+import com.example.domain.model.CallLog
 import android.provider.ContactsContract
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.LocalContext
 import com.example.domain.model.Contact
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
-fun syncContact(resolver: ContentResolver):MutableList<Contact> {
+fun syncContact(resolver: ContentResolver): MutableList<Contact> {
     val contactList = mutableListOf<Contact>()
 
     resolver.query(
@@ -32,4 +40,53 @@ fun syncContact(resolver: ContentResolver):MutableList<Contact> {
         }
     }
     return contactList
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
+    val callLogs = mutableListOf<CallLog>()
+
+    resolver.query(
+        android.provider.CallLog.Calls.CONTENT_URI,
+        arrayOf(
+            android.provider.CallLog.Calls.CACHED_FORMATTED_NUMBER,
+            android.provider.CallLog.Calls.CACHED_NAME,
+            android.provider.CallLog.Calls.DURATION,
+            android.provider.CallLog.Calls.DATE,
+            android.provider.CallLog.Calls.TYPE,
+        ),
+        "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL",
+        null,
+        null
+    )?.use { cursor ->
+
+        var count = 0
+        while (cursor.moveToNext()) {
+            if (count++ == 100) break
+            val formatPhone = cursor.getString(0)
+            val name = cursor.getString(1)
+            val duration = cursor.getString(2)
+            val startDate = cursor.getString(3)
+            val type = cursor.getString(4)
+
+            val currentDateTime =
+                Instant.ofEpochMilli(startDate.toLong()).atZone(ZoneId.systemDefault())
+                    .toLocalDateTime()
+            val formatStartDate = DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss")
+                .format(currentDateTime)
+
+            // name이 null일 수 있음, 전화번호에 저장되지 않고 모르는 번호로 전화온 case
+            callLogs.add(
+                CallLog(
+                    name,
+                    formatPhone,
+                    duration.toLong(),
+                    formatStartDate,
+                    type.toInt()
+                )
+            )
+        }
+//        Log.d("daeyoung", "callLogs: $callLogs")
+    }
+    return callLogs
 }
