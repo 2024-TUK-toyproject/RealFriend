@@ -1,16 +1,18 @@
 package com.example.connex.ui.login.view
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -33,13 +35,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.connex.ui.component.GenerateButton
+import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.DisableBackground
 import com.example.connex.ui.theme.DisableBorder
 import com.example.connex.ui.theme.MainBlue
+import com.example.connex.ui.theme.Typography
 import com.example.domain.model.MobileCarrier
 
 
@@ -47,6 +50,7 @@ import com.example.domain.model.MobileCarrier
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
     val loginPhoneAuthUiState by loginViewModel.loginPhoneAuthUiState.collectAsStateWithLifecycle()
+    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     var isPhone by remember {
         mutableStateOf(false)
@@ -65,12 +69,6 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             loginPhoneAuthUiState.phoneNumber.checkValidation() && loginPhoneAuthUiState.phoneNumber.mobileCarrier!= MobileCarrier.NOT && loginPhoneAuthUiState.verificationCode.isNotEmpty()
         }
     }
-
-    val titleStyle = TextStyle(
-        fontSize = 24.sp,
-        fontWeight = FontWeight.Bold,
-        lineHeight = 32.sp
-    )
 
 
 
@@ -92,7 +90,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
             Icon(
                 imageVector = Icons.Default.ArrowBackIosNew,
                 contentDescription = null,
@@ -101,7 +99,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             Spacer(modifier = Modifier.height(64.dp))
             Text(
                 text = "휴대전화 번호를\n입력해 주세요.",
-                style = titleStyle,
+                style = Typography.titleMedium,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -154,7 +152,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 )
             }
         }
-        GenerateButton(
+        GeneralButton(
             modifier = Modifier.align(Alignment.BottomCenter),
             text = "다음",
             enabled = buttonEnabled

@@ -15,12 +15,15 @@ object Constants {
     const val MYPAGE_EDIT_PROFILE_ROUTE = "nav-mypage-edit-profile"
     const val MYPAGE_EDIT_PROFILE_COMPLETE_ROUTE = "nav-mypage-edit-profile-complete"
 
-    const val LOGIN_BASE_ROUTE = "nav-login"
-    const val LOGIN_ID_PW_ROUTE = "nav-login_id_pw"
+    const val SIGNUP_START_ROUTE = "nav-login"
+    const val SIGNUP_PROFILE_INIT_ROUTE = "nav-profile-init"
+    const val SIGNUP_COMPLETE_ROUTE = "nav-complete"
     const val SPLASH_ROUTE = "nav-splash"
 
     const val FRIEND_SYNC_ROUTE = "nav-friend-sync"
     const val PROFILE_INIT_ROUTE = "nav-profile-init"
+    const val PROFILE_INIT_COMPLETE_ROUTE = "nav-profile-init-complete"
+
 
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"
     const val SIGNIN_PHONE_VERIFY_ROUTE = "nav-signin-phone-verify"

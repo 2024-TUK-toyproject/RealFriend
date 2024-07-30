@@ -13,7 +13,7 @@ import com.example.connex.utils.Constants.LOGIN_GRAPH
 @Composable
 fun RootNavhost() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = INIT_SETTING_GRAPH, modifier = Modifier.fillMaxSize()) {
+    NavHost(navController = navController, startDestination = LOGIN_GRAPH, modifier = Modifier.fillMaxSize()) {
         loginGraph(navController)
         initSettingGraph(navController)
     }

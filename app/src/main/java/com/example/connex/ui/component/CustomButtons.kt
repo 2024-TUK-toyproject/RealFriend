@@ -1,7 +1,6 @@
 package com.example.connex.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -15,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun GenerateButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
+fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
     val color = Color(0xFF5076FD)
     val textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 19.sp)
 
