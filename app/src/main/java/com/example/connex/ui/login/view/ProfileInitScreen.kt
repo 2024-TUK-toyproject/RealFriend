@@ -36,10 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
+import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.MainBlue
@@ -50,12 +52,20 @@ fun ProfileInitScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
-
+    val focusManager = LocalFocusManager.current
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     var text by remember { mutableStateOf("") }
 
     val buttonEnabled by remember { derivedStateOf {text.isNotBlank()} }
+
+    var isShowDialog by remember { mutableStateOf(false) }
+
+    if (isShowDialog) {
+        PictureChoiceDialog {
+            isShowDialog = false
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -95,7 +105,7 @@ fun ProfileInitScreen(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
                 ) {}
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { isShowDialog = true },
                     modifier = Modifier
                         .size(40.dp)
                         .align(Alignment.BottomEnd)
@@ -122,7 +132,7 @@ fun ProfileInitScreen(
                 text = text,
                 updateText = { if (it.length <= 10) { text = it } }
             ) {
-
+                focusManager.clearFocus()
             }
         }
 
