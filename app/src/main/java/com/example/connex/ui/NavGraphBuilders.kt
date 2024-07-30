@@ -13,6 +13,7 @@ import androidx.navigation.navigation
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.login.view.LoginCompleteScreen
 import com.example.connex.ui.login.view.LoginScreen
+import com.example.connex.ui.login.view.ProfileInitScreen
 import com.example.connex.utils.Constants.FRIEND_SYNC_ROUTE
 import com.example.connex.utils.Constants.INIT_SETTING_GRAPH
 import com.example.connex.utils.Constants.LOGIN_GRAPH
@@ -22,7 +23,7 @@ import com.example.connex.utils.Constants.SIGNUP_START_ROUTE
 
 
 fun NavGraphBuilder.loginGraph(navController: NavController) {
-    navigation(startDestination = SIGNUP_COMPLETE_ROUTE, route = LOGIN_GRAPH) {
+    navigation(startDestination = SIGNUP_PROFILE_INIT_ROUTE, route = LOGIN_GRAPH) {
         composable(SIGNUP_START_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
@@ -37,6 +38,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 navController = navController,
                 graph = LOGIN_GRAPH
             )
+            ProfileInitScreen(navController = navController, loginViewModel = hiltViewModel(backStackEntry))
         }
         composable(SIGNUP_COMPLETE_ROUTE) { entry ->
             LoginCompleteScreen(navController)

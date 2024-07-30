@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -31,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,7 +89,7 @@ fun SearchTextField(
     text: String,
     placeholder: String,
     updateText: (String) -> Unit,
-    onDone: () -> Unit
+    onSearch: () -> Unit
 ) {
     val borderColor = Color(0xFF000000).copy(alpha = 0.1f)
     val backgroundColor = Color.White
@@ -102,12 +105,16 @@ fun SearchTextField(
             .background(color = backgroundColor, shape = shape)
             .fillMaxWidth(),
         singleLine = true,
-        textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp, lineHeight = 12.sp),
+        textStyle = LocalTextStyle.current.copy(
+            color = Color.Black,
+            fontSize = 12.sp,
+            lineHeight = 12.sp
+        ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
         ),
-        keyboardActions = KeyboardActions(onDone = { onDone() })
+        keyboardActions = KeyboardActions(onSearch = { onSearch() })
     ) { innerTextField ->
         Row(
             modifier = Modifier
@@ -131,6 +138,53 @@ fun SearchTextField(
                 }
                 innerTextField()
             }
+        }
+    }
+}
+
+@Composable
+fun UserNameTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    updateText: (String) -> Unit,
+    onDone: () -> Unit
+) {
+
+    BasicTextField(
+        value = text,
+        onValueChange = updateText,
+        modifier = modifier
+            .fillMaxWidth(),
+        singleLine = true,
+        textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp, lineHeight = 12.sp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(onDone = { onDone() })
+    ) { innerTextField ->
+        Column(modifier = Modifier.fillMaxWidth()) {
+            innerTextField()
+            Spacer(modifier = Modifier.height(2.dp))
+            Divider(
+                thickness = 1.dp,
+                color = Color(0xFFBFC1C6),
+                modifier = Modifier
+                    .fillMaxWidth()
+//                    .padding(top = 2.dp)
+            )
+            Spacer(modifier = Modifier.height(8.5.dp))
+            Text(
+                text = "${text.length}/10자",
+                style = LocalTextStyle.current.copy(
+                    fontSize = 14.sp,
+                    lineHeight = (18.2).sp,
+                    color = Color(0xFFBFC1C6),
+                    textAlign = TextAlign.End
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
     }
 }
