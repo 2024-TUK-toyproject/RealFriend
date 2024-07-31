@@ -29,26 +29,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.connex.ui.component.ArrowBackIcon
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
+import com.example.connex.ui.component.util.addFocusCleaner
+import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.DisableBackground
 import com.example.connex.ui.theme.DisableBorder
 import com.example.connex.ui.theme.MainBlue
 import com.example.connex.ui.theme.Typography
+import com.example.connex.utils.Constants
 import com.example.domain.model.MobileCarrier
 
 
 @Composable
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
+    val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginPhoneAuthUiState.collectAsStateWithLifecycle()
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
@@ -88,14 +94,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             }
         }
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .addFocusCleaner(focusManager)
         ) {
             Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
-            Icon(
-                imageVector = Icons.Default.ArrowBackIosNew,
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
-            )
+            ArrowBackIcon {
+                navController.popBackStack()
+            }
             Spacer(modifier = Modifier.height(64.dp))
             Text(
                 text = "휴대전화 번호를\n입력해 주세요.",
@@ -120,7 +126,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                             }
                         },
                         enabled = true,
-                        onDone = {},
+                        onDone = { focusManager.clearFocus() },
                         trailingIcon = { Text(text = "02:58", style = verificationCodeStyle) }
                     )
                 }
@@ -148,12 +154,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                         }
                     },
                     enabled = !isPhone,
-                    onDone = {}
+                    onDone = { focusManager.clearFocus() }
                 )
             }
         }
         GeneralButton(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier
+                .height(55.dp)
+                .align(Alignment.BottomCenter),
             text = "다음",
             enabled = buttonEnabled
         ) {
@@ -163,7 +171,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             } else if (!isMobileCarrier) {
                 isMobileCarrier = true
             } else {
-                loginViewModel.updateVerificationCode("")
+                navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
             }
         }
     }

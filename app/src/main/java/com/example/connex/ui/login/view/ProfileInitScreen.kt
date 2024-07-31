@@ -51,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.BuildConfig
+import com.example.connex.ui.component.ArrowBackIcon
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
@@ -63,6 +64,7 @@ import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.MainBlue
 import com.example.connex.ui.theme.Typography
+import com.example.connex.utils.Constants
 import com.example.connex.utils.allDelete
 import java.io.File
 import java.util.Objects
@@ -106,7 +108,7 @@ fun ProfileInitScreen(
     if (isShowDialog) {
         PictureChoiceDialog(
             onClose = { isShowDialog = false },
-            onClick1 = { cameraLauncher.launch(image) },
+            onClick1 = { cameraLauncher.launch(galleryImageUri) },
             onClick2 = {takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent)}
         )
     }
@@ -117,13 +119,9 @@ fun ProfileInitScreen(
             .addFocusCleaner(focusManager)
     ) {
         Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
-        Icon(
-            imageVector = Icons.Default.ArrowBackIosNew,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(start = 24.dp)
-                .size(24.dp)
-        )
+        ArrowBackIcon(modifier = Modifier.padding(start = 24.dp)) {
+            navController.popBackStack()
+        }
         Spacer(modifier = Modifier.height(64.dp))
         Text(
             text = "사용할 프로필을 \n설정해 주세요.",
@@ -195,7 +193,7 @@ fun ProfileInitScreen(
                 .height(55.dp)
                 .padding(horizontal = 24.dp), text = "확인", enabled = buttonEnabled
         ) {
-
+            navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)
         }
         Spacer(modifier = Modifier.height(80.dp))
     }

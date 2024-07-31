@@ -23,7 +23,7 @@ import com.example.connex.utils.Constants.SIGNUP_START_ROUTE
 
 
 fun NavGraphBuilder.loginGraph(navController: NavController) {
-    navigation(startDestination = SIGNUP_PROFILE_INIT_ROUTE, route = LOGIN_GRAPH) {
+    navigation(startDestination = SIGNUP_START_ROUTE, route = LOGIN_GRAPH) {
         composable(SIGNUP_START_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,

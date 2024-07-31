@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.SearchTextField
+import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.friendinit.FriendSyncViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -52,6 +55,7 @@ fun FriendSyncScreen(
     navController: NavController,
     friendSyncViewModel: FriendSyncViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
     val contactsUiState by friendSyncViewModel.filteredContacts.collectAsStateWithLifecycle()
 
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
@@ -66,8 +70,8 @@ fun FriendSyncScreen(
         mutableStateOf("")
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(116.dp-statusBarPadding))
+    Column(modifier = Modifier.fillMaxSize().addFocusCleaner(focusManager)) {
+        Spacer(modifier = Modifier.height(116.dp - statusBarPadding))
         Text(
             text = "새싹님을 위한\n추천 친구 목록이에요.",
             style = titleStyle,
@@ -85,6 +89,7 @@ fun FriendSyncScreen(
                 search = it
                 friendSyncViewModel.search(search)
             }) {
+            focusManager.clearFocus()
         }
         LazyColumn(modifier = Modifier.weight(1f)) {
             item { Spacer(modifier = Modifier.height(48.dp)) }
@@ -92,9 +97,11 @@ fun FriendSyncScreen(
                 ContactCard(name = it.name, phone = it.phone)
             }
         }
-        GeneralButton(modifier = Modifier
-            .height(55.dp)
-            .padding(horizontal = 24.dp), text = "다음", enabled = true) {}
+        GeneralButton(
+            modifier = Modifier
+                .height(55.dp)
+                .padding(horizontal = 24.dp), text = "다음", enabled = true
+        ) {}
         Spacer(modifier = Modifier.height(80.dp))
     }
 }
@@ -127,9 +134,11 @@ fun ContactCard(name: String, phone: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(modifier = Modifier
-            .weight(1f)
-            .fillMaxHeight()) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
             Box(
                 modifier = Modifier
                     .size(60.dp)

@@ -120,7 +120,7 @@ fun SearchTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = padding.first, vertical = padding.second),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.Search,

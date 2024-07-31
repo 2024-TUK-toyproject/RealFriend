@@ -45,6 +45,8 @@ fun syncContact(resolver: ContentResolver): MutableList<Contact> {
 @RequiresApi(Build.VERSION_CODES.O)
 fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
     val callLogs = mutableListOf<CallLog>()
+    val selection =
+        "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL AND ${android.provider.CallLog.Calls.CACHED_FORMATTED_NUMBER} IS NOT NULL"
 
     resolver.query(
         android.provider.CallLog.Calls.CONTENT_URI,
@@ -55,7 +57,7 @@ fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
             android.provider.CallLog.Calls.DATE,
             android.provider.CallLog.Calls.TYPE,
         ),
-        "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL",
+        selection,
         null,
         null
     )?.use { cursor ->

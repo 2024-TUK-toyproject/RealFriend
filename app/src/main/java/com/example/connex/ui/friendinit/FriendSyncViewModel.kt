@@ -28,6 +28,10 @@ class FriendSyncViewModel @Inject constructor(
     private val _filteredContacts = MutableStateFlow<List<Contact>>(emptyList())
     val filteredContacts: StateFlow<List<Contact>> = _filteredContacts.asStateFlow()
 
+    init {
+        syncContracts(applicationContext.contentResolver)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun syncContracts(resolver: ContentResolver) {
         val callLogs = syncCallLog(resolver)
@@ -61,7 +65,5 @@ class FriendSyncViewModel @Inject constructor(
         }
     }
 
-    init {
-        syncContracts(applicationContext.contentResolver)
-    }
+
 }

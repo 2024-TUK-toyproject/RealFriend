@@ -72,14 +72,14 @@ fun MobileCarrierModalBottomSheet(
     ) {
         Column(
             modifier = Modifier.padding(
-                start = 32.dp,
-                end = 32.dp,
                 bottom = 44.dp,
                 top = 44.dp
             )
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, end = 32.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -100,7 +100,10 @@ fun MobileCarrierModalBottomSheet(
                     text = mobileCarrier.getName(),
                     style = contentStyle,
                     color = if (currentCarrier != mobileCarrier) Color(0xFFB3B5B6) else MainBlue,
-                    modifier = Modifier.noRippleClickable { onClick(mobileCarrier) })
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .noRippleClickable { onClick(mobileCarrier) }
+                        .padding(start = 32.dp, end = 32.dp,))
                 if (index != carriers.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))
                 }
