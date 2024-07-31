@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -82,7 +86,7 @@ fun ProfileInitScreen(
     var isShowDialog by remember { mutableStateOf(false) }
     var galleryImageUri by remember { mutableStateOf(Uri.EMPTY) }
 
-    val takePhotoFromAlbumLauncher = takePhotoFromAlbumLauncher{
+    val takePhotoFromAlbumLauncher = takePhotoFromAlbumLauncher {
         image = it
         isShowDialog = false
     }
@@ -93,7 +97,7 @@ fun ProfileInitScreen(
 
     var text by remember { mutableStateOf("") }
 
-    val buttonEnabled by remember { derivedStateOf {text.isNotBlank()} }
+    val buttonEnabled by remember { derivedStateOf { text.isNotBlank() } }
 
     DisposableEffect(Unit) {
         galleryImageUri = context.getImageUri()
@@ -109,7 +113,7 @@ fun ProfileInitScreen(
         PictureChoiceDialog(
             onClose = { isShowDialog = false },
             onClick1 = { cameraLauncher.launch(galleryImageUri) },
-            onClick2 = {takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent)}
+            onClick2 = { takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent) }
         )
     }
 
@@ -117,76 +121,84 @@ fun ProfileInitScreen(
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
+//            .navigationBarsPadding()
+            .imePadding()
     ) {
         Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
         ArrowBackIcon(modifier = Modifier.padding(start = 24.dp)) {
             navController.popBackStack()
         }
-        Spacer(modifier = Modifier.height(64.dp))
-        Text(
-            text = "사용할 프로필을 \n설정해 주세요.",
-            style = Typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 28.dp)
-        )
-        Spacer(modifier = Modifier.height(48.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box(
+        Column(modifier = Modifier
+            .weight(1f)
+            .verticalScroll(rememberScrollState())) {
+            Spacer(modifier = Modifier.height(64.dp))
+            Text(
+                text = "사용할 프로필을 \n설정해 주세요.",
+                style = Typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 28.dp)
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            Column(
                 modifier = Modifier
-                    .width(104.dp)
-                    .height(100.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Card(
+                Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f),
-                    shape = CircleShape,
-                    border = BorderStroke(width = 2.dp, color = MainBlue),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
+                        .width(104.dp)
+                        .height(100.dp)
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model = image),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-                IconButton(
-                    onClick = { isShowDialog = true },
-                    modifier = Modifier
-                        .size(40.dp)
-                        .align(Alignment.BottomEnd)
-                        .shadow(
-                            elevation = 4.dp,
-                            shape = CircleShape,
-                            ambientColor = Color.Black.copy(0.16f)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f),
+                        shape = CircleShape,
+                        border = BorderStroke(width = 2.dp, color = MainBlue),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = image),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
-                        .clip(CircleShape)
-                        .background(Color.White)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CameraAlt,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color(0xFFC1C1C1)
-                    )
+                    }
+                    IconButton(
+                        onClick = { isShowDialog = true },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .align(Alignment.BottomEnd)
+                            .shadow(
+                                elevation = 4.dp,
+                                shape = CircleShape,
+                                ambientColor = Color.Black.copy(0.16f)
+                            )
+                            .clip(CircleShape)
+                            .background(Color.White)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CameraAlt,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = Color(0xFFC1C1C1)
+                        )
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(72.5.dp))
+                Spacer(modifier = Modifier.height(72.5.dp))
 
-            UserNameTextField(
-                modifier = Modifier.width(200.dp),
-                text = text,
-                updateText = { if (it.length <= 10) { text = it } }
-            ) {
-                focusManager.clearFocus()
+                UserNameTextField(
+                    modifier = Modifier.width(200.dp),
+                    text = text,
+                    updateText = {
+                        if (it.length <= 10) {
+                            text = it
+                        }
+                    }
+                ) {
+                    focusManager.clearFocus()
+                }
             }
         }
-
 
         GeneralButton(
             modifier = Modifier
@@ -195,7 +207,7 @@ fun ProfileInitScreen(
         ) {
             navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)
         }
-        Spacer(modifier = Modifier.height(80.dp))
+//        Spacer(modifier = Modifier.height(80.dp))
     }
 
 }

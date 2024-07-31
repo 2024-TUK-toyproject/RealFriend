@@ -31,7 +31,7 @@ fun RootNavhost(
     ) {
         NavHost(
             navController = appState.navController,
-            startDestination = Constants.HOME_GRAPH,
+            startDestination = Constants.LOGIN_GRAPH,
             modifier = Modifier.fillMaxSize()
         ) {
             loginGraph(appState.navController)
