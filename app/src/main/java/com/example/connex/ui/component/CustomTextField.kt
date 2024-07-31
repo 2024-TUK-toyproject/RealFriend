@@ -153,17 +153,16 @@ fun UserNameTextField(
     BasicTextField(
         value = text,
         onValueChange = updateText,
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         singleLine = true,
-        textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp, lineHeight = 12.sp),
+        textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp, lineHeight = 12.sp, textAlign = TextAlign.Center,),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(onDone = { onDone() })
     ) { innerTextField ->
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             innerTextField()
             Spacer(modifier = Modifier.height(2.dp))
             Divider(

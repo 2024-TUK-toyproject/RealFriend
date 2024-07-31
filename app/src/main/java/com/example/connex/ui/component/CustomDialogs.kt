@@ -27,7 +27,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun PictureChoiceDialog(modifier: Modifier = Modifier, onClose: () -> Unit) {
+fun PictureChoiceDialog(
+    modifier: Modifier = Modifier,
+    onClose: () -> Unit,
+    onClick1: () -> Unit,
+    onClick2: () -> Unit
+) {
     Dialog(
         onDismissRequest = onClose,
         properties = DialogProperties(
@@ -35,22 +40,26 @@ fun PictureChoiceDialog(modifier: Modifier = Modifier, onClose: () -> Unit) {
             dismissOnClickOutside = true,
         )
     ) {
-        PictureChoiceDialogContents(modifier = modifier)
+        PictureChoiceDialogContents(modifier = modifier, onClick1 = onClick1, onClick2 = onClick2)
     }
 }
 
 @Composable
-fun PictureChoiceDialogContents(modifier: Modifier = Modifier) {
+fun PictureChoiceDialogContents(
+    modifier: Modifier = Modifier,
+    onClick1: () -> Unit,
+    onClick2: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(13.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column(modifier = modifier.padding(vertical = 16.dp)) {
             PictureChoiceDialogContent(icon = Icons.Default.CameraAlt, text = "카메라로 촬영하기") {
-
+                onClick1()
             }
             PictureChoiceDialogContent(icon = Icons.Default.AddPhotoAlternate, text = "사진 선택하기") {
-
+                onClick2()
             }
         }
 
@@ -66,7 +75,12 @@ fun PictureChoiceDialogContent(icon: ImageVector, text: String, onClick: () -> U
         .fillMaxWidth()
         .clickable { onClick() }
         .padding(start = 40.dp, top = 16.dp, bottom = 16.dp)) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(24.dp), tint = contentColor)
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = contentColor
+        )
         Spacer(modifier = Modifier.width(24.dp))
         Text(text = text, style = textStyle)
     }

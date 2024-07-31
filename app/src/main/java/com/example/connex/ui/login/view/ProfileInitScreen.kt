@@ -1,6 +1,8 @@
 package com.example.connex.ui.login.view
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,13 +38,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
+import com.example.connex.ui.component.util.addFocusCleaner
+import com.example.connex.ui.domain.takePhotoFromAlbumIntent
+import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.MainBlue
 import com.example.connex.ui.theme.Typography
@@ -55,20 +62,31 @@ fun ProfileInitScreen(
     val focusManager = LocalFocusManager.current
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
+    var image by remember { mutableStateOf(Uri.EMPTY) }
+    var isShowDialog by remember { mutableStateOf(false) }
+
+
+    val takePhotoFromAlbumLauncher = takePhotoFromAlbumLauncher{
+        image = it
+        isShowDialog = false
+    }
+
+
     var text by remember { mutableStateOf("") }
 
     val buttonEnabled by remember { derivedStateOf {text.isNotBlank()} }
 
-    var isShowDialog by remember { mutableStateOf(false) }
 
     if (isShowDialog) {
-        PictureChoiceDialog {
-            isShowDialog = false
-        }
+        PictureChoiceDialog(
+            onClose = { isShowDialog = false },
+            onClick1 = {},
+            onClick2 = {takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent)}
+        )
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().addFocusCleaner(focusManager)
     ) {
         Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
         Icon(
@@ -103,7 +121,14 @@ fun ProfileInitScreen(
                     shape = CircleShape,
                     border = BorderStroke(width = 2.dp, color = MainBlue),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
-                ) {}
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = image),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
                 IconButton(
                     onClick = { isShowDialog = true },
                     modifier = Modifier

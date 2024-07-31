@@ -22,9 +22,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val focusManager = LocalFocusManager.current
             ConnexTheme {
-                Scaffold(modifier = Modifier.fillMaxSize().addFocusCleaner(focusManager)) { innerPadding ->
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
