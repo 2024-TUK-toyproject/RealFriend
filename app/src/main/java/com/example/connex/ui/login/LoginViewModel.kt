@@ -1,6 +1,6 @@
 package com.example.connex.ui.login
 
-import androidx.compose.runtime.mutableStateOf
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.MobileCarrier
@@ -14,9 +14,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-data class LoginPhoneAuthUiState(
+data class LoginUiState(
     val phoneNumber: Phone = Phone.default(),
     val verificationCode: String = "",
+)
+
+data class ProfileInitUiState(
+    val imageUrl: Uri = Uri.EMPTY,
+    val name: String = "",
 )
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
@@ -26,13 +31,30 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val _verificationCode = MutableStateFlow(" ")
     val verificationCode: StateFlow<String> = _verificationCode.asStateFlow()
 
-    val loginPhoneAuthUiState = combine(_phone, _verificationCode) { phone, verificationCode ->
-        LoginPhoneAuthUiState(phone, verificationCode)
+    private val _imageUrl = MutableStateFlow<Uri>(Uri.EMPTY)
+    val imageUrl: StateFlow<Uri> = _imageUrl
+
+    private val _name = MutableStateFlow("")
+    val name: StateFlow<String> = _name
+
+    val loginUiState = combine(_phone, _verificationCode) { phone, verificationCode ->
+        LoginUiState(phone, verificationCode)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = LoginPhoneAuthUiState()
+        initialValue = LoginUiState()
     )
+
+    val profileInitUiState = combine(_imageUrl, _name) { imageUrl, name ->
+        ProfileInitUiState(imageUrl, name)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProfileInitUiState()
+    )
+
+
+
 
     fun updatePhone(phone: String) {
         _phone.value = _phone.value.copy(number = phone)
@@ -44,6 +66,14 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
     fun updateVerificationCode(code: String) {
         _verificationCode.value = code
+    }
+
+    fun updateImageUrl(imageUrl: Uri) {
+        _imageUrl.value = imageUrl
+    }
+
+    fun updateName(name: String) {
+        _name.value = name
     }
 
 }

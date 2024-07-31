@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 // 갤러리에서 사진 가져오기
 @Composable
 fun takePhotoFromAlbumLauncher(update: (Uri) -> Unit): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    val scope = rememberCoroutineScope()
+
     return rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let {
-                    uri -> scope.launch { update(uri) }
+                    uri -> update(uri)
             }
         } else if (result.resultCode != Activity.RESULT_CANCELED) {
         }

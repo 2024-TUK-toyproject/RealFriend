@@ -11,12 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -41,7 +37,6 @@ import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.component.util.addFocusCleaner
-import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.DisableBackground
 import com.example.connex.ui.theme.DisableBorder
@@ -55,7 +50,7 @@ import com.example.domain.model.MobileCarrier
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
     val focusManager = LocalFocusManager.current
-    val loginPhoneAuthUiState by loginViewModel.loginPhoneAuthUiState.collectAsStateWithLifecycle()
+    val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     var isPhone by remember {

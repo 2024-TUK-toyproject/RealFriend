@@ -2,6 +2,8 @@ package com.example.connex.ui.login.view
 
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,19 +18,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,8 +49,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.BuildConfig
@@ -60,9 +59,7 @@ import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
 import com.example.connex.ui.component.util.addFocusCleaner
-import com.example.connex.ui.domain.cameraLauncher
-import com.example.connex.ui.domain.createImageFile
-import com.example.connex.ui.domain.getImageUri
+import com.example.connex.ui.contentprovider.ComposeFileProvider
 import com.example.connex.ui.domain.takePhotoFromAlbumIntent
 import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
@@ -71,36 +68,39 @@ import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
 import com.example.connex.utils.allDelete
 import java.io.File
-import java.util.Objects
 
 @Composable
 fun ProfileInitScreen(
     navController: NavController,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    val profileInitUiState by loginViewModel.profileInitUiState.collectAsStateWithLifecycle()
+
     val focusManager = LocalFocusManager.current
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     val context = LocalContext.current
     var image by remember { mutableStateOf(Uri.EMPTY) }
     var isShowDialog by remember { mutableStateOf(false) }
-    var galleryImageUri by remember { mutableStateOf(Uri.EMPTY) }
+    var hasImage by remember { mutableStateOf(false) }
 
     val takePhotoFromAlbumLauncher = takePhotoFromAlbumLauncher {
-        image = it
+        loginViewModel.updateImageUrl(it)
         isShowDialog = false
     }
-    val cameraLauncher = cameraLauncher(uri = galleryImageUri) {
-        image = it
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        hasImage = it
         isShowDialog = false
     }
 
-    var text by remember { mutableStateOf("") }
+    val buttonEnabled by remember { derivedStateOf { profileInitUiState.name.isNotBlank() } }
 
-    val buttonEnabled by remember { derivedStateOf { text.isNotBlank() } }
+
+    LaunchedEffect(hasImage) {
+        if (hasImage) loginViewModel.updateImageUrl(image)
+    }
 
     DisposableEffect(Unit) {
-        galleryImageUri = context.getImageUri()
         onDispose {
             val path = "/storage/emulated/0/Android/data/${BuildConfig.APPLICATION_ID}/cache/"
             val cashFile = File(path)
@@ -112,7 +112,11 @@ fun ProfileInitScreen(
     if (isShowDialog) {
         PictureChoiceDialog(
             onClose = { isShowDialog = false },
-            onClick1 = { cameraLauncher.launch(galleryImageUri) },
+            onClick1 = {
+                val uri = ComposeFileProvider.getImageUri(context)
+                image = uri
+                cameraLauncher.launch(uri)
+                       },
             onClick2 = { takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent) }
         )
     }
@@ -157,7 +161,7 @@ fun ProfileInitScreen(
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
                     ) {
                         Image(
-                            painter = rememberAsyncImagePainter(model = image),
+                            painter = rememberAsyncImagePainter(model = profileInitUiState.imageUrl),
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
@@ -188,10 +192,10 @@ fun ProfileInitScreen(
 
                 UserNameTextField(
                     modifier = Modifier.width(200.dp),
-                    text = text,
+                    text = profileInitUiState.name,
                     updateText = {
                         if (it.length <= 10) {
-                            text = it
+                            loginViewModel.updateName(it)
                         }
                     }
                 ) {
