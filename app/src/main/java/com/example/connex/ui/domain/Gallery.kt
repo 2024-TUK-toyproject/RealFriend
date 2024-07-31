@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -37,3 +38,4 @@ val takePhotoFromAlbumIntent =
         )
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
     }
+
