@@ -225,12 +225,15 @@ fun MobileCarrierBox(
             contentColor = Color.LightGray
         )
     ) {
-        Text(
-            text = mobileCarrier,
-            fontSize = 12.sp,
-            lineHeight = 12.sp,
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 16.dp)
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = mobileCarrier,
+                fontSize = 12.sp,
+                lineHeight = 12.sp,
+                modifier = Modifier.align(Alignment.CenterStart).padding(horizontal = 14.dp, vertical = 16.dp)
+            )
+        }
+
     }
 }
 

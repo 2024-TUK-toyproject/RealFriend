@@ -1,9 +1,14 @@
 package com.example.connex.utils
 
+import com.example.connex.ui.Screen
+
 object Constants {
+
+    val BOTTOM_NAV_ITEMS = listOf<Screen>(Screen.Home, Screen.Friends,Screen.Analyze, Screen.Mypage)
     /** navigation id */
     const val HOME_ROUTE = "nav-home"
-    const val MAP_ROUTE = "nav-map"
+    const val FRIENDS_ROUTE = "nav-friends"
+    const val ANALYZE_ROUTE = "nav-analyze"
     const val MYPAGE_ROUTE = "nav-mypage"
 
     const val WEB_VIEW_ROUTE = "nav-web-view"
@@ -21,8 +26,6 @@ object Constants {
     const val SPLASH_ROUTE = "nav-splash"
 
     const val FRIEND_SYNC_ROUTE = "nav-friend-sync"
-    const val PROFILE_INIT_ROUTE = "nav-profile-init"
-    const val PROFILE_INIT_COMPLETE_ROUTE = "nav-profile-init-complete"
 
 
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"
@@ -50,7 +53,7 @@ object Constants {
     const val SETTING_VERIFY_PASSWORD_ROTUE = "nav-setting-verify-password"
 
     /** Graph Id */
-    const val MAIN_GRAPH = "main-graph"
+    const val HOME_GRAPH = "home-graph"
     const val LOGIN_GRAPH = "login-graph"
     const val INIT_SETTING_GRAPH = "init-setting-graph"
     const val SETTING_GRAPH = "setting-graph"

@@ -11,11 +11,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
+import com.example.connex.ui.home.AnalyzeScreen
+import com.example.connex.ui.home.FriendsScreen
+import com.example.connex.ui.home.HomeScreen
+import com.example.connex.ui.home.MypageScreen
 import com.example.connex.ui.login.view.LoginCompleteScreen
 import com.example.connex.ui.login.view.LoginScreen
 import com.example.connex.ui.login.view.ProfileInitScreen
 import com.example.connex.utils.Constants.FRIEND_SYNC_ROUTE
-import com.example.connex.utils.Constants.INIT_SETTING_GRAPH
+import com.example.connex.utils.Constants.HOME_GRAPH
+import com.example.connex.utils.Constants.HOME_ROUTE
 import com.example.connex.utils.Constants.LOGIN_GRAPH
 import com.example.connex.utils.Constants.SIGNUP_COMPLETE_ROUTE
 import com.example.connex.utils.Constants.SIGNUP_PROFILE_INIT_ROUTE
@@ -30,7 +35,10 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 navController = navController,
                 graph = LOGIN_GRAPH
             )
-            LoginScreen(navController = navController, loginViewModel = hiltViewModel(backStackEntry))
+            LoginScreen(
+                navController = navController,
+                loginViewModel = hiltViewModel(backStackEntry)
+            )
         }
         composable(SIGNUP_PROFILE_INIT_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
@@ -38,7 +46,10 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 navController = navController,
                 graph = LOGIN_GRAPH
             )
-            ProfileInitScreen(navController = navController, loginViewModel = hiltViewModel(backStackEntry))
+            ProfileInitScreen(
+                navController = navController,
+                loginViewModel = hiltViewModel(backStackEntry)
+            )
         }
         composable(SIGNUP_COMPLETE_ROUTE) { entry ->
             LoginCompleteScreen(navController)
@@ -48,16 +59,45 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.initSettingGraph(navController: NavController) {
-    navigation(startDestination = FRIEND_SYNC_ROUTE, route = INIT_SETTING_GRAPH) {
-        composable(FRIEND_SYNC_ROUTE) { entry ->
+    composable(FRIEND_SYNC_ROUTE) { entry ->
+        FriendSyncScreen(navController = navController)
+    }
+}
+
+fun NavGraphBuilder.homeGraph(navController: NavController) {
+    navigation(startDestination = HOME_ROUTE, route = HOME_GRAPH) {
+        composable(Screen.Home.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
                 navController = navController,
-                graph = INIT_SETTING_GRAPH
+                graph = HOME_GRAPH
             )
-            FriendSyncScreen(navController = navController, friendSyncViewModel = hiltViewModel(backStackEntry))
+            HomeScreen()
         }
-
+        composable(Screen.Friends.route) { entry ->
+            val backStackEntry = rememberNavControllerBackEntry(
+                entry = entry,
+                navController = navController,
+                graph = HOME_GRAPH
+            )
+            FriendsScreen()
+        }
+        composable(Screen.Analyze.route) { entry ->
+            val backStackEntry = rememberNavControllerBackEntry(
+                entry = entry,
+                navController = navController,
+                graph = HOME_GRAPH
+            )
+            AnalyzeScreen()
+        }
+        composable(Screen.Mypage.route) { entry ->
+            val backStackEntry = rememberNavControllerBackEntry(
+                entry = entry,
+                navController = navController,
+                graph = HOME_GRAPH
+            )
+            MypageScreen()
+        }
     }
 }
 

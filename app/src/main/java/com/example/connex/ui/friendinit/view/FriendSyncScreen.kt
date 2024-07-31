@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.connex.ui.Screen
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.addFocusCleaner
@@ -101,7 +102,7 @@ fun FriendSyncScreen(
             modifier = Modifier
                 .height(55.dp)
                 .padding(horizontal = 24.dp), text = "다음", enabled = true
-        ) {}
+        ) { navController.navigate(Screen.Home.route) }
         Spacer(modifier = Modifier.height(80.dp))
     }
 }

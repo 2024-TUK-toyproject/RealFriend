@@ -74,7 +74,7 @@ fun LoginCompleteScreen(navController: NavController) {
                 text = "시작하기",
                 enabled = true
             ) {
-                navController.navigate(Constants.INIT_SETTING_GRAPH)
+                navController.navigate(Constants.FRIEND_SYNC_ROUTE)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "건너뛰기", style = body2Style)

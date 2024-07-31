@@ -22,10 +22,7 @@ import java.util.Objects
 
 @Composable
 fun cameraLauncher(uri: Uri, update: (Uri) -> Unit): ManagedActivityResultLauncher<Uri, Boolean> {
-
-    val scope = rememberCoroutineScope()
     return rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        Log.d("daeyoung", "camera uri: $uri")
         if (success) update(uri)
     }
 }
