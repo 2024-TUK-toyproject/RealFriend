@@ -89,7 +89,7 @@ async def get_profile(userId : str, user_service : User_service = Depends()):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/users/modify/profile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 수정 성공"}, 400 : {"model" : CommoneResponse, "description" : "프로필 수정 실패"}}, tags = ["User/Profile"])
+@router.post("/users/modify/profile", responses = {200 : {"model" : Profile_modify_response, "description" : "프로필 수정 성공"}, 400 : {"model" : CommoneResponse, "description" : "프로필 수정 실패"}}, tags = ["User/Profile"])
 async def modify_profile(userId : str, file : UploadFile, user_service : User_service = Depends()):
     try:
         return await user_service.modify_profile(userId, file)

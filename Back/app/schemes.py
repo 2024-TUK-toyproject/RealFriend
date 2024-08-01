@@ -18,10 +18,15 @@ class Last_call_response(BaseModel):
 class Profile_response(BaseModel):
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
-    profile_image : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+    profileImage : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
 
 class Profile_only_response(BaseModel):
-    profile_image : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+    profileImage : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+
+class Profile_modify_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, str] = Field({"profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}, example = {"profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"})
 
 class Most_friendly_list(BaseModel):
     name : str = Field(..., example = "홍길동")
