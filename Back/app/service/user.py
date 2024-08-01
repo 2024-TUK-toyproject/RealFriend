@@ -28,22 +28,21 @@ class User_service:
         self.today = datetime.now()
         self.rng = RandomNumberGenerator()
 
-    async def register_user(self, user_info : User_info_request) -> Register_user_response:
+    async def register_user(self, user_info : User_info_request) -> CommoneResponse:
         exiting_user = self.db.query(models.user_info).filter(models.user_info.phone == user_info.phone).first()
         if exiting_user is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
 
         new_temp_user = models.temp_user_info(
-            name = user_info.name,
             phone = user_info.phone,
             create_date = self.today.strftime('%Y-%m-%d')
         )
         self.db.add(new_temp_user)
         self.db.commit()
 
-        return Register_user_response(status = "success", message = "사용자 등록 성공", content = {"phone" : user_info.phone})
+        return Register_user_response(status = "success", message = "사용자 등록 성공")
     
-    async def set_profile(self, userId : str, file : UploadFile) -> CommoneResponse:
+    async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
@@ -62,23 +61,24 @@ class User_service:
             userId,
             urllib.parse.quote(filen_name)
         )
+        user.name = name
 
         self.db.commit()
 
         return CommoneResponse(status = "success", message = "프로필 사진 등록 성공")
     
-    async def get_profile(self, userId : str) -> Profile_response:
+    async def get_profile(self, userId : str) -> Get_profile_response:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
-        return Profile_response(
+        return Get_profile_response(
             name = user.name,
             phone = user.phone,
             profile_image = user.profile_image
         )
     
-    async def modify_profile(self, userId : str, file : UploadFile) -> Profile_only_response:
+    async def modify_profile(self, userId : str, file : UploadFile) -> Profile_modify_response:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
@@ -100,7 +100,7 @@ class User_service:
 
         self.db.commit()
 
-        return Profile_only_response(profile_image = user.profile_image)
+        return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : user.profile_image})
     
     # 인증번호로직 추후에 추가
     async def certification_user(self, request : Certificate_request) -> Certificate_response:
@@ -116,7 +116,6 @@ class User_service:
         
         new_user = models.user_info(
             user_id = new_id,
-            name = user.name,
             phone = user.phone,
             create_date = user.create_date,
             last_modified_date = self.today.strftime('%Y-%m-%d')
