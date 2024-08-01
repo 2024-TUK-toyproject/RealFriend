@@ -43,7 +43,7 @@ import com.example.connex.ui.theme.DisableBorder
 import com.example.connex.ui.theme.MainBlue
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
-import com.example.domain.model.MobileCarrier
+import com.example.domain.model.login.MobileCarrier
 
 
 @Composable

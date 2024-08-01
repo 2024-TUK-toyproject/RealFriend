@@ -2,12 +2,10 @@ package com.example.connex.utils
 
 import android.content.ContentResolver
 import android.os.Build
-import com.example.domain.model.CallLog
+import com.example.domain.model.login.CallLog
 import android.provider.ContactsContract
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.platform.LocalContext
-import com.example.domain.model.Contact
+import com.example.domain.model.login.Contact
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter

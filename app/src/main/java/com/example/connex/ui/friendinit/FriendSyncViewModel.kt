@@ -8,7 +8,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.example.connex.utils.syncCallLog
 import com.example.connex.utils.syncContact
-import com.example.domain.model.Contact
+import com.example.domain.model.login.Contact
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

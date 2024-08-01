@@ -1,6 +1,7 @@
 plugins {
     id("daeyoung.plugin.android.library")
     id("daeyoung.plugin.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -9,8 +10,9 @@ android {
 
     defaultConfig {
         minSdk = 24
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"http://34.203.190.231:5000\"")
         consumerProguardFiles("consumer-rules.pro")
     }
 

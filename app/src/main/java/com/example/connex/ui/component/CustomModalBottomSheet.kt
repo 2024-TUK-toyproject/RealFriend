@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.theme.FontBlack
 import com.example.connex.ui.theme.MainBlue
-import com.example.domain.model.MobileCarrier
+import com.example.domain.model.login.MobileCarrier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
