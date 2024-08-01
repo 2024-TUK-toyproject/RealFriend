@@ -64,6 +64,8 @@ ossPlugin = "0.10.6"
 oss = "17.0.1"
 appcompatVersion = "1.6.1"
 materialVersion = "1.10.0"
+monitor = "1.7.1"
+junitKtx = "1.2.1"
 
 [plugins]
 
@@ -162,6 +164,8 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [bundles]
 firebase = ["firebase-analytics", "firebase-cloud-messaging"]
