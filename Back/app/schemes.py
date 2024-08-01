@@ -15,10 +15,12 @@ class Last_call_response(BaseModel):
     duration : int = Field(..., example = "90", description="통화시간(초)")
     type : int = Field(..., example = "1", description="1 : 수신, 2 : 발신, 3 : 부재중")
 
-class Profile_response(BaseModel):
-    name : str = Field(..., example = "홍길동")
-    phone : str = Field(..., example = "010-1234-5678")
-    profileImage : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+
+
+class Get_profile_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, str] = Field({"name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}, example = {"name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"})
 
 class Profile_only_response(BaseModel):
     profileImage : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
@@ -79,16 +81,17 @@ class Call_record_request(BaseModel):
     content : List[Call_record_list]
 
 class User_info_request(BaseModel):
-    name : str = Field(..., example = "홍길동")
+    #name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
     company : str = Field(..., example="skt")
 
 class Certificate_request(BaseModel):
     code : str = Field(..., example = "123456")
-    name : str = Field(..., example = "홍길동")
+    #name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
     company : str = Field(..., example="skt")
     
 class Set_profile_request(BaseModel):
     userId : str = Field(..., example = "123456")
+    name : str = Field(..., example = "홍길동")
 
