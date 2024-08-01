@@ -18,3 +18,4 @@ dependencyResolutionManagement {
 rootProject.name = "Connex"
 include(":app")
 include(":domain")
+include(":data")

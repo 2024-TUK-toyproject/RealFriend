@@ -33,7 +33,7 @@ gradlePlugin {
             implementationClass = "AndroidHiltConventionPlugin"
         }
         register("AndroidLibraryPlugin") {
-            id = "buzzzzing.plugin.android.library"
+            id = "daeyoung.plugin.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
         register("AndroidLibraryComposePlugin") {

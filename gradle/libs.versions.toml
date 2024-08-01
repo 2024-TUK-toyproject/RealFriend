@@ -40,7 +40,8 @@ kotlinxCoroutines = "1.7.1"
 kotlinxSerializationJson = "1.5.1"
 
 retrofit = "2.9.0"
-retrofitConverter = "2.9.0"
+retrofitSerialication = "1.0.0"
+retrofitConverter = "2.6.0"
 retrofitJson = "2.8.9"
 retrofitKotlinxSerializationJson = "1.0.0"
 okhttp = "4.11.0"
@@ -128,8 +129,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-json = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitConverter" }
 retrofit-json = { group = "com.google.code.gson", name = "gson", version.ref = "retrofitJson" }
+retrofit-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitSerialication" }
 
-# okhttp
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 

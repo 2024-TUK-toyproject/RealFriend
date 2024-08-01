@@ -1,5 +1,6 @@
 package com.example.connex.ui.login.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -77,7 +78,7 @@ fun LoginCompleteScreen(navController: NavController) {
                 navController.navigate(Constants.FRIEND_SYNC_ROUTE)
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "건너뛰기", style = body2Style)
+            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })
             Spacer(modifier = Modifier.height(46.dp))
         }
     }
