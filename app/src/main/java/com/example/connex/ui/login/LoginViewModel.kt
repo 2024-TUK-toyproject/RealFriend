@@ -1,15 +1,20 @@
 package com.example.connex.ui.login
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.connex.utils.asMultipart
 import com.example.domain.model.ApiState
+import com.example.domain.model.UserId
 import com.example.domain.model.login.MobileCarrier
 import com.example.domain.model.login.Phone
 import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
+import com.example.domain.usecase.SignupProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +39,12 @@ data class ProfileInitUiState(
 class LoginViewModel @Inject constructor(
     val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase,
     val checkCertificateCodeUseCase: CheckCertificateCodeUseCase,
+    val signupProfileImageUseCase: SignupProfileImageUseCase,
+    @ApplicationContext val context: Context
 ) : ViewModel() {
+
+    private var userId = 0L
+
     private val _phone = MutableStateFlow(Phone.default())
     val phone: StateFlow<Phone> = _phone.asStateFlow()
 
@@ -98,12 +108,31 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
     fun fetchCheckCertificateCode(onSuccess: () -> Unit) {
         viewModelScope.launch {
             when (val result = checkCertificateCodeUseCase(
                 phone = _phone.value.number,
                 mobileCarrier = _phone.value.mobileCarrier.name,
                 certificateCode = _verificationCode.value
+            ).first()) {
+                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
+                ApiState.Loading -> TODO()
+                is ApiState.Success<*> -> result.onSuccess {
+                    userId = (it as UserId).userId
+                    onSuccess()
+                }
+                is ApiState.NotResponse -> TODO()
+            }
+        }
+    }
+
+    fun fetchSignupProfileImage(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            when (val result = signupProfileImageUseCase(
+                userId = userId,
+                name = _name.value,
+                file = imageUrl.value.asMultipart("file", context.contentResolver)!!
             ).first()) {
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()

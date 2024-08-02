@@ -8,11 +8,17 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.BufferedSink
 import okio.source
 
-fun Uri.asMultipart(name: String, contentResolver: ContentResolver): MultipartBody.Part? =
-    contentResolver.query(this, null, null, null, null)?.use {
+fun Uri.asMultipart(name: String, contentResolver: ContentResolver): MultipartBody.Part? {
+//    return MultipartBody.Part.createFormData(
+//        "files",
+//        name,
+//        this.toString().toRequestBody("image/jpeg".toMediaType())
+//    )
+    return contentResolver.query(this, null, null, null, null)?.use {
         if (it.moveToNext()) {
             val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME));
             val requestBody = object : RequestBody() {
@@ -29,3 +35,5 @@ fun Uri.asMultipart(name: String, contentResolver: ContentResolver): MultipartBo
             null
         }
     }
+}
+

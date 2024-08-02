@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(private val loginApi: LoginApi): LoginRepository {
@@ -41,4 +42,20 @@ class LoginRepositoryImpl @Inject constructor(private val loginApi: LoginApi): L
             error.message?.let { emit(ApiState.Error(it)) }
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun signupProfileImage(
+        userId: Long,
+        name: String,
+        file: MultipartBody.Part
+    ): Flow<ApiState<Unit>> = flow {
+        kotlin.runCatching {
+            loginApi.signupProfileImage(userId.toString(), name, file)
+        }.onSuccess {
+            emit(ApiState.Success(Unit))
+        }.onFailure { error ->
+            error.message?.let { emit(ApiState.Error(it)) }
+        }
+    }.flowOn(Dispatchers.IO)
+
+
 }

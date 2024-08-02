@@ -209,7 +209,8 @@ fun ProfileInitScreen(
                 .height(55.dp)
                 .padding(horizontal = 24.dp), text = "확인", enabled = buttonEnabled
         ) {
-            navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)
+            loginViewModel.fetchSignupProfileImage{navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)}
+
         }
 //        Spacer(modifier = Modifier.height(80.dp))
     }
