@@ -32,15 +32,21 @@ class User_service:
         exiting_user = self.db.query(models.user_info).filter(models.user_info.phone == user_info.phone).first()
         if exiting_user is not None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
+        
+        existing_temp_user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == user_info.phone).first()
 
-        new_temp_user = models.temp_user_info(
-            phone = user_info.phone,
-            create_date = self.today.strftime('%Y-%m-%d')
-        )
-        self.db.add(new_temp_user)
-        self.db.commit()
+        if not existing_temp_user:
+            new_temp_user = models.temp_user_info(
+                phone = user_info.phone,
+                create_date = self.today.strftime('%Y-%m-%d')
+            )
+            self.db.add(new_temp_user)
+            self.db.commit()
+        else:
+            existing_temp_user.create_date = self.today.strftime('%Y-%m-%d')
+            self.db.commit()
 
-        return Register_user_response(status = "success", message = "사용자 등록 성공")
+        return CommoneResponse(status = "success", message = "사용자 등록 성공")
     
     async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
@@ -107,7 +113,7 @@ class User_service:
         if request.code:
             pass
 
-        user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).first()
+        user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone, models.temp_user_info.create_date == self.today.strftime('%Y-%m-%d')).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
