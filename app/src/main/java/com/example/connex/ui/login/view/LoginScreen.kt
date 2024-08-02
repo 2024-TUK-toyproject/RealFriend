@@ -164,6 +164,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 loginViewModel.updateMobileCarrier(MobileCarrier.NOT)
                 isPhone = true
             } else if (!isMobileCarrier) {
+                loginViewModel.fetchRequestCertificateCode()
                 isMobileCarrier = true
             } else {
                 navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
