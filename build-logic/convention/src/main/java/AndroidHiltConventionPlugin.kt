@@ -15,9 +15,8 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", libs.findLibrary("hilt.android").get())
                 add("ksp", libs.findLibrary("hilt.compiler").get())
-                add("ksp", libs.findLibrary("hilt.compiler").get())
-//                "testImplementation"(libs.findLibrary("hilt.testing").get())
-//                "kspTest"(libs.findLibrary("hilt.testing.compiler").get())
+                "testImplementation"(libs.findLibrary("hilt.testing").get())
+                "kspTest"(libs.findLibrary("hilt.testing.compiler").get())
 
             }
         }

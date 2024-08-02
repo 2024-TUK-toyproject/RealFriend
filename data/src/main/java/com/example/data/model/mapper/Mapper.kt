@@ -1,7 +1,7 @@
 package com.example.data.model.mapper
 
-import com.example.data.model.UserIdDTO
-import com.example.data.model.asDomain
+import com.example.data.model.response.UserIdDTO
+import com.example.data.model.response.asDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

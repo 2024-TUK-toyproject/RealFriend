@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 @InstallIn(SingletonComponent::class)
 object ApiModule {
     @Provides
-    fun provideAuthApi(@NetworkModule.ConnexRetrofit retrofit: Retrofit): LoginApi {
+    fun provideLoginApi(@NetworkModule.ConnexRetrofit retrofit: Retrofit): LoginApi {
         return retrofit.create(LoginApi::class.java)
     }
 }
