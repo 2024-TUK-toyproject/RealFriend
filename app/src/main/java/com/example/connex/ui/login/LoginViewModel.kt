@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
 import com.example.domain.model.login.MobileCarrier
 import com.example.domain.model.login.Phone
+import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,8 @@ data class ProfileInitUiState(
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase
+    val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase,
+    val checkCertificateCodeUseCase: CheckCertificateCodeUseCase,
 ) : ViewModel() {
     private val _phone = MutableStateFlow(Phone.default())
     val phone: StateFlow<Phone> = _phone.asStateFlow()
@@ -82,7 +84,7 @@ class LoginViewModel @Inject constructor(
         _name.value = name
     }
 
-    fun fetchRequestCertificateCode() {
+    fun fetchRequestCertificateCode(onSuccess: () -> Unit) {
 
         viewModelScope.launch {
             when (val result = postRequestCertificateCodeUseCase(
@@ -91,7 +93,22 @@ class LoginViewModel @Inject constructor(
             ).first()) {
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()
-                is ApiState.Success<*> -> Log.d("daeyoung", "api 통신 성공: ${result.value}")
+                is ApiState.Success<*> -> result.onSuccess { onSuccess() }
+                is ApiState.NotResponse -> TODO()
+            }
+        }
+    }
+    fun fetchCheckCertificateCode(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            when (val result = checkCertificateCodeUseCase(
+                phone = _phone.value.number,
+                mobileCarrier = _phone.value.mobileCarrier.name,
+                certificateCode = _verificationCode.value
+            ).first()) {
+                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
+                ApiState.Loading -> TODO()
+                is ApiState.Success<*> -> result.onSuccess { onSuccess() }
+                is ApiState.NotResponse -> TODO()
             }
         }
     }
