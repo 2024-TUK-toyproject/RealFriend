@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -38,9 +41,11 @@ import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.login.LoginViewModel
-import com.example.connex.ui.theme.DisableBackground
-import com.example.connex.ui.theme.DisableBorder
-import com.example.connex.ui.theme.MainBlue
+import com.example.connex.ui.theme.Gray200
+import com.example.connex.ui.theme.Gray400
+import com.example.connex.ui.theme.Gray50
+import com.example.connex.ui.theme.Gray900
+import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
 import com.example.domain.model.login.MobileCarrier
@@ -51,7 +56,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
     val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
-    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+//    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     var isPhone by remember {
         mutableStateOf(false)
@@ -78,7 +83,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 24.dp, vertical = 40.dp)
+            .imePadding()
     ) {
         if (isMobileCarrierBottomSheetOpen) {
             MobileCarrierModalBottomSheet(
@@ -92,8 +98,10 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .addFocusCleaner(focusManager)
+                .verticalScroll(
+                    rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
+//            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
             ArrowBackIcon {
                 navController.popBackStack()
             }
@@ -110,7 +118,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     lineHeight = 12.sp,
-                    color = MainBlue
+                    color = PrimaryBlue2
                 )
                 LoginOutLineTextField(label = "인증번호") {
                     PhoneOutLineTextField(
@@ -181,8 +189,8 @@ fun LoginOutLineTextField(
     textField: @Composable () -> Unit
 ) {
 
-    val completedColor = DisableBorder
-    val notCompletedColor = Color(0xFF333333)
+    val completedColor = Gray400
+    val notCompletedColor = Gray900
 
     val labelStyle = TextStyle(
         color = if (isCompleted) completedColor else notCompletedColor,
@@ -205,8 +213,8 @@ fun MobileCarrierBox(
     mobileCarrier: String,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isCompleted) DisableBorder else MainBlue
-    val backgroundColor = if (isCompleted) DisableBackground else Color.White
+    val borderColor = if (isCompleted) Gray200 else PrimaryBlue2
+    val backgroundColor = if (isCompleted) Gray50 else Color.White
 
     Card(
         modifier = Modifier
@@ -225,7 +233,9 @@ fun MobileCarrierBox(
                 text = mobileCarrier,
                 fontSize = 12.sp,
                 lineHeight = 12.sp,
-                modifier = Modifier.align(Alignment.CenterStart).padding(horizontal = 14.dp, vertical = 16.dp)
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(horizontal = 14.dp, vertical = 16.dp)
             )
         }
 

@@ -13,11 +13,6 @@ import okio.BufferedSink
 import okio.source
 
 fun Uri.asMultipart(name: String, contentResolver: ContentResolver): MultipartBody.Part? {
-//    return MultipartBody.Part.createFormData(
-//        "files",
-//        name,
-//        this.toString().toRequestBody("image/jpeg".toMediaType())
-//    )
     return contentResolver.query(this, null, null, null, null)?.use {
         if (it.moveToNext()) {
             val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME));

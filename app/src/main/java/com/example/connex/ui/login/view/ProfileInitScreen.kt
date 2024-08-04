@@ -1,7 +1,6 @@
 package com.example.connex.ui.login.view
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -63,7 +62,7 @@ import com.example.connex.ui.contentprovider.ComposeFileProvider
 import com.example.connex.ui.domain.takePhotoFromAlbumIntent
 import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
-import com.example.connex.ui.theme.MainBlue
+import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
 import com.example.connex.utils.allDelete
@@ -77,7 +76,7 @@ fun ProfileInitScreen(
     val profileInitUiState by loginViewModel.profileInitUiState.collectAsStateWithLifecycle()
 
     val focusManager = LocalFocusManager.current
-    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+//    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     val context = LocalContext.current
     var image by remember { mutableStateOf(Uri.EMPTY) }
@@ -125,11 +124,11 @@ fun ProfileInitScreen(
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
-//            .navigationBarsPadding()
+            .padding(horizontal = 24.dp, vertical = 40.dp)
             .imePadding()
     ) {
-        Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
-        ArrowBackIcon(modifier = Modifier.padding(start = 24.dp)) {
+//        Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
+        ArrowBackIcon() {
             navController.popBackStack()
         }
         Column(modifier = Modifier
@@ -139,9 +138,8 @@ fun ProfileInitScreen(
             Text(
                 text = "사용할 프로필을 \n설정해 주세요.",
                 style = Typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 28.dp)
             )
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -149,15 +147,15 @@ fun ProfileInitScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .width(104.dp)
-                        .height(100.dp)
+                        .fillMaxWidth(0.277f)
+                        .aspectRatio(1.04f)
                 ) {
                     Card(
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(1f),
                         shape = CircleShape,
-                        border = BorderStroke(width = 2.dp, color = MainBlue),
+                        border = BorderStroke(width = 2.dp, color = PrimaryBlue2),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA))
                     ) {
                         Image(
@@ -206,8 +204,8 @@ fun ProfileInitScreen(
 
         GeneralButton(
             modifier = Modifier
-                .height(55.dp)
-                .padding(horizontal = 24.dp), text = "확인", enabled = buttonEnabled
+                .height(55.dp),
+            text = "확인", enabled = buttonEnabled
         ) {
             loginViewModel.fetchSignupProfileImage{navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)}
 

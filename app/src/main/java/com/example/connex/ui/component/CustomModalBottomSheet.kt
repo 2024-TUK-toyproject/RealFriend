@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.theme.FontBlack
-import com.example.connex.ui.theme.MainBlue
+import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.domain.model.login.MobileCarrier
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +99,7 @@ fun MobileCarrierModalBottomSheet(
                 Text(
                     text = mobileCarrier.getName(),
                     style = contentStyle,
-                    color = if (currentCarrier != mobileCarrier) Color(0xFFB3B5B6) else MainBlue,
+                    color = if (currentCarrier != mobileCarrier) Color(0xFFB3B5B6) else PrimaryBlue2,
                     modifier = Modifier
                         .fillMaxWidth()
                         .noRippleClickable { onClick(mobileCarrier) }

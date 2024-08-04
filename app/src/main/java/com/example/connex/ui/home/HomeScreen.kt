@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,7 +32,7 @@ import com.example.connex.R
 import com.example.connex.ui.component.General2Button
 import com.example.connex.ui.component.ShadowBox
 import com.example.connex.ui.theme.FontBlack
-import com.example.connex.ui.theme.MainBlue2
+import com.example.connex.ui.theme.PrimaryBlue1
 
 @Composable
 fun HomeScreen() {
@@ -89,7 +87,7 @@ fun TitleText(name: String, pictureCount: Int) {
     )
     val accentStyle = SpanStyle(
         fontWeight = FontWeight.SemiBold,
-        color = MainBlue2
+        color = PrimaryBlue1
     )
 
 

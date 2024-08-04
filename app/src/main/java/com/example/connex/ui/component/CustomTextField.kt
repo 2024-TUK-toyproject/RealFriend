@@ -38,6 +38,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.drawColoredShadow
+import com.example.connex.ui.theme.Gray200
+import com.example.connex.ui.theme.Gray400
+import com.example.connex.ui.theme.Gray50
+import com.example.connex.ui.theme.Gray900
+import com.example.connex.ui.theme.PrimaryBlue2
 
 @Composable
 fun PhoneOutLineTextField(
@@ -47,8 +52,8 @@ fun PhoneOutLineTextField(
     onDone: () -> Unit,
     trailingIcon: @Composable (() -> Unit)? = null
 ) {
-    val borderColor = if (enabled) Color(0xFF5076FD) else Color(0xFFBFC1C6)
-    val backgroundColor = if (enabled) Color.White else Color(0xFFF3F5F7)
+    val borderColor = if (enabled) PrimaryBlue2 else Gray200
+    val backgroundColor = if (enabled) Color.White else Gray50
     val shape = RoundedCornerShape(8.dp)
 
     BasicTextField(
@@ -61,7 +66,7 @@ fun PhoneOutLineTextField(
             .fillMaxWidth()
             .height(48.dp),
         singleLine = true,
-        textStyle = LocalTextStyle.current.copy(color = Color.Black, fontSize = 12.sp),
+        textStyle = LocalTextStyle.current.copy(color = Gray900, fontSize = 14.sp),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Done

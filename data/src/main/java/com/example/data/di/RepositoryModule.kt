@@ -1,6 +1,8 @@
 package com.example.data.di
 
+import com.example.data.repository.ContactRepositoryImpl
 import com.example.data.repository.LoginRepositoryImpl
+import com.example.domain.repository.ContactRepository
 import com.example.domain.repository.LoginRepository
 import dagger.Binds
 import dagger.Module
@@ -19,4 +21,10 @@ abstract class RepositoryModule {
     abstract fun bindLoginRepository(
         loginRepositoryImpl: LoginRepositoryImpl,
     ): LoginRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindContactRepository(
+        contactRepositoryImpl: ContactRepositoryImpl,
+    ): ContactRepository
 }

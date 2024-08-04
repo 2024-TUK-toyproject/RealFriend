@@ -13,12 +13,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.connex.ui.theme.MainBlue
-import com.example.connex.ui.theme.MainBlue2
+import com.example.connex.ui.theme.PrimaryBlue1
+import com.example.connex.ui.theme.PrimaryBlue2
 
 @Composable
 fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
-    val color = MainBlue
+    val color = PrimaryBlue2
     val textStyle =
         TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 19.sp)
 
@@ -39,7 +39,7 @@ fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: (
 
 @Composable
 fun General2Button(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
-    val color = MainBlue2
+    val color = PrimaryBlue1
     val textStyle =
         TextStyle(fontSize = 14.sp, fontWeight = FontWeight.SemiBold, lineHeight = (16.7).sp)
 

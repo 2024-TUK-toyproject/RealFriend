@@ -30,4 +30,6 @@ interface LoginApi {
         @Query("name") name: String,
         @Part file: MultipartBody.Part
     ): ApiResponse<Unit>
+
+
 }
