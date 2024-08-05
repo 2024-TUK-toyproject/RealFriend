@@ -108,6 +108,8 @@ class User_service:
 
         return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : user.profile_image})
     
+
+    
     # 인증번호로직 추후에 추가
     async def certification_user(self, request : Certificate_request) -> Certificate_response:
         if request.code:

@@ -6,6 +6,7 @@ from .schemes import *
 from .service.upload import upload_service
 from .service.download import download_service
 from .service.user import User_service
+from .service.album import Album_service
 
 import boto3
 import uuid
@@ -51,7 +52,23 @@ async def certification_user(userId : str, user_service : User_service = Depends
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+#User/sharedAlbum
+@router.get("/users/get/{user_id}/albumId", responses = {200 : {"model" : Album_list_response, "description" : "앨범 리스트 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "앨범 리스트 조회 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 리스트 조회")
+async def get_album_list(user_id : str, album_service : Album_service = Depends()):
+    try:
+        return await album_service.get_album_list(user_id)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/users/album/create", responses = {200 : {"model" : Album_create_response, "description" : "앨범 생성 성공"}, 400 : {"model" : CommoneResponse, "description" : "앨범 생성 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 생성")
+async def create_album(request : Album_create_request, album_service : Album_service = Depends()):
+    try:
+        return await album_service.create_album(request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
 
 # 실제 라우트
 #Register
@@ -122,3 +139,6 @@ async def get_last_call(user_id : str, download_service : download_service = Dep
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+
