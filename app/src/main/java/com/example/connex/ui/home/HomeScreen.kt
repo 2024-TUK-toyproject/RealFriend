@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -28,11 +26,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.connex.R
 import com.example.connex.ui.component.General2Button
 import com.example.connex.ui.component.ShadowBox
+import com.example.connex.ui.svg.IconPack
+import com.example.connex.ui.svg.iconpack.Connexlogo2
 import com.example.connex.ui.theme.FontBlack
 import com.example.connex.ui.theme.PrimaryBlue1
+import rememberNotificationIcon
 
 @Composable
 fun HomeScreen() {
@@ -51,15 +51,17 @@ fun HomeScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Image(
-                painter = painterResource(id = R.drawable.im_app_logo),
+//                imageVector = rememberConnexLogo2(),
+                imageVector = IconPack.Connexlogo2,
                 contentDescription = "app_logo",
-                modifier = Modifier.size(32.dp)
+//                modifier = Modifier.size(32.dp)
             )
             Image(
-                painter = painterResource(id = R.drawable.ic_notification),
+                imageVector = rememberNotificationIcon(),
                 contentDescription = "notification",
-                modifier = Modifier.size(24.dp)
+//                modifier = Modifier.size(24.dp)
             )
         }
         Spacer(modifier = Modifier.height(40.dp))

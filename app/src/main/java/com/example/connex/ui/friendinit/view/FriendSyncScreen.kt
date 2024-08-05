@@ -58,6 +58,7 @@ import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Heading2
 import com.example.connex.ui.theme.PrimaryBlue2
+import rememberConnexLogo1
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -109,7 +110,7 @@ fun FriendSyncScreen(
                     style = Heading2,
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.im_app_logo),
+                    imageVector = rememberConnexLogo1(),
                     contentDescription = null,
                     modifier = Modifier.size(width = 61.3.dp, 52.8.dp)
                 )
@@ -162,19 +163,19 @@ fun FriendSyncScreen(
             }
             GeneralButton(
                 modifier = Modifier
-                    .height(55.dp)
-                    .padding(horizontal = 24.dp), text = "다음", enabled = true
+                    .height(55.dp),
+                text = "다음", enabled = true
             ) { navController.navigate(Screen.Home.route) }
         }
     }
-
 }
 
 @Composable
 fun ContactCard(name: String, phone: String, isSelected: Boolean = false, onClick: () -> Unit) {
     val profileColor = Color(0xFFD9D9D9)
     val checkColor = if (isSelected) PrimaryBlue2 else Gray300
-    val backgroundColor = if (isSelected) Color(0xFFECEFFF) else Color.White
+//    val backgroundColor = if (isSelected) Color(0xFFECEFFF) else Color.White
+    val backgroundColor = Color.White
     val nameStyle =
         TextStyle(
             fontWeight = FontWeight.SemiBold,
