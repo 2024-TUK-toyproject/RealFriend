@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,14 +59,21 @@ import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Heading2
 import com.example.connex.ui.theme.PrimaryBlue2
+import com.example.domain.model.UserId
 import rememberConnexLogo1
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FriendSyncScreen(
     navController: NavController,
+    name: String,
+    userId: Long,
     friendSyncViewModel: FriendSyncViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(Unit) {
+        friendSyncViewModel.userId = userId
+    }
+
     val focusManager = LocalFocusManager.current
     val contactsUiState by friendSyncViewModel.filteredContacts.collectAsStateWithLifecycle()
 
@@ -87,6 +95,7 @@ fun FriendSyncScreen(
         mutableStateOf("")
     }
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,7 +115,7 @@ fun FriendSyncScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "새싹님을 위한\n추천 친구 목록이에요.",
+                    text = "${name}님을 위한\n추천 친구 목록이에요.",
                     style = Heading2,
                 )
                 Image(
@@ -165,7 +174,9 @@ fun FriendSyncScreen(
                 modifier = Modifier
                     .height(55.dp),
                 text = "다음", enabled = true
-            ) { navController.navigate(Screen.Home.route) }
+            ) {
+                friendSyncViewModel.fetchSyncContacts { navController.navigate(Screen.Home.route) }
+            }
         }
     }
 }

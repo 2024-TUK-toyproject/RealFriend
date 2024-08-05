@@ -22,6 +22,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -106,19 +107,21 @@ class FriendSyncViewModel @Inject constructor(
             it.isSelect = isSelect
         }
     }
-//    fun fetchSyncContacts() {
-//        viewModelScope.launch {
-//            when (val result = syncContactsUseCase(
-//                userId = userId,
-//                contacts = ,
-//            ).first()) {
-//                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
-//                ApiState.Loading -> TODO()
-//                is ApiState.Success<*> -> result.onSuccess { onSuccess() }
-//                is ApiState.NotResponse -> TODO()
-//            }
-//        }
-//    }
+    fun fetchSyncContacts(onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val selectedContacts = contacts.value.filter { it.isSelect }.map { it.contact }
+
+            when (val result = syncContactsUseCase(
+                userId = userId,
+                contacts = selectedContacts,
+            ).first()) {
+                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
+                ApiState.Loading -> TODO()
+                is ApiState.Success<*> -> result.onSuccess { onSuccess() }
+                is ApiState.NotResponse -> TODO()
+            }
+        }
+    }
 
 
 }

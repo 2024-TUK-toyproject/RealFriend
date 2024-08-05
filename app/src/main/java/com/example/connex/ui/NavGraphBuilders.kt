@@ -1,6 +1,7 @@
 package com.example.connex.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -51,22 +52,30 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
                 loginViewModel = hiltViewModel(backStackEntry)
             )
         }
-        composable(SIGNUP_COMPLETE_ROUTE) { entry ->
-            LoginCompleteScreen(navController)
+        composable("${SIGNUP_COMPLETE_ROUTE}/{userId}/{name}") { entry ->
+            LoginCompleteScreen(
+                navController = navController,
+                userId = entry.arguments?.getString("userId") ?: "111_111",
+                name = entry.arguments?.getString("name") ?: "새싹"
+            )
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.initSettingGraph(navController: NavController) {
-    composable(FRIEND_SYNC_ROUTE) { entry ->
-        FriendSyncScreen(navController = navController)
+    composable("${FRIEND_SYNC_ROUTE}/{userId}/{name}") { entry ->
+        FriendSyncScreen(
+            navController = navController,
+            name = entry.arguments?.getString("name") ?: "새싹",
+            userId = entry.arguments?.getString("userId")?.toLong() ?: 111_111L,
+        )
     }
 }
 
 fun NavGraphBuilder.homeGraph(navController: NavController) {
     navigation(startDestination = HOME_ROUTE, route = HOME_GRAPH) {
-        composable(Screen.Home.route) { entry ->
+        composable("${Screen.Home.route}/{userId}") { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
                 navController = navController,

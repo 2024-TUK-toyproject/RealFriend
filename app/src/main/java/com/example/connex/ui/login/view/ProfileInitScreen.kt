@@ -116,7 +116,7 @@ fun ProfileInitScreen(
                 val uri = ComposeFileProvider.getImageUri(context)
                 image = uri
                 cameraLauncher.launch(uri)
-                       },
+            },
             onClick2 = { takePhotoFromAlbumLauncher.launch(takePhotoFromAlbumIntent) }
         )
     }
@@ -132,9 +132,11 @@ fun ProfileInitScreen(
         ArrowBackIcon() {
             navController.popBackStack()
         }
-        Column(modifier = Modifier
-            .weight(1f)
-            .verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             Spacer(modifier = Modifier.height(64.dp))
             Text(
                 text = "사용할 프로필을 \n설정해 주세요.",
@@ -208,7 +210,7 @@ fun ProfileInitScreen(
                 .height(55.dp),
             text = "확인", enabled = buttonEnabled
         ) {
-            loginViewModel.fetchSignupProfileImage{navController.navigate(Constants.SIGNUP_COMPLETE_ROUTE)}
+            loginViewModel.fetchSignupProfileImage { navController.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }
 
         }
 //        Spacer(modifier = Modifier.height(80.dp))

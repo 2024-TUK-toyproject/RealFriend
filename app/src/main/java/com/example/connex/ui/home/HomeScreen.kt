@@ -30,9 +30,9 @@ import com.example.connex.ui.component.General2Button
 import com.example.connex.ui.component.ShadowBox
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.Connexlogo2
+import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.theme.FontBlack
 import com.example.connex.ui.theme.PrimaryBlue1
-import rememberNotificationIcon
 
 @Composable
 fun HomeScreen() {
@@ -59,7 +59,7 @@ fun HomeScreen() {
 //                modifier = Modifier.size(32.dp)
             )
             Image(
-                imageVector = rememberNotificationIcon(),
+                imageVector = IconPack.IcNotification,
                 contentDescription = "notification",
 //                modifier = Modifier.size(24.dp)
             )

@@ -5,14 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,6 +37,7 @@ import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.component.util.addFocusCleaner
+import com.example.connex.ui.login.LoginScreenState
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray400
@@ -47,7 +45,6 @@ import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Heading1
 import com.example.connex.ui.theme.PrimaryBlue2
-import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
 import com.example.domain.model.login.MobileCarrier
 
@@ -57,50 +54,52 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
     val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
-//    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
-    var isPhone by remember {
-        mutableStateOf(false)
-    }
+    var loginScreenState by remember { mutableStateOf<LoginScreenState>(LoginScreenState.Phone) }
 
-    var isMobileCarrier by remember {
-        mutableStateOf(false)
-    }
-
-    var isMobileCarrierBottomSheetOpen by remember {
+    var isShowMobileCarrierBottomSheet by remember {
         mutableStateOf(false)
     }
 
     val buttonEnabled by remember {
         derivedStateOf {
-            loginPhoneAuthUiState.phoneNumber.checkValidation() && loginPhoneAuthUiState.phoneNumber.mobileCarrier!= MobileCarrier.NOT && loginPhoneAuthUiState.verificationCode.isNotEmpty()
+            when(loginScreenState) {
+                is LoginScreenState.Phone -> {
+                    loginPhoneAuthUiState.phoneNumber.checkValidation()
+                }
+                is LoginScreenState.MobileCarrier -> {
+                    loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
+                }
+                is LoginScreenState.CertificateCode -> {
+                    loginPhoneAuthUiState.verificationCode.isNotEmpty()
+                }
+            }
         }
     }
 
 
-
-
-
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 40.dp)
             .imePadding()
     ) {
-        if (isMobileCarrierBottomSheetOpen) {
+        if (isShowMobileCarrierBottomSheet) {
             MobileCarrierModalBottomSheet(
                 currentCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier,
-                onClose = { isMobileCarrierBottomSheetOpen = false }) {
+                onClose = { isShowMobileCarrierBottomSheet = false }) {
                 loginViewModel.updateMobileCarrier(it)
-                isMobileCarrierBottomSheetOpen = false
+                isShowMobileCarrierBottomSheet = false
             }
         }
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .weight(1f)
                 .addFocusCleaner(focusManager)
                 .verticalScroll(
-                    rememberScrollState())
+                    rememberScrollState()
+                )
         ) {
 //            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
             ArrowBackIcon {
@@ -114,7 +113,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             )
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (isMobileCarrier) {
+
+            if (loginScreenState is LoginScreenState.CertificateCode) {
                 val verificationCodeStyle = TextStyle(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
@@ -137,45 +137,53 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            if (isPhone) {
-                LoginOutLineTextField(label = "통신사", isCompleted = isMobileCarrier) {
+            if (loginScreenState !is LoginScreenState.Phone) {
+                LoginOutLineTextField(label = "통신사", isCompleted = loginScreenState !is LoginScreenState.MobileCarrier) {
                     MobileCarrierBox(
-                        isCompleted = isMobileCarrier,
+                        isCompleted = loginScreenState !is LoginScreenState.MobileCarrier,
                         mobileCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier.getName()
                     ) {
-                        isMobileCarrierBottomSheetOpen = true
+                        isShowMobileCarrierBottomSheet = true
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            LoginOutLineTextField(label = "휴대전화 번호", isCompleted = isPhone) {
+            LoginOutLineTextField(label = "휴대전화 번호", isCompleted = loginScreenState !is LoginScreenState.Phone) {
                 PhoneOutLineTextField(
+//                    text = loginPhoneAuthUiState.phoneNumber.number,
+//                    updatePhone = {
+//                        if (it.length <= 11) {
+//                            loginViewModel.updatePhone(it)
+//                        }
+//                    },
                     text = loginPhoneAuthUiState.phoneNumber.number,
                     updatePhone = {
                         if (it.length <= 11) {
                             loginViewModel.updatePhone(it)
                         }
                     },
-                    enabled = !isPhone,
+                    enabled = loginScreenState is LoginScreenState.Phone,
                     onDone = { focusManager.clearFocus() }
                 )
             }
         }
         GeneralButton(
             modifier = Modifier
-                .height(55.dp)
-                .align(Alignment.BottomCenter),
+                .height(55.dp),
             text = "다음",
             enabled = buttonEnabled
         ) {
-            if (!isPhone) {
-                loginViewModel.updateMobileCarrier(MobileCarrier.NOT)
-                isPhone = true
-            } else if (!isMobileCarrier) {
-                loginViewModel.fetchRequestCertificateCode{ isMobileCarrier = true }
-            } else {
-                loginViewModel.fetchCheckCertificateCode { navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE) }
+            when(loginScreenState) {
+                is LoginScreenState.CertificateCode -> {
+                    navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                }
+                is LoginScreenState.MobileCarrier -> {
+                    loginScreenState = LoginScreenState.CertificateCode
+                }
+                is LoginScreenState.Phone -> {
+                    loginScreenState = LoginScreenState.MobileCarrier
+                }
             }
         }
     }

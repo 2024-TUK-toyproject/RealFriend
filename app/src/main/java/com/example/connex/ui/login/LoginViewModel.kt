@@ -3,6 +3,9 @@ package com.example.connex.ui.login
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.asMultipart
@@ -35,6 +38,12 @@ data class ProfileInitUiState(
     val name: String = "",
 )
 
+sealed class LoginScreenState() {
+    data object Phone : LoginScreenState()
+    data object MobileCarrier : LoginScreenState()
+    data object CertificateCode : LoginScreenState()
+}
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase,
@@ -43,7 +52,7 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
-    private var userId = 0L
+    var userId = 0L
 
     private val _phone = MutableStateFlow(Phone.default())
     val phone: StateFlow<Phone> = _phone.asStateFlow()
@@ -72,7 +81,6 @@ class LoginViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ProfileInitUiState()
     )
-
 
     fun updatePhone(phone: String) {
         _phone.value = _phone.value.copy(number = phone)
@@ -120,8 +128,10 @@ class LoginViewModel @Inject constructor(
                 ApiState.Loading -> TODO()
                 is ApiState.Success<*> -> result.onSuccess {
                     userId = (it as UserId).userId
+                    Log.d("daeyoung", "userId: $userId")
                     onSuccess()
                 }
+
                 is ApiState.NotResponse -> TODO()
             }
         }
