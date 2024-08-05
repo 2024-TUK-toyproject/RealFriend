@@ -5,6 +5,11 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.syncCallLog
@@ -21,10 +26,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class PhoneUiState(
+class PhoneUiState(
     val contact: Contact,
-    val isSelect: Boolean = false
-)
+    initialChecked: Boolean = false
+) {
+    var isSelect by mutableStateOf(initialChecked)
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
@@ -35,11 +42,15 @@ class FriendSyncViewModel @Inject constructor(
 
     var userId: Long = 0L
 
-    private val _contacts = MutableStateFlow<List<Contact>>(emptyList())
-    val contacts: StateFlow<List<Contact>> = _contacts.asStateFlow()
+    private val _contacts = MutableStateFlow<List<PhoneUiState>>(emptyList())
+    val contacts: StateFlow<List<PhoneUiState>> = _contacts.asStateFlow()
 
-    private val _filteredContacts = MutableStateFlow<List<Contact>>(emptyList())
-    val filteredContacts: StateFlow<List<Contact>> = _filteredContacts.asStateFlow()
+    private val _filteredContacts = MutableStateFlow<List<PhoneUiState>>(emptyList())
+    val filteredContacts: StateFlow<List<PhoneUiState>> = _filteredContacts.asStateFlow()
+
+    val count = derivedStateOf {
+        filteredContacts.value.count { it.isSelect }
+    }
 
     init {
         syncContracts(applicationContext.contentResolver)
@@ -53,25 +64,31 @@ class FriendSyncViewModel @Inject constructor(
             .eachCount()
             .toList()
             .sortedByDescending { it.second }
-            .map { it.first }
-        Log.d("daeyoung", "callLogs: $callLogs")
+            .map { PhoneUiState(Contact(it.first.first!!, it.first.second!!), false) }
+//        Log.d("daeyoung", "callLogs: $callLogs")
 
 
-        _contacts.value = resortedBy(syncContact(resolver).sortedBy { it.name }.toMutableList(), callLogs)
+        _contacts.value = resortedBy(
+            syncContact(resolver).sortedBy { it.name }
+                .map { PhoneUiState(Contact(it.name, it.phone), false) }
+                .toMutableList(),
+            callLogs
+        )
         _filteredContacts.value = contacts.value
 
     }
 
-    fun resortedBy(list1: MutableList<Contact>, list2: List<Pair<String?, String?>>): List<Contact> {
-        list1.removeAll { contact -> contact.name in list2.map { it.first } }
+    fun resortedBy(list1: MutableList<PhoneUiState>, list2: List<PhoneUiState>): List<PhoneUiState>
+    {
+        list1.removeAll { contact -> contact.contact.name in list2.map { it.contact.name } }
         list2.reversed().forEach {
-            list1.add(0, Contact(it.first!!, it.second!!))
+            list1.add(0, PhoneUiState(Contact(it.contact.name, it.contact.phone), false))
         }
         return list1
     }
 
     fun search(name: String) {
-        val filtering = contacts.value.filter { it.name.contains(name) }
+        val filtering = contacts.value.filter { it.contact.name.contains(name) }
         if (name.isEmpty()) {
             _filteredContacts.value = contacts.value
         } else {
@@ -79,6 +96,16 @@ class FriendSyncViewModel @Inject constructor(
         }
     }
 
+    fun selectCard(phone: String, isSelect: Boolean) {
+//        val index = contacts.value.indexOfFirst { it.contact.phone == phone }
+//        if (index != -1) {
+//            val item = contacts.value[index]
+//            _contacts.value.toMutableList()[index] = item.copy(isSelect = isSelect)
+//        }
+        _contacts.value.find { it.contact.phone == phone }?.let {
+            it.isSelect = isSelect
+        }
+    }
 //    fun fetchSyncContacts() {
 //        viewModelScope.launch {
 //            when (val result = syncContactsUseCase(

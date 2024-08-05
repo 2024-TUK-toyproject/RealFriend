@@ -96,17 +96,15 @@ fun SearchTextField(
     updateText: (String) -> Unit,
     onSearch: () -> Unit
 ) {
-    val borderColor = Color(0xFF000000).copy(alpha = 0.1f)
     val backgroundColor = Color.White
     val shape = RoundedCornerShape(200.dp)
-    val iconColor = Color(0xFF939393)
 
     BasicTextField(
         value = text,
         onValueChange = updateText,
         modifier = modifier
             .shadow(elevation = 4.dp, shape = shape, spotColor = Color.Black.copy(0.12f))
-            .border(width = 1.dp, color = borderColor, shape)
+            .border(width = 1.dp, color = Gray200, shape)
             .background(color = backgroundColor, shape = shape)
             .fillMaxWidth(),
         singleLine = true,
@@ -130,15 +128,15 @@ fun SearchTextField(
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(16.dp)
+                tint = Gray400,
+                modifier = Modifier.size(14.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
             Box(modifier = Modifier.weight(1f)) {
                 if (text.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = TextStyle(color = Color.Gray, fontSize = 12.sp, lineHeight = 12.sp)
+                        style = TextStyle(color = Gray400, fontSize = 12.sp, lineHeight = 12.sp)
                     )
                 }
                 innerTextField()

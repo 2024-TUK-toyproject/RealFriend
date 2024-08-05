@@ -45,6 +45,7 @@ import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray900
+import com.example.connex.ui.theme.Heading1
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
@@ -108,7 +109,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             Spacer(modifier = Modifier.height(64.dp))
             Text(
                 text = "휴대전화 번호를\n입력해 주세요.",
-                style = Typography.titleMedium,
+                style = Heading1,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
             Spacer(modifier = Modifier.height(32.dp))

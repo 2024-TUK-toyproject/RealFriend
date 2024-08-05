@@ -62,6 +62,7 @@ import com.example.connex.ui.contentprovider.ComposeFileProvider
 import com.example.connex.ui.domain.takePhotoFromAlbumIntent
 import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
+import com.example.connex.ui.theme.Heading1
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
@@ -137,7 +138,7 @@ fun ProfileInitScreen(
             Spacer(modifier = Modifier.height(64.dp))
             Text(
                 text = "사용할 프로필을 \n설정해 주세요.",
-                style = Typography.titleMedium,
+                style = Heading1,
             )
             Spacer(modifier = Modifier.height(40.dp))
             Column(

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
+import com.example.connex.ui.theme.Heading1
 import com.example.connex.ui.theme.Typography
 import com.example.connex.utils.Constants
 
@@ -56,7 +57,7 @@ fun LoginCompleteScreen(navController: NavController) {
         Column {
             Text(
                 text = "새싹님, 반가워요!",
-                style = Typography.titleMedium,
+                style = Heading1,
                 modifier = Modifier.padding(horizontal = 104.dp)
             )
             Spacer(modifier = Modifier.height(20.dp))
