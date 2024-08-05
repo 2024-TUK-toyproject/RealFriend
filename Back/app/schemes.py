@@ -15,8 +15,6 @@ class Last_call_response(BaseModel):
     duration : int = Field(..., example = "90", description="통화시간(초)")
     type : int = Field(..., example = "1", description="1 : 수신, 2 : 발신, 3 : 부재중")
 
-
-
 class Get_profile_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
@@ -51,7 +49,15 @@ class Certificate_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : Dict[str, str] = Field({"userId" : "123456"}, example = {"userId" : "123456"})
 
+class Album_list_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Dict[str, str]] = Field([{"albumId" : "123456", "albumName" : "가족사진"}], example = [{"albumId" : "123456", "albumName" : "가족사진"}])
 
+class Album_create_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Dict[str, str]] = Field({"albumId" : "123456"}, example = {"albumId" : "123456", "albumName" : "가족사진"})
 
 
 
@@ -94,4 +100,9 @@ class Certificate_request(BaseModel):
 class Set_profile_request(BaseModel):
     userId : str = Field(..., example = "123456")
     name : str = Field(..., example = "홍길동")
+
+class Album_create_request(BaseModel):
+    userId : str = Field(..., example = "123456")
+    withWhom : str = Field(..., example = "654321")
+    albumName : str = Field(..., example = "가족사진")
 
