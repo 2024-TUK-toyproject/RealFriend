@@ -53,3 +53,12 @@ class call_record_info(Base):
     time = Column(String(255))
     duration = Column(Integer)
     type = Column(Integer)
+
+class album_info(Base):
+    __tablename__ = 'album_info'
+
+    album_id = Column(String(255), primary_key=True)
+    album_name = Column(String(255))
+    create_user_id = Column(String(255))
+    with_whom = Column(String(255))
+    directory = Column(String(255))
