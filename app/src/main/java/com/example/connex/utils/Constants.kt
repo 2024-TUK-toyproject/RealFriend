@@ -26,6 +26,7 @@ object Constants {
     const val SPLASH_ROUTE = "nav-splash"
 
     const val FRIEND_SYNC_ROUTE = "nav-friend-sync"
+    const val FRIEND_SYNC_COMPLETE_ROUTE = "nav-friend-sync-complete"
 
 
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"

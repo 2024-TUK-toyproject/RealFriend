@@ -64,13 +64,13 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val buttonEnabled by remember {
         derivedStateOf {
             when(loginScreenState) {
-                is LoginScreenState.Phone -> {
+                LoginScreenState.Phone -> {
                     loginPhoneAuthUiState.phoneNumber.checkValidation()
                 }
-                is LoginScreenState.MobileCarrier -> {
+                LoginScreenState.MobileCarrier -> {
                     loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
                 }
-                is LoginScreenState.CertificateCode -> {
+                LoginScreenState.CertificateCode -> {
                     loginPhoneAuthUiState.verificationCode.isNotEmpty()
                 }
             }
@@ -176,10 +176,14 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         ) {
             when(loginScreenState) {
                 is LoginScreenState.CertificateCode -> {
-                    navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                    loginViewModel.fetchCheckCertificateCode {
+                        navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                    }
                 }
                 is LoginScreenState.MobileCarrier -> {
-                    loginScreenState = LoginScreenState.CertificateCode
+                    loginViewModel.fetchRequestCertificateCode {
+                        loginScreenState = LoginScreenState.CertificateCode
+                    }
                 }
                 is LoginScreenState.Phone -> {
                     loginScreenState = LoginScreenState.MobileCarrier

@@ -96,6 +96,14 @@ val Subtitle1 = TextStyle(
     letterSpacing = 0.2.sp,
 )
 
+val Subtitle2 = TextStyle(
+    fontSize = 16.sp,
+    lineHeight = 19.2.sp,
+    fontWeight = FontWeight.SemiBold,
+    color = Gray900,
+    letterSpacing = 0.16.sp,
+)
+
 val text1 = TextStyle(
     fontSize = 12.sp,
     lineHeight = 27.sp,

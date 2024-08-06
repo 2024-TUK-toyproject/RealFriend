@@ -1,6 +1,5 @@
-package com.example.connex.ui.login.view
+package com.example.connex.ui.friendinit.view
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,16 +18,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.connex.ui.Screen
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.theme.Heading1
 import com.example.connex.utils.Constants
 
 @Composable
-fun LoginCompleteScreen(navController: NavController, userId: String, name: String) {
+fun FriendSyncCompleteScreen(navController: NavController, userId: Long, name: String) {
 //    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     val bodyStyle = TextStyle(
@@ -56,7 +55,7 @@ fun LoginCompleteScreen(navController: NavController, userId: String, name: Stri
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "연락 빈도를 기반으로 ${name}님에게\n꼭 맞는 친구 목록을 추천해 드릴게요.",
+                text = "Connex와 함께 추억을 공유해 보세요.",
                 style = bodyStyle,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -68,10 +67,10 @@ fun LoginCompleteScreen(navController: NavController, userId: String, name: Stri
                 modifier = Modifier
                     .height(55.dp)
                     .padding(horizontal = 24.dp),
-                text = "다음",
+                text = "추가하기",
                 enabled = true
             ) {
-                navController.navigate("${Constants.FRIEND_SYNC_ROUTE}/$userId/$name")
+                navController.navigate("${Screen.Home.route}/$userId")
             }
 //            Spacer(modifier = Modifier.height(16.dp))
 //            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })
@@ -79,3 +78,4 @@ fun LoginCompleteScreen(navController: NavController, userId: String, name: Stri
         }
     }
 }
+

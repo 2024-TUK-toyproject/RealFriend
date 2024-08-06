@@ -1,6 +1,7 @@
 package com.example.connex.ui.login.view
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -211,9 +212,7 @@ fun ProfileInitScreen(
             text = "확인", enabled = buttonEnabled
         ) {
             loginViewModel.fetchSignupProfileImage { navController.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }
-
         }
-//        Spacer(modifier = Modifier.height(80.dp))
     }
 
 }

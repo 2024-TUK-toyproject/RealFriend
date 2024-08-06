@@ -59,6 +59,7 @@ import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Heading2
 import com.example.connex.ui.theme.PrimaryBlue2
+import com.example.connex.utils.Constants
 import com.example.domain.model.UserId
 import rememberConnexLogo1
 
@@ -175,7 +176,7 @@ fun FriendSyncScreen(
                     .height(55.dp),
                 text = "다음", enabled = true
             ) {
-                friendSyncViewModel.fetchSyncContacts { navController.navigate(Screen.Home.route) }
+                friendSyncViewModel.fetchSyncContacts { navController.navigate("${Constants.FRIEND_SYNC_COMPLETE_ROUTE}/${userId}/${name}") }
             }
         }
     }
