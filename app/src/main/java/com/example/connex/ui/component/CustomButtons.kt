@@ -22,7 +22,6 @@ fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: (
     val textStyle =
         TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 19.sp)
 
-
     Button(
         onClick = { onClick() },
         modifier = modifier.fillMaxWidth(),
@@ -51,6 +50,26 @@ fun General2Button(modifier: Modifier, text: String, enabled: Boolean, onClick: 
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.White,
             containerColor = color,
+        )
+    ) {
+        Text(text = text, style = textStyle)
+    }
+}
+
+@Composable
+fun General3Button(modifier: Modifier, text: String, onClick: () -> Unit) {
+    val backgroundColor = Color(0xFFEEF2FF)
+    val contentColor = PrimaryBlue2
+    val textStyle =
+        TextStyle(fontSize = 14.sp, fontWeight = FontWeight.SemiBold, lineHeight = 18.9.sp)
+
+    Button(
+        onClick = { onClick() },
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = contentColor,
+            containerColor = backgroundColor,
         )
     ) {
         Text(text = text, style = textStyle)

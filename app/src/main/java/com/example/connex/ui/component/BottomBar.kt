@@ -53,7 +53,7 @@ fun BoxScope.BottomBar(
             .fillMaxWidth()
             .align(Alignment.BottomCenter)
             .background(color = Color.Transparent)
-            .navigationBarsPadding(),
+//            .navigationBarsPadding(),
     ) {
         BottomNavigation(backgroundColor = Color.White, elevation = 0.dp) {
             val navBackStackEntry by appState.navController.currentBackStackEntryAsState()

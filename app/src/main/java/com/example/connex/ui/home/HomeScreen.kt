@@ -1,8 +1,11 @@
 package com.example.connex.ui.home
 
+import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -11,10 +14,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -24,7 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,11 +41,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.General2Button
+import com.example.connex.ui.component.General3Button
 import com.example.connex.ui.component.ShadowBox
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.Connexlogo2
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.theme.FontBlack
+import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
@@ -50,11 +60,12 @@ fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
     ) {
         HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp))
         HomeBody()
-        
+
     }
 }
 
@@ -114,9 +125,9 @@ fun ColumnScope.HomeBody() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .weight(1f)
+//            .weight(1f)
             .background(backgroundColor)
-            .padding(top = 40.dp, start = 24.dp, end = 24.dp)
+            .padding(top = 40.dp, start = 24.dp, end = 24.dp, bottom = 30.dp)
     ) {
         Text(text = "이건 어떠세요?", style = Subtitle2)
         Spacer(modifier = Modifier.height(16.dp))
@@ -135,10 +146,144 @@ fun HomeCallLogBox(modifier: Modifier = Modifier) {
         padding = 20.dp to 21.dp,
         shape = RoundedCornerShape(12.dp)
     ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            HomeCallLogHeader(date = "07일 22일 20시", duration = "45", difference = "10")
+            HomeCallLogBody(modifier = Modifier.fillMaxWidth())
+            General3Button(modifier = Modifier.height(47.dp), text = "상세 분석 보기") {
 
+            }
+        }
     }
 }
 
+@Composable
+fun ColumnScope.HomeCallLogHeader(date: String, duration: String, difference: String) {
+    val dateStyle = TextStyle(
+        fontSize = 10.sp,
+        color = Gray300,
+        lineHeight = 12.sp,
+        letterSpacing = 0.1.sp,
+    )
+
+    val titleStyle = TextStyle(
+        fontSize = 10.sp,
+        color = Gray300,
+        lineHeight = 12.sp,
+        letterSpacing = 0.1.sp,
+    )
+
+    val subTitleStyle = TextStyle(
+        fontSize = 10.sp,
+        color = Gray300,
+        lineHeight = 12.sp,
+        letterSpacing = 0.1.sp,
+    )
+    Text(text = "${date} 기준", style = dateStyle)
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(text = buildAnnotatedString {
+        withStyle(SpanStyle()) {
+            append("${duration}분 ")
+        }
+        append("통화했어요!")
+    })
+    Spacer(modifier = Modifier.height(4.dp))
+    Text(text = buildAnnotatedString {
+        append("어제보다 ")
+        withStyle(SpanStyle()) {
+            append("${difference}분 ")
+        }
+        append("더 통화했어요.")
+    })
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun ColumnScope.HomeCallLogBody(modifier: Modifier) {
+    // 20분 39초
+    var time1 = 20 * 60 + 39
+    // 8분 21초
+    var time2 = 8 * 60 + 21
+    // 4분
+    var time3 = 4 * 60
+
+    var allTime = time1 + time2 + time3
+    var time1Rate = time1 / allTime.toFloat()
+    var time2Rate = time2 / allTime.toFloat()
+
+    val callLogUsers = listOf(
+        CallLogTop3User(
+            color = Color(0xFF5074F2),
+            name = "지땡",
+            time = "20분 39초"
+        ),
+        CallLogTop3User(
+            color = Color(0xFFA1B0FF),
+            name = "서빵",
+            time = "8분 21초"
+        ),
+        CallLogTop3User(
+            color = Color(0xFFACCDFF),
+            name = "주히",
+            time = "4분"
+        )
+    )
+
+
+    Canvas(modifier = modifier.padding(horizontal = 6.dp)) {
+        drawLine(
+            color = Color(0xFFACCDFF),
+            start = Offset.Zero,
+            end = Offset(this.size.width, 0f),
+            strokeWidth = 40f,
+            cap = StrokeCap.Round
+        )
+        drawLine(
+            color = Color(0xFFA1B0FF),
+            start = Offset(this.size.width * time1Rate, 0f),
+            end = Offset(this.size.width * time1Rate + this.size.width * time2Rate, 0f),
+            strokeWidth = 40f,
+            cap = StrokeCap.Round
+        )
+        drawLine(
+            color = Color(0xFF5074F2),
+            start = Offset.Zero,
+            end = Offset(this.size.width * time1Rate, 0f),
+            strokeWidth = 40f,
+            cap = StrokeCap.Round
+        )
+    }
+    Spacer(modifier = Modifier.height(20.dp))
+    callLogUsers.forEachIndexed { index, callLogTop3User ->
+        HomeCallLogBodyUser(
+            color = callLogTop3User.color,
+            name = callLogTop3User.name,
+            time = callLogTop3User.time
+        )
+        if (index != callLogUsers.lastIndex) {
+            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+
+}
+
+
+@Composable
+fun ColumnScope.HomeCallLogBodyUser(color: Color, name: String, time: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier
+            .size(14.dp)
+            .clip(CircleShape)
+            .background(color))
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(text = name)
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = time)
+        }
+    }
+}
 @Composable
 fun HomeRecommendedBoxes(modifier: Modifier = Modifier) {
     Row(modifier = modifier) {
@@ -189,7 +334,11 @@ fun HomeRecommendedContent1(modifier: Modifier, name: String, date: Int) {
         letterSpacing = 0.16.sp,
     )
     Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(text = buildAnnotatedString {
                 append("${name}님과 연락한 지\n")
                 withStyle(accentStyle) {
@@ -197,7 +346,12 @@ fun HomeRecommendedContent1(modifier: Modifier, name: String, date: Int) {
                 }
                 append(" 지났어요...")
             }, style = titleStyle)
-            Icon(imageVector = Icons.Default.ArrowForwardIos, contentDescription = "next_ic", modifier = Modifier.size(20.dp), tint = Gray400)
+            Icon(
+                imageVector = Icons.Default.ArrowForwardIos,
+                contentDescription = "next_ic",
+                modifier = Modifier.size(20.dp),
+                tint = Gray400
+            )
         }
         Text(text = "${name}님께\n안부 인사를\n전해 보세요!", style = bodyStyle)
     }
@@ -221,13 +375,24 @@ fun HomeRecommendedContent2(modifier: Modifier) {
         letterSpacing = 0.16.sp,
     )
     Column(modifier = modifier, verticalArrangement = Arrangement.SpaceBetween) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(text = "누구에게 안부를\n전해볼까요?", style = titleStyle)
-            Icon(imageVector = Icons.Default.ArrowForwardIos, contentDescription = "next_ic", modifier = Modifier.size(20.dp), tint = Gray400)
+            Icon(
+                imageVector = Icons.Default.ArrowForwardIos,
+                contentDescription = "next_ic",
+                modifier = Modifier.size(20.dp),
+                tint = Gray400
+            )
         }
-        Text(text = "연락할 친구를\n" +
-                "랜덤으로 추천\n" +
-                "받아 보세요!", style = bodyStyle)
+        Text(
+            text = "연락할 친구를\n" +
+                    "랜덤으로 추천\n" +
+                    "받아 보세요!", style = bodyStyle
+        )
     }
 }
 
@@ -278,3 +443,9 @@ fun LongTimeContact(name: String, date: Int) {
         }
     }
 }
+
+data class CallLogTop3User(
+    val color: Color,
+    val name: String,
+    val time: String
+)
