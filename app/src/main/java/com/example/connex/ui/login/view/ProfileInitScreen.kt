@@ -4,6 +4,13 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,6 +67,8 @@ import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
 import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.contentprovider.ComposeFileProvider
+import com.example.connex.ui.domain.keyboardAsState
+import com.example.connex.ui.domain.model.KeyboardStatus
 import com.example.connex.ui.domain.takePhotoFromAlbumIntent
 import com.example.connex.ui.domain.takePhotoFromAlbumLauncher
 import com.example.connex.ui.login.LoginViewModel
@@ -73,7 +82,7 @@ import java.io.File
 @Composable
 fun ProfileInitScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val profileInitUiState by loginViewModel.profileInitUiState.collectAsStateWithLifecycle()
 
@@ -95,6 +104,36 @@ fun ProfileInitScreen(
     }
 
     val buttonEnabled by remember { derivedStateOf { profileInitUiState.name.isNotBlank() } }
+
+    val isKeyboardOpen by keyboardAsState() // Keyboard.Opened or Keyboard.Closed
+
+    val profileSize by animateFloatAsState(
+//        targetValue = if (isKeyboardOpen == KeyboardStatus.Opened) 0.223f else 0.277f,
+        targetValue = if (isKeyboardOpen == KeyboardStatus.Opened) 0.223f else 0.377f,
+
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = FastOutSlowInEasing
+        )
+    )
+
+    val bottomPaddingSize by animateDpAsState(
+        targetValue = if (isKeyboardOpen == KeyboardStatus.Opened) 0.dp else 40.dp,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = FastOutSlowInEasing
+        )
+    )
+    val heightSpacerSize by animateDpAsState(
+        targetValue = if (isKeyboardOpen == KeyboardStatus.Opened) 20.dp else 50.dp,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = FastOutSlowInEasing
+        )
+    )
+
+
+    Log.d("daeyoung", "isKeyboardOpen: $isKeyboardOpen")
 
 
     LaunchedEffect(hasImage) {
@@ -126,7 +165,7 @@ fun ProfileInitScreen(
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
-            .padding(horizontal = 24.dp, vertical = 40.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 40.dp, bottom = bottomPaddingSize)
             .imePadding()
     ) {
 //        Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
@@ -138,12 +177,23 @@ fun ProfileInitScreen(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(64.dp))
+//            androidx.compose.animation.AnimatedVisibility(
+//                visible = isKeyboardOpen != KeyboardStatus.Opened,
+//                enter = slideInVertically(initialOffsetY = {
+//                    -it
+//                }),
+//                exit = slideOutVertically(targetOffsetY = {
+//                    -it
+//                })
+//            ) {
+//
+//            }
             Text(
                 text = "사용할 프로필을 \n설정해 주세요.",
                 style = Heading1,
+                modifier = Modifier.padding(top = 64.dp, bottom = 40.dp)
             )
-            Spacer(modifier = Modifier.height(40.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -151,7 +201,7 @@ fun ProfileInitScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.277f)
+                        .fillMaxWidth(profileSize)
                         .aspectRatio(1.04f)
                 ) {
                     Card(
@@ -190,7 +240,7 @@ fun ProfileInitScreen(
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(72.5.dp))
+                Spacer(modifier = Modifier.height(heightSpacerSize))
 
                 UserNameTextField(
                     modifier = Modifier.width(200.dp),

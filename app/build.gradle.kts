@@ -63,4 +63,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit4)
     androidTestImplementation(libs.bundles.androidx.test)
+
+    // compose-keyboard-controller
+    implementation(libs.compose.keyboard.controller)
 }
