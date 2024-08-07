@@ -39,6 +39,7 @@ class Call_record_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : List[Most_friendly_list]
 
+#사용자 등록 관련
 class Register_user_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
@@ -49,6 +50,7 @@ class Certificate_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : Dict[str, str] = Field({"userId" : "123456"}, example = {"userId" : "123456"})
 
+#공유 앨범
 class Album_list_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
@@ -59,8 +61,11 @@ class Album_create_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : List[Dict[str, str]] = Field({"albumId" : "123456"}, example = {"albumId" : "123456", "albumName" : "가족사진"})
 
-
-
+#친구 관련
+class Friend_list_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
 
 
 
@@ -106,3 +111,6 @@ class Album_create_request(BaseModel):
     withWhom : str = Field(..., example = "654321")
     albumName : str = Field(..., example = "가족사진")
 
+class Add_friend_request(BaseModel):
+    userId : str = Field(..., example = "123456")
+    friendId : str = Field(..., example = "654321")
