@@ -54,6 +54,7 @@ fun PhoneOutLineTextField(
 ) {
     val borderColor = if (enabled) PrimaryBlue2 else Gray200
     val backgroundColor = if (enabled) Color.White else Gray50
+    val textColor = if (enabled) Gray900 else Gray400
     val shape = RoundedCornerShape(8.dp)
 
     BasicTextField(
@@ -66,7 +67,7 @@ fun PhoneOutLineTextField(
             .fillMaxWidth()
             .height(48.dp),
         singleLine = true,
-        textStyle = LocalTextStyle.current.copy(color = Gray900, fontSize = 14.sp),
+        textStyle = LocalTextStyle.current.copy(color = textColor, fontSize = 14.sp),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Phone,
             imeAction = ImeAction.Done

@@ -55,7 +55,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
 
-    var loginScreenState by remember { mutableStateOf<LoginScreenState>(LoginScreenState.Phone) }
+    var loginScreenState by remember { mutableStateOf<LoginScreenState>(LoginScreenState.Phone()) }
 
     var isShowMobileCarrierBottomSheet by remember {
         mutableStateOf(false)
@@ -64,13 +64,13 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
     val buttonEnabled by remember {
         derivedStateOf {
             when(loginScreenState) {
-                LoginScreenState.Phone -> {
+                is LoginScreenState.Phone -> {
                     loginPhoneAuthUiState.phoneNumber.checkValidation()
                 }
-                LoginScreenState.MobileCarrier -> {
+                is LoginScreenState.MobileCarrier -> {
                     loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
                 }
-                LoginScreenState.CertificateCode -> {
+                is LoginScreenState.CertificateCode -> {
                     loginPhoneAuthUiState.verificationCode.isNotEmpty()
                 }
             }
@@ -107,7 +107,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
             }
             Spacer(modifier = Modifier.height(64.dp))
             Text(
-                text = "휴대전화 번호를\n입력해 주세요.",
+                text = loginScreenState.title,
                 style = Heading1,
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
@@ -182,11 +182,11 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 }
                 is LoginScreenState.MobileCarrier -> {
                     loginViewModel.fetchRequestCertificateCode {
-                        loginScreenState = LoginScreenState.CertificateCode
+                        loginScreenState = LoginScreenState.CertificateCode()
                     }
                 }
                 is LoginScreenState.Phone -> {
-                    loginScreenState = LoginScreenState.MobileCarrier
+                    loginScreenState = LoginScreenState.MobileCarrier()
                 }
             }
         }
@@ -228,6 +228,7 @@ fun MobileCarrierBox(
 ) {
     val borderColor = if (isCompleted) Gray200 else PrimaryBlue2
     val backgroundColor = if (isCompleted) Gray50 else Color.White
+    val textColor = if (isCompleted) Gray400 else Gray900
 
     Card(
         modifier = Modifier
@@ -238,7 +239,7 @@ fun MobileCarrierBox(
         border = BorderStroke(width = (1.5).dp, color = borderColor),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor,
-            contentColor = Color.LightGray
+            contentColor = textColor
         )
     ) {
         Box(modifier = Modifier.fillMaxSize()) {

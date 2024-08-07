@@ -32,7 +32,7 @@ fun RootNavhost(
         NavHost(
             navController = appState.navController,
 //            startDestination = Constants.LOGIN_GRAPH,
-            startDestination = Constants.HOME_GRAPH,
+            startDestination = Constants.LOGIN_GRAPH,
             modifier = Modifier.fillMaxSize()
         ) {
             loginGraph(appState.navController)
@@ -55,5 +55,7 @@ private fun customNavigationBarPaading(
     if (appState.bottomBarState.value) {
         return Modifier
     }
-    return Modifier.navigationBarsPadding()
+//    return Modifier.navigationBarsPadding()
+    return Modifier
+
 }

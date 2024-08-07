@@ -38,10 +38,10 @@ data class ProfileInitUiState(
     val name: String = "",
 )
 
-sealed class LoginScreenState() {
-    data object Phone : LoginScreenState()
-    data object MobileCarrier : LoginScreenState()
-    data object CertificateCode : LoginScreenState()
+sealed class LoginScreenState(open val title: String) {
+    data class Phone(override val title: String = "휴대전화 번호를\n입력해 주세요") : LoginScreenState(title)
+    data class MobileCarrier(override val title: String = "통신사를\n선택해 주세요") : LoginScreenState(title)
+    data class CertificateCode(override val title: String = "안중번호를\n입력해 주세요") : LoginScreenState(title)
 }
 
 @HiltViewModel
@@ -49,13 +49,13 @@ class LoginViewModel @Inject constructor(
     val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase,
     val checkCertificateCodeUseCase: CheckCertificateCodeUseCase,
     val signupProfileImageUseCase: SignupProfileImageUseCase,
-    @ApplicationContext val context: Context
+    @ApplicationContext val context: Context,
 ) : ViewModel() {
 
     var userId = 0L
 
-    private val _phone = MutableStateFlow(Phone.default())
-    val phone: StateFlow<Phone> = _phone.asStateFlow()
+    private val _phone = MutableStateFlow(com.example.domain.model.login.Phone.default())
+    val phone: StateFlow<com.example.domain.model.login.Phone> = _phone.asStateFlow()
 
     private val _verificationCode = MutableStateFlow(" ")
     val verificationCode: StateFlow<String> = _verificationCode.asStateFlow()
