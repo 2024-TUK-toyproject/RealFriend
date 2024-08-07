@@ -19,10 +19,11 @@ class upload_service:
         self.check_user_id(phone_list.userId)
         
         for phone in phone_list.content:
+            phone_num = self.format_phone_number(phone.phone)
             new_phone = models.phone_info(
                 user_id = phone_list.userId,
                 name = phone.name,
-                phone = phone.phone,
+                phone = phone_num,
                 create_date = self.today.strftime('%Y-%m-%d'),
                 last_modified_date = self.today.strftime('%Y-%m-%d')
             )
@@ -37,10 +38,11 @@ class upload_service:
 
         for call_record in call_record_list.content:
             date1, time = self.divide_date(call_record.date)
+            phone_num = self.format_phone_number(call_record.phone)
             new_call_record = models.call_record_info(
                 user_id = call_record_list.userId,
                 name = call_record.name,
-                phone = call_record.phone,
+                phone = phone_num,
                 date = date1,
                 time = time, 
                 duration = self.preprocess_duration(call_record.duration),
@@ -106,3 +108,10 @@ class upload_service:
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         return user
+    
+    def format_phone_number(self, phone_number : str) -> str:
+        if len(phone_number) > 11:
+            return phone_number
+        else:
+            formatted_number = phone_number[:3] + '-' + phone_number[3:7] + '-' + phone_number[7:]
+            return formatted_number
