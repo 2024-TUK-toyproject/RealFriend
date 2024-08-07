@@ -1,5 +1,6 @@
 from fastapi import HTTPException, status, Depends, UploadFile
 from sqlalchemy.orm import Session
+from sqlalchemy import and_, or_
 
 
 from ..database import Database
@@ -35,9 +36,11 @@ class User_service:
         
         existing_temp_user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == user_info.phone).first()
 
+        phone_num = self.format_phone_number(user_info.phone)
+        
         if not existing_temp_user:
             new_temp_user = models.temp_user_info(
-                phone = user_info.phone,
+                phone = phone_num,
                 create_date = self.today.strftime('%Y-%m-%d')
             )
             self.db.add(new_temp_user)
@@ -108,7 +111,77 @@ class User_service:
 
         return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : user.profile_image})
     
+    async def add_friend(self, request : Add_friend_request) -> CommoneResponse:
+        user = self.db.query(models.user_info).filter(models.user_info.user_id == request.userId).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        friend = self.db.query(models.user_info).filter(models.user_info.user_id == request.friendId).first()
+        if friend is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 정보가 없습니다.")
+        
+        is_friend = self.db.query(models.is_friend).filter(
+            or_(
+                and_(
+                    models.is_friend.user_id == request.userId,
+                    models.is_friend.from_user_id == request.friendId
+                ),
+                and_(
+                    models.is_friend.user_id == request.friendId,
+                    models.is_friend.from_user_id == request.userId
+                )
+            )
+        ).first()
+        if is_friend.is_friend is True:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구입니다.")
+        
+        for _ in range(10):
+            new_id = self.rng.generate_unique_random_number(100000, 999999)
 
+        new_friend = models.is_friend(
+            friend_id = new_id,
+            user_id = request.userId,
+            from_user_id = request.friendId,
+            is_friend = False,
+            create_date = self.today.strftime('%Y-%m-%d'),
+            last_modified_date = self.today.strftime('%Y-%m-%d')
+        )
+        self.db.add(new_friend)
+        self.db.commit()
+
+
+        return CommoneResponse(status = "success", message = "친구 추가 성공")
+
+
+    # 테스트 아직 안함/통화시간, 통화횟수 추가해야함
+    async def get_friend_list(self, userId : str) -> Friend_list_response:
+        user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        friends = self.db.query(models.is_friend).filter(
+            and_(
+                or_(
+                    models.is_friend.user_id == userId,
+                    models.is_friend.from_user_id == userId
+                ),
+                models.is_friend.is_friend == True  
+            )
+        ).all()
+        friend_list = []
+        for friend in friends:
+            if friend.user_id == userId:
+                friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
+            else:
+                friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.user_id).first()
+            friend_list.append({
+                "userId" : friend.user_id,
+                "name" : friend.name,
+                "phone" : friend.phone,
+                "profileImage" : friend.profile_image
+            })
+        
+        return Friend_list_response(status = "success", message = "친구 리스트 조회 성공", content = friend_list)
     
     # 인증번호로직 추후에 추가
     async def certification_user(self, request : Certificate_request) -> Certificate_response:
@@ -122,9 +195,11 @@ class User_service:
         for _ in range(10):
             new_id = self.rng.generate_unique_random_number(100000, 999999)
         
+        phone_num = self.format_phone_number(request.phone)
+
         new_user = models.user_info(
             user_id = new_id,
-            phone = user.phone,
+            phone = phone_num,
             create_date = user.create_date,
             last_modified_date = self.today.strftime('%Y-%m-%d')
         )
@@ -135,3 +210,10 @@ class User_service:
         self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).delete()
         self.db.commit()
         return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id)})
+    
+    def format_phone_number(self, phone_number : str) -> str:
+        if len(phone_number) > 11:
+            return phone_number
+        else:
+            formatted_number = phone_number[:3] + '-' + phone_number[3:7] + '-' + phone_number[7:]
+            return formatted_number
