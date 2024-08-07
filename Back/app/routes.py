@@ -69,6 +69,32 @@ async def create_album(request : Album_create_request, album_service : Album_ser
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+#User/friend
+@router.get("/users/get/{user_id}/friend", responses = {200 : {"model" : Friend_list_response, "description" : "친구 리스트 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "친구 리스트 조회 실패"}}, tags = ["Test/User/friend"], summary = "친구 리스트 조회")
+async def get_friend_list(user_id : str, user_service : User_service = Depends()):
+    try:
+        return await user_service.get_friend_list(user_id)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/users/add/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 추가 성공"}, 400 : {"model" : CommoneResponse, "description" : "친구 추가 실패"}}, tags = ["Test/User/friend"], summary = "친구 추가")
+async def add_friend(request : Add_friend_request, user_service : User_service = Depends()):
+    try:
+        return await user_service.add_friend(request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get("/users/get/{user_id}/friend/request", responses = {200 : {"model" : Friend_request_list_response, "description" : "친구 요청 리스트 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "친구 요청 리스트 조회"}}, tags = ["Test/User/friend"], summary = "친구 요청 리스트 조회")
+async def get_friend_request_list(user_id : str, user_service : User_service = Depends()):
+    try:
+        return await user_service.get_friend_request_list(user_id)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+\
 
 # 실제 라우트
 #Register
