@@ -9,7 +9,7 @@ class CommoneResponse(BaseModel):
 
 class Last_call_content(BaseModel):
     date : str = Field(..., example = "2024-07-25")
-    users : List[Dict[str,str]] = Field([{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}], example = [{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}])
+    users : List[Dict[str,Optional[str]]] = Field([{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}], example = [{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}])
 
 class Last_call_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -49,7 +49,7 @@ class Register_user_response(BaseModel):
 class Certificate_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, str] = Field({"userId" : "123456"}, example = {"userId" : "123456"})
+    content : Dict[str, str] = Field({"userId" : "123456", "isExist" : True}, example = {"userId" : "123456", "isExist" : "true or false"})
 
 #공유 앨범
 class Album_list_response(BaseModel):
