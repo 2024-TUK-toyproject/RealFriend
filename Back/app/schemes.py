@@ -7,13 +7,14 @@ class CommoneResponse(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
 
-class Last_call_response(BaseModel):
-    name : str = Field(..., example = "홍길동")
-    phone : str = Field(..., example = "010-1234-5678")
+class Last_call_content(BaseModel):
     date : str = Field(..., example = "2024-07-25")
-    time : str = Field(..., example = "14:20:01")
-    duration : int = Field(..., example = "90", description="통화시간(초)")
-    type : int = Field(..., example = "1", description="1 : 수신, 2 : 발신, 3 : 부재중")
+    users : List[Dict[str,str]] = Field([{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}], example = [{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}])
+
+class Last_call_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Last_call_content
 
 class Get_profile_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -67,6 +68,10 @@ class Friend_list_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
 
+class Friend_request_list_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
 
 
 
