@@ -10,7 +10,7 @@ class user_info(Base):
     name = Column(String(255))
     phone = Column(String(255))
     create_date = Column(String(255))
-    last_modified_date = Column(String(255))
+    last_login_date = Column(String(255))
     profile_image = Column(String(255))
 
 class temp_user_info(Base):
