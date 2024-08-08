@@ -158,7 +158,7 @@ async def upload_call_record(request : Call_record_request, upload_service : upl
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.get("/users/get/{user_id}/lastcall", responses = {200 : {"model" : Last_call_response, "description" : "통화 기록 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "통화 기록 조회 실패"}}, tags = ["User/Phone"], summary = "가장 최근에 통화한 사람의 정보를 반환(3명)")
+@router.get("/users/get/{user_id}/longestcall", responses = {200 : {"model" : Last_call_response, "description" : "통화 기록 조회 성공"}, 400 : {"model" : CommoneResponse, "description" : "통화 기록 조회 실패"}}, tags = ["User/Phone"], summary = "오늘 날짜의 통화 기록중 긴 통화 시간을 가진 최대 3명을 가져오는 api")
 async def get_last_call(user_id : str, download_service : download_service = Depends()):
     try:
         return await download_service.get_last_call(user_id)
