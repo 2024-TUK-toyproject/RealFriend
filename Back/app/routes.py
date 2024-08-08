@@ -106,7 +106,7 @@ async def register_user(request : User_info_request, user_service : User_service
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/register/certificate", responses = {200 : {"model" : Certificate_response, "description" : "인증 성공"}, 400 : {"model" : CommoneResponse, "description" : "인증 실패"}}, tags = ["Register"], summary = "인증번호를 서버로 전송(아직 미구현 상태, 인증번호는 아무거나 입력해도 됨)")
+@router.post("/register/certificate", responses = {200 : {"model" : Certificate_response, "description" : "인증 성공"}, 400 : {"model" : CommoneResponse, "description" : "인증 실패"}}, tags = ["Register"], summary = "인증번호를 서버로 전송(아직 미구현 상태, 인증번호는 아무거나 입력해도 됨) / 기존 사용자인 경우 isExist = true, 신규 사용자인 경우 isExist = false")
 async def certification_user(request : Certificate_request, user_service : User_service = Depends()):
     try:
         return await user_service.certification_user(request)
