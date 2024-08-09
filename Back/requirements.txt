@@ -5,3 +5,4 @@ boto3==1.34.144
 SQLAlchemy==2.0.29
 PyMySQL==1.1.0
 pytz==2024.1
+python-jose==3.3.0
