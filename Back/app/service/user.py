@@ -8,6 +8,8 @@ from .. import models
 from ..schemes import *
 from ..random_generator import RandomNumberGenerator
 from ..config import Config
+from ..util import JWTService
+from ..httpException import CustomException
 
 from datetime import datetime
 
@@ -28,11 +30,12 @@ class User_service:
         self.db = db
         self.today = datetime.now()
         self.rng = RandomNumberGenerator()
+        self.jwt = JWTService()
 
     async def register_user(self, user_info : User_info_request) -> CommoneResponse:
         '''exiting_user = self.db.query(models.user_info).filter(models.user_info.phone == user_info.phone).first()
         if exiting_user is not None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")'''
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")'''
         
         existing_temp_user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == user_info.phone).first()
 
@@ -58,7 +61,8 @@ class User_service:
 
         user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone, models.temp_user_info.create_date == self.today.strftime('%Y-%m-%d')).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
         existing_user = self.db.query(models.user_info).filter(models.user_info.phone == request.phone).first()
         if existing_user is not None:
             existing_user.last_login_date = self.today.strftime('%Y-%m-%d')
@@ -89,7 +93,7 @@ class User_service:
     async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         filen_name = f"{str(uuid.uuid4())}.jpeg"
         s3_key = f"profile/{userId}/{filen_name}"
@@ -114,7 +118,7 @@ class User_service:
     async def get_profile(self, userId : str) -> Get_profile_response:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         return Get_profile_response(
             name = user.name,
@@ -125,7 +129,7 @@ class User_service:
     async def modify_profile(self, userId : str, file : UploadFile) -> Profile_modify_response:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         filen_name = f"{str(uuid.uuid4())}.jpeg"
         s3_key = f"profile/{userId}/{filen_name}"
@@ -149,11 +153,11 @@ class User_service:
     async def add_friend(self, request : Add_friend_request) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == request.userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         friend = self.db.query(models.user_info).filter(models.user_info.user_id == request.friendId).first()
         if friend is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 정보가 없습니다.")
         
         is_friend = self.db.query(models.is_friend).filter(
             or_(
@@ -168,7 +172,7 @@ class User_service:
             )
         ).first()
         if is_friend.is_friend is True:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구입니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구입니다.")
         
         for _ in range(10):
             new_id = self.rng.generate_unique_random_number(100000, 999999)
@@ -192,7 +196,7 @@ class User_service:
     async def get_friend_list(self, userId : str) -> Friend_list_response:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         friends = self.db.query(models.is_friend).filter(
             and_(
@@ -218,7 +222,36 @@ class User_service:
         
         return Friend_list_response(status = "success", message = "친구 리스트 조회 성공", content = friend_list)
     
-    
+    async def test_register(self, phone : str) -> token_response:
+        existing_user = self.db.query(models.user_info).filter(models.user_info.phone == phone).first()
+
+        if existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
+        
+        for _ in range(10):
+            new_id = self.rng.generate_unique_random_number(100000, 999999)
+
+        phone_num = self.format_phone_number(phone)
+
+        new_user = models.user_info(
+            user_id = new_id,
+            phone = phone_num,
+            create_date = self.today.strftime('%Y-%m-%d'),
+            last_login_date = self.today.strftime('%Y-%m-%d'),
+            access_token = self.jwt.create_access_token(phone,new_id),
+            refresh_token = self.jwt.create_refresh_token(phone, new_id)
+        )
+
+        return token_response(
+            status = "success",
+            message = "사용자 등록 성공",
+            content = {
+                "userId" : str(new_id),
+                "accessToken" : new_user.access_token,
+                "refreshToken" : new_user.refresh_token
+            }
+        )
+
     
     def format_phone_number(self, phone_number : str) -> str:
         if len(phone_number) > 11:
