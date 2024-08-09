@@ -7,8 +7,13 @@ class CommoneResponse(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
 
+class Error_response(BaseModel):
+    detail : str = Field("404: {'status': 'error', 'detail': '존재하지 않는 사용자입니다.'}")
+
 class Last_call_content(BaseModel):
     date : str = Field(..., example = "2024-07-25")
+    time : int = Field(..., example = "14", description="현재 시간")
+    difference : int = Field(..., example = "100", description="어제와의 통화시간 차이, 양수면 증가, 음수면 감소")
     users : List[Dict[str,Optional[str]]] = Field([{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}], example = [{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}])
 
 class Last_call_response(BaseModel):
@@ -73,8 +78,10 @@ class Friend_request_list_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
 
-
-
+class token_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, str] = Field({"userID" : "123456", "accessToken" : "123456", "refreshToken" : "123456"})
 
 # Request Model
 class Phone_list(BaseModel):
