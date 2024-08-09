@@ -5,6 +5,9 @@ from sqlalchemy.orm import Session
 from ..database import Database
 from .. import models
 from ..schemes import *
+
+from ..httpException import CustomException
+
 from datetime import datetime
 from pytz import timezone
 
@@ -106,7 +109,7 @@ class upload_service:
     def check_user_id(self, userId):
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         return user
     
     def format_phone_number(self, phone_number : str) -> str:
