@@ -18,30 +18,29 @@ sealed class Screen(
             HOME_ROUTE,
             "홈",
             R.drawable.ic_nav_home_off,
-            R.drawable.ic_nav_home_off,
-        )
+            R.drawable.ic_nav_home_on)
 
     object Friends :
         Screen(
             FRIENDS_ROUTE,
             "친구 목록",
-            R.drawable.ic_nav_friends_off,
-            R.drawable.ic_nav_friends_off,
+            R.drawable.ic_nav_user_off,
+            R.drawable.ic_nav_user_on,
         )
 
     object Analyze :
         Screen(
             ANALYZE_ROUTE,
             "분석",
-            R.drawable.ic_nav_analyze_off,
-            R.drawable.ic_nav_analyze_off,
+            R.drawable.ic_nav_album_off,
+            R.drawable.ic_nav_album_on,
         )
 
     object Mypage :
         Screen(
             MYPAGE_ROUTE,
             "내 정보",
-            R.drawable.ic_nav_mypage_off,
-            R.drawable.ic_nav_mypage_off,
+            R.drawable.ic_nav_setting_off,
+            R.drawable.ic_nav_setting_on,
         )
 }

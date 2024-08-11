@@ -1,7 +1,6 @@
 package com.example.connex.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,10 +12,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
-import com.example.connex.ui.home.AnalyzeScreen
-import com.example.connex.ui.home.FriendsScreen
-import com.example.connex.ui.home.HomeScreen
-import com.example.connex.ui.home.MypageScreen
+import com.example.connex.ui.home.view.AnalyzeScreen
+import com.example.connex.ui.home.view.FriendsScreen
+import com.example.connex.ui.home.view.HomeScreen
+import com.example.connex.ui.home.view.MypageScreen
 import com.example.connex.ui.login.view.LoginCompleteScreen
 import com.example.connex.ui.login.view.LoginScreen
 import com.example.connex.ui.login.view.ProfileInitScreen
@@ -32,7 +31,7 @@ import com.example.connex.utils.Constants.SIGNUP_START_ROUTE
 
 
 fun NavGraphBuilder.loginGraph(navController: NavController) {
-    navigation(startDestination = SIGNUP_PROFILE_INIT_ROUTE, route = LOGIN_GRAPH) {
+    navigation(startDestination = SIGNUP_START_ROUTE, route = LOGIN_GRAPH) {
         composable(SIGNUP_START_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,

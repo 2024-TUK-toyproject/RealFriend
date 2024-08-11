@@ -1,11 +1,11 @@
 package com.example.data.network
 
-import com.example.data.model.ApiResponse
-import com.example.data.model.request.CertificateCodeRequest
-import com.example.data.model.request.PhoneRequest
-import com.example.data.model.response.PhoneResponse
-import com.example.data.model.response.UserIdResponse
+import com.example.domain.model.ApiResponse
+import com.example.domain.model.request.CertificateCodeRequest
+import com.example.domain.model.request.PhoneRequest
+import com.example.domain.model.response.UserIdResponse
 import okhttp3.MultipartBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -16,7 +16,7 @@ interface LoginApi {
 
     // 인증번호 요청
     @POST("/register/users")
-    suspend fun requestCertificateCode(@Body phone: PhoneRequest): ApiResponse<Unit>
+    suspend fun requestCertificateCode(@Body phone: PhoneRequest): Response<Unit>
 
     // 인증번호 요청
     @POST("/register/certificate")

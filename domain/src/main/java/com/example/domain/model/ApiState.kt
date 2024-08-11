@@ -21,6 +21,11 @@ sealed class ApiState<out T : Any> {
 //        if (this is NotResponse) {
 //            onError(ErrorResponse("500", false, "네트워크 오류가 발생했습니다."))
 //        }
+        if (this is NotResponse) {
+//            onError(ErrorResponse("500", false, "네트워크 오류가 발생했습니다."))
+//            onError()
+
+        }
     }
 
     fun onLoading(onLoading: () -> Unit) {

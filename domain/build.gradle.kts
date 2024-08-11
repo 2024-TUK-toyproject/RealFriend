@@ -1,6 +1,7 @@
 plugins {
     id("daeyoung.plugin.android.library")
     id("daeyoung.plugin.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -40,6 +41,9 @@ dependencies {
 //    testImplementation(libs.junit4)
 //    androidTestImplementation(libs.androidx.junit)
 //    androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.retrofit.serialization)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.okhttp)
 

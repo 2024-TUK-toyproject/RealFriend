@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
@@ -29,6 +30,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.connex.ui.Screen
 import com.example.connex.ui.domain.ApplicationState
+import com.example.connex.ui.theme.PrimaryBlue1
 import com.example.connex.utils.Constants
 
 /** BottomNavigation Bar를 정의한다. */
@@ -37,12 +39,12 @@ fun BoxScope.BottomBar(
     appState: ApplicationState,
     bottomNavItems: List<Screen> = Constants.BOTTOM_NAV_ITEMS,
 ) {
-    val nameStyle =
+    fun nameStyle(isSelected: Boolean) =
         TextStyle(
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 16.sp,
-            color = Color.Black.copy(0.4f)
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            lineHeight = 13.2.sp,
+            color = if(isSelected) PrimaryBlue1 else Color.Black.copy(0.4f)
         )
 
     AnimatedVisibility(
@@ -69,10 +71,10 @@ fun BoxScope.BottomBar(
                                 (if (isSelected) screen.selecteddrawableResId else screen.drawableResId),
                             ),
                             contentDescription = null,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                            modifier = Modifier.padding(bottom = 5.dp).size(24.dp),
                         )
                     },
-                    label = { Text(text = screen.name, style = nameStyle) },
+                    label = { Text(text = screen.name, style = nameStyle(isSelected)) },
                     selected = isSelected,
                     modifier = Modifier
 //                        .width(24.dp)

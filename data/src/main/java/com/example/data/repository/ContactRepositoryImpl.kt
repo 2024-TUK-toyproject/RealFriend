@@ -1,11 +1,13 @@
 package com.example.data.repository
 
-import com.example.data.model.request.ContactDTO
-import com.example.data.model.request.ContactsRequest
-import com.example.data.model.request.toDTO
 import com.example.data.network.ContactApi
 import com.example.domain.model.ApiState
 import com.example.domain.model.login.Contact
+import com.example.domain.model.request.ContactDTO
+import com.example.domain.model.request.ContactsRequest
+import com.example.domain.model.request.toDTO
+import com.example.domain.model.response.MostCalledDateTimeResponse
+import com.example.domain.model.safeFlow
 import com.example.domain.repository.ContactRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -33,4 +35,8 @@ class ContactRepositoryImpl @Inject constructor(
             error.message?.let { emit(ApiState.Error(it)) }
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>> = safeFlow {
+        contactApi.readMostCalledUsers(userId.toString())
+    }
 }
