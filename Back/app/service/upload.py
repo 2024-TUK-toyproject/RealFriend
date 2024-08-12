@@ -8,7 +8,7 @@ from ..schemes import *
 
 from ..httpException import CustomException
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 
 
@@ -48,7 +48,8 @@ class upload_service:
                 phone = phone_num,
                 date = date1,
                 time = time, 
-                duration = self.preprocess_duration(call_record.duration),
+                #duration = self.preprocess_duration(call_record.duration),
+                duration = call_record.duration,
                 type = call_record.type
             )
             self.db.add(new_call_record)
@@ -56,8 +57,10 @@ class upload_service:
         self.db.commit()
 
         #최대 3개월 이내의 통화내역가져온다
-        call_record = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == call_record_list.userId).filter(models.call_record_info.date >= self.today.strftime('%Y-%m-%d')).all()
-
+        three_month_ago = self.today - timedelta(days = 90)
+        three_month_ago = three_month_ago.strftime('%Y-%m-%d')
+        call_record = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == call_record_list.userId).filter(models.call_record_info.date >= three_month_ago).all()
+    
         #같은 번호로 통화한 횟수와 통화시간을 구한다
         phone_dict = {}
         for record in call_record:
@@ -65,7 +68,7 @@ class upload_service:
                 phone_dict[record.phone]['count'] += 1
                 phone_dict[record.phone]['duration'] += record.duration
             else:
-                phone_dict[record.phone] = {'count' : 1, 'duration' : record.duration}
+                phone_dict[record.phone] = {'name' : record.name, 'count' : 1, 'duration' : record.duration}
         
         #통화횟수가 많은 순으로 정렬
         phone_dict = sorted(phone_dict.items(), key = lambda x : x[1]['count'], reverse = True)
@@ -74,7 +77,7 @@ class upload_service:
 
         for phone in phone_dict:
             content.append(Most_friendly_list(
-                name = phone[0],
+                name = phone[1]['name'],
                 phone = phone[0],
                 duration = phone[1]['duration'],
                 count = phone[1]['count']
