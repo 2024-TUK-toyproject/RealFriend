@@ -96,7 +96,7 @@ class Call_record_list(BaseModel):
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
     date : str = Field(..., example = "2024.11.20.14.20.01")
-    duration : str = Field(..., example = "00:01:30")
+    duration : int = Field(..., example = "90")
     type : int = Field(..., example = "1", description="1 : 수신, 2 : 발신, 3 : 부재중")
 
 class Call_record_request(BaseModel):
