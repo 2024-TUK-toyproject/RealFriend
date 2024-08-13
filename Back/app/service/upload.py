@@ -7,6 +7,7 @@ from .. import models
 from ..schemes import *
 
 from ..httpException import CustomException
+from ..util import JWTService
 
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -16,15 +17,20 @@ class upload_service:
     def __init__(self, db: Session = Depends(Database().get_session)):
         self.db = db
         self.today = datetime.now(timezone('Asia/Seoul'))
+        self.jwt = JWTService()
 
-    async def upload_phone_info(self, phone_list : Phone_request) -> CommoneResponse:
+    async def upload_phone_info(self, phone_list : Phone_request, token : str) -> CommoneResponse:
+        
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰이 만료되었습니다.")
 
-        self.check_user_id(phone_list.userId)
+        self.check_user_id(user["key"])
         
         for phone in phone_list.content:
             phone_num = self.format_phone_number(phone.phone)
             new_phone = models.phone_info(
-                user_id = phone_list.userId,
+                user_id = user["key"],
                 name = phone.name,
                 phone = phone_num,
                 create_date = self.today.strftime('%Y-%m-%d'),
@@ -35,15 +41,18 @@ class upload_service:
 
         return CommoneResponse(status = "success", message = "연락처 동기화 성공")
     
-    async def upload_call_record(self, call_record_list : Call_record_request) -> Call_record_response:  
+    async def upload_call_record(self, call_record_list : Call_record_request, token : str) -> Call_record_response:  
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰이 만료되었습니다.")
         
-        self.check_user_id(call_record_list.userId)
+        self.check_user_id(user["key"])
 
         for call_record in call_record_list.content:
             date1, time = self.divide_date(call_record.date)
             phone_num = self.format_phone_number(call_record.phone)
             new_call_record = models.call_record_info(
-                user_id = call_record_list.userId,
+                user_id = user["key"],
                 name = call_record.name,
                 phone = phone_num,
                 date = date1,
@@ -59,7 +68,7 @@ class upload_service:
         #최대 3개월 이내의 통화내역가져온다
         three_month_ago = self.today - timedelta(days = 90)
         three_month_ago = three_month_ago.strftime('%Y-%m-%d')
-        call_record = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == call_record_list.userId).filter(models.call_record_info.date >= three_month_ago).all()
+        call_record = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user["key"]).filter(models.call_record_info.date >= three_month_ago).all()
     
         #같은 번호로 통화한 횟수와 통화시간을 구한다
         phone_dict = {}

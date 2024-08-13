@@ -7,6 +7,7 @@ from ..database import Database
 from .. import models
 from ..schemes import *
 from ..httpException import CustomException
+from ..util import JWTService
 
 from datetime import datetime, timedelta
 from pytz import timezone
@@ -17,13 +18,17 @@ class download_service:
         self.db = db
         self.today = datetime.now(timezone('Asia/Seoul'))
         self.now = datetime.now(timezone('Asia/Seoul'))
+        self.jwt = JWTService()
 
-    async def get_last_call(self, user_id : str) -> Last_call_response:
+    async def get_last_call(self, token : str) -> Last_call_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰이 만료되었습니다.")
         
-        self.check_user_id(user_id)
+        self.check_user_id(user["key"])
 
         #오늘 날짜 전체 통화 기록을 가져온다
-        last_call = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user_id).filter(models.call_record_info.date == self.today.strftime('%Y-%m-%d')).order_by(models.call_record_info.time.desc()).all()
+        last_call = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user["key"]).filter(models.call_record_info.date == self.today.strftime('%Y-%m-%d')).order_by(models.call_record_info.time.desc()).all()
         if last_call is None:
             raise CustomException(status_code=400, detail="통화 기록이 없습니다.")
         
@@ -51,7 +56,7 @@ class download_service:
         yesterday = self.now - timedelta(days=1)
         yesterday_str = yesterday.strftime('%Y-%m-%d')
 
-        yesterday_call_duration = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user_id).filter(models.call_record_info.date == yesterday_str).all()
+        yesterday_call_duration = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user["key"]).filter(models.call_record_info.date == yesterday_str).all()
 
         if yesterday_call_duration is None:
             yester_day_call = 0
