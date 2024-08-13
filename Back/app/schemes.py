@@ -8,7 +8,7 @@ class CommoneResponse(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
 
 class Error_response(BaseModel):
-    detail : str = Field("404: {'status': 'error', 'detail': '존재하지 않는 사용자입니다.'}")
+    detail : str = Field("404: {'status': 'error', 'detail': '에러 사유'}")
 
 class Last_call_content(BaseModel):
     date : str = Field(..., example = "2024-07-25")
@@ -54,7 +54,7 @@ class Register_user_response(BaseModel):
 class Certificate_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, str] = Field({"userId" : "123456", "isExist" : True}, example = {"userId" : "123456", "isExist" : "true or false"})
+    content : Dict[str, str] = Field({"userId" : "123456", "isExist" : True, "accessToken" : "asdasdasd", "refreshToken" : "asdasdasd"}, example = {"userId" : "123456", "isExist" : "true or false", "accessToken" : "asdasdasd", "refreshToken" : "asdasdasd"})
 
 #공유 앨범
 class Album_list_response(BaseModel):
@@ -83,13 +83,20 @@ class token_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : Dict[str, str] = Field({"userID" : "123456", "accessToken" : "123456", "refreshToken" : "123456"})
 
+class Login_response(BaseModel):
+    status : str = Field("success", example = "success or error or retry")
+    message : str = Field("성공메시지 or 오류메시지 or 재시도 메시지")
+    content: Optional[Dict[str, Optional[str]]] = Field(
+        None,
+        example={"accessToken": "asdasdasd", "refreshToken": "asdasdasd"}
+    )
+
 # Request Model
 class Phone_list(BaseModel):
     name : str = Field(..., example = "홍길동")
     phone : str = Field(..., example = "010-1234-5678")
 
 class Phone_request(BaseModel):
-    userId : str = Field(..., example = "123456")
     content : List[Phone_list]
 
 class Call_record_list(BaseModel):
@@ -100,7 +107,6 @@ class Call_record_list(BaseModel):
     type : int = Field(..., example = "1", description="1 : 수신, 2 : 발신, 3 : 부재중")
 
 class Call_record_request(BaseModel):
-    userId : str = Field(..., example = "123456")
     content : List[Call_record_list]
 
 class User_info_request(BaseModel):
