@@ -12,7 +12,6 @@ class user_info(Base):
     create_date = Column(String(255))
     last_login_date = Column(String(255))
     profile_image = Column(String(255))
-    access_token = Column(String(255))
     refresh_token = Column(String(255))
 
 class temp_user_info(Base):
