@@ -24,37 +24,7 @@ s3 = boto3.client(
 )
 
 
-
 # 테스트 라우트
-@router.post("/test/upload", tags=["test"])
-async def upload(file: UploadFile, directory: str):
-    try:
-        filen_name = f"{str(uuid.uuid4())}.jpg"
-        s3_key = f"{directory}/{filen_name}"
-
-        s3.upload_fileobj(
-            file.file,
-            Config.s3_bucket,
-            s3_key
-        )
-
-        url = "https://%s.s3.amazonaws.com/%s/%s" % (
-            Config.s3_bucket,
-            directory,
-            urllib.parse.quote(filen_name)
-        )
-        return JSONResponse(content = "{'url': '%s'}" % url)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@router.get("/test/{userId}/certification", responses = {200 : {"model" : CommoneResponse, "description" : "인증 성공"}, 400 : {"model" : Error_response, "description" : "인증 실패"}}, tags=["test"])
-async def certification_user(userId : str, user_service : User_service = Depends()):
-    try:
-        return await user_service.certification_user(userId)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 #User/sharedAlbum
 @router.get("/users/get/{user_id}/albumId", responses = {200 : {"model" : Album_list_response, "description" : "앨범 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 리스트 조회 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 리스트 조회(구현중)")
@@ -98,7 +68,7 @@ async def get_friend_request_list(user_id : str, user_service : User_service = D
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/jwt/test/register")
+@router.post("/test/jwt/register", tags = ["Test/JWT"])
 async def test_current_user(phone : str, user_service : User_service = Depends()):
     try:
         return await user_service.test_register(phone)
@@ -106,8 +76,32 @@ async def test_current_user(phone : str, user_service : User_service = Depends()
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/test/jwt/access", tags = ["Test/JWT"])
+async def test_access_token(token: str = Depends(APIKeyHeader(name = "Authorization"))):
+    try:
+        return jwt.check_token_expired(token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/test/jwt/makeAccessToken", tags = ["Test/JWT"], summary="테스트용 access_token 생성")
+async def test_make_access_token(phone : str, userId : str):
+    try:
+        return jwt.create_access_token(phone, userId)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # 실제 라우트
+#autoLogin
+@router.post("/login", responses = {200 : {"model" : Login_response, "description" : "로그인 성공"}, 400 : {"model" : Error_response, "description" : "로그인 실패"}}, tags = ["AutoLogin"], summary = "자동 로그인 / access_token 만료 에러시 refresh_token으로 재시도 할 것 / refresh_token으로 재시도시 access_token과 refresh_token이 반환됨 / 로그인 성공시 content는 NULL")
+async def login(token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+    try:
+        return await user_service.login(token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 #Register
 @router.post("/register/users", responses = {200 : {"model" : CommoneResponse, "description" : "사용자 등록 성공"}, 400 : {"model" : Error_response, "description" : "사용자 등록 실패"}}, tags = ["Register"], summary = "전화번호, 통신사를 서버로 전송")
 async def register_user(request : User_info_request, user_service : User_service = Depends()):
@@ -125,7 +119,7 @@ async def certification_user(request : Certificate_request, user_service : User_
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/register/setprofile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 등록 성공"}, 400 : {"model" : Error_response, "description" : "프로필 등록 실패"}}, tags = ["Register"], summary = "프로필 사진과 사용자 이름을 서버로 전송(쿼리스트링으로 전송 바람)")
+@router.post("/register/setprofile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 등록 성공"}, 400 : {"model" : Error_response, "description" : "프로필 등록 실패"}}, tags = ["Register"], summary = "프로필 사진과 사용자 이름을 서버로 전송(쿼리스트링으로 전송 바람) / 이 과정까지만 userId를 사용 이후엔 토큰을 사용")
 async def set_profile(userId : str, name : str, file : UploadFile, user_service : User_service = Depends()):
     try:
         return await user_service.set_profile(userId, name, file)
@@ -135,18 +129,18 @@ async def set_profile(userId : str, name : str, file : UploadFile, user_service 
 
 
 #User/Profile
-@router.get("/users/getprofile/{userId}", responses = {200 : {"model" : Get_profile_response, "description" : "프로필 조회 성공"}, 400 : {"model" : Error_response, "description" : "프로필 조회 실패"}}, summary= "프로필 사진과 사용자 정보를 불러오는 api", tags = ["User/Profile"], description = "프로필 사진과 사용자 정보를 불러오는 api")
-async def get_profile(userId : str, user_service : User_service = Depends()):
+@router.get("/users/getprofile", responses = {200 : {"model" : Get_profile_response, "description" : "프로필 조회 성공"}, 400 : {"model" : Error_response, "description" : "프로필 조회 실패"}}, summary= "프로필 사진과 사용자 정보를 불러오는 api", tags = ["User/Profile"], description = "프로필 사진과 사용자 정보를 불러오는 api")
+async def get_profile(token = Depends(APIKeyHeader(name="Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.get_profile(userId)
+        return await user_service.get_profile(token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/users/modify/profile", responses = {200 : {"model" : Profile_modify_response, "description" : "프로필 수정 성공"}, 400 : {"model" : Error_response, "description" : "프로필 수정 실패"}}, tags = ["User/Profile"], summary = "프로필 사진을 수정하는 api")
-async def modify_profile(userId : str, file : UploadFile, user_service : User_service = Depends()):
+async def modify_profile(file : UploadFile, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.modify_profile(userId, file)
+        return await user_service.modify_profile(token, file)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -154,25 +148,25 @@ async def modify_profile(userId : str, file : UploadFile, user_service : User_se
 
 #User/Phone
 @router.post("/users/upload/phone", responses = {200 : {"model" : CommoneResponse, "description" : "동기화 성공"}, 400 : {"model" : Error_response, "description" : "동기화 실패"}}, tags = ["User/Phone"], summary = "전화번호부 동기화")
-async def upload_phone_info(request : Phone_request, upload_service : upload_service = Depends()):
+async def upload_phone_info(request : Phone_request, token = Depends(APIKeyHeader(name = "Authorization")),upload_service : upload_service = Depends()):
     try:
-        return await upload_service.upload_phone_info(request)
+        return await upload_service.upload_phone_info(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.post("/users/upload/callrecord", responses = {200 : {"model" : Call_record_response, "description" : "동기화 성공"}, 400 : {"model" : Error_response, "description" : "동기화 실패"}}, summary = "통화 기록 동기화, 응답으로 통화 횟수와 통화 시간이 많은 순으로 정렬된 리스트를 반환", tags = ["User/Phone"])
-async def upload_call_record(request : Call_record_request, upload_service : upload_service = Depends()):
+async def upload_call_record(request : Call_record_request, token = Depends(APIKeyHeader(name = "Authorization")),upload_service : upload_service = Depends()):
     try:
-        return await upload_service.upload_call_record(request)
+        return await upload_service.upload_call_record(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.get("/users/get/{user_id}/longestcall", responses = {200 : {"model" : Last_call_response, "description" : "통화 기록 조회 성공"}, 400 : {"model" : Error_response, "description" : "통화 기록 조회 실패"}}, tags = ["User/Phone"], summary = "오늘 날짜의 통화 기록중 긴 통화 시간을 가진 최대 3명을 가져오는 api")
-async def get_last_call(user_id : str, download_service : download_service = Depends()):
+@router.get("/users/get/longestcall", responses = {200 : {"model" : Last_call_response, "description" : "통화 기록 조회 성공"}, 400 : {"model" : Error_response, "description" : "통화 기록 조회 실패"}}, tags = ["User/Phone"], summary = "오늘 날짜의 통화 기록중 긴 통화 시간을 가진 최대 3명을 가져오는 api")
+async def get_last_call(token = Depends(APIKeyHeader(name = "Authorization")),download_service : download_service = Depends()):
     try:
-        return await download_service.get_last_call(user_id)
+        return await download_service.get_last_call(token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

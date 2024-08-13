@@ -9,7 +9,7 @@ from ..schemes import *
 from ..random_generator import RandomNumberGenerator
 from ..config import Config
 from ..util import JWTService
-from ..httpException import CustomException
+from ..httpException import CustomException, CustomException2
 
 from datetime import datetime
 
@@ -22,7 +22,6 @@ s3 = boto3.client(
     aws_access_key_id=Config.s3_access_key,
     aws_secret_access_key=Config.s3_secret_key
 )
-
 
 
 
@@ -68,9 +67,12 @@ class User_service:
         if existing_user is not None:
             existing_user.last_login_date = self.today.strftime('%Y-%m-%d')
             self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).delete()
+            new_token = self.jwt.create_access_token(existing_user.phone, existing_user.user_id)
+            refresh_token = self.jwt.create_refresh_token(existing_user.phone, existing_user.user_id)
+            existing_user.refresh_token = refresh_token
             self.db.commit()
             
-            return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(existing_user.user_id), "isExist" : str(True)})
+            return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(existing_user.user_id), "isExist" : str(True), "accessToken" : new_token, "refreshToken" : refresh_token})
         
         for _ in range(10):
             new_id = self.rng.generate_unique_random_number(100000, 999999)
@@ -81,15 +83,17 @@ class User_service:
             user_id = new_id,
             phone = phone_num,
             create_date = user.create_date,
-            last_login_date = self.today.strftime('%Y-%m-%d')
+            last_login_date = self.today.strftime('%Y-%m-%d'),
+            refresh_token = self.jwt.create_refresh_token(phone_num, new_id)
         )
+        new_token = self.jwt.create_access_token(phone_num, new_id)
         self.db.add(new_user)
         self.db.commit()
 
         # temp_user_info 삭제
         self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).delete()
         self.db.commit()
-        return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id), "isExist" : str(False)})
+        return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id), "isExist" : str(False), "accessToken" : new_token, "refreshToken" : new_user.refresh_token})
     
     async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
@@ -116,24 +120,37 @@ class User_service:
 
         return CommoneResponse(status = "success", message = "프로필 사진 등록 성공")
     
-    async def get_profile(self, userId : str) -> Get_profile_response:
-        user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
+    async def get_profile(self, token : str) -> Get_profile_response:
+        user = self.jwt.check_token_expired(token)
         if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        print(user["key"])
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        print(existing_user.name, existing_user.phone, existing_user.profile_image)
+        if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         return Get_profile_response(
-            name = user.name,
-            phone = user.phone,
-            profile_image = user.profile_image
+            status = "success",
+            message = "프로필 조회 성공",
+            content = dict(
+                name = existing_user.name,
+                phone = existing_user.phone,
+                profileImage = existing_user.profile_image
+            )
         )
     
-    async def modify_profile(self, userId : str, file : UploadFile) -> Profile_modify_response:
-        user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
+    async def modify_profile(self, token : str, file : UploadFile) -> Profile_modify_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
         if user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         filen_name = f"{str(uuid.uuid4())}.jpeg"
-        s3_key = f"profile/{userId}/{filen_name}"
+        s3_key = f"profile/{existing_user.user_id}/{filen_name}"
 
         s3.upload_fileobj(
             file.file,
@@ -143,13 +160,13 @@ class User_service:
 
         user.profile_image = f"https://%s.s3.amazonaws.com/profile/%s/%s" % (
             Config.s3_bucket,
-            userId,
+            user["key"],
             urllib.parse.quote(filen_name)
         )
 
         self.db.commit()
 
-        return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : user.profile_image})
+        return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : existing_user.profile_image})
     
     async def add_friend(self, request : Add_friend_request) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == request.userId).first()
@@ -192,6 +209,27 @@ class User_service:
 
         return CommoneResponse(status = "success", message = "친구 추가 성공")
 
+    async def login(self, token : str) -> Login_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            print(1)
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        user_info = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if user_info is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        if token == user_info.refresh_token:
+            new_access_token = self.jwt.create_access_token(user_info.phone, user_info.user_id)
+            new_refresh_token = self.jwt.create_refresh_token(user_info.phone, user_info.user_id)
+            user_info.refresh_token = new_refresh_token
+            self.db.commit()
+            return Login_response(status = "success", message = "new token 발급 완료", content = {"accessToken" : new_access_token, "refreshToken" : new_refresh_token})
+        
+        user_info.last_login_date = self.today.strftime('%Y-%m-%d')
+        self.db.commit()
+
+        return Login_response(status = "success", message = "로그인 성공", content = {"accessToken" : None, "refreshToken" : None})
 
     # 테스트 아직 안함/통화시간, 통화횟수 추가해야함
     async def get_friend_list(self, userId : str) -> Friend_list_response:
@@ -239,7 +277,6 @@ class User_service:
             phone = phone_num,
             create_date = self.today.strftime('%Y-%m-%d'),
             last_login_date = self.today.strftime('%Y-%m-%d'),
-            access_token = self.jwt.create_access_token(phone,new_id),
             refresh_token = self.jwt.create_refresh_token(phone, new_id)
         )
 
@@ -248,7 +285,7 @@ class User_service:
             message = "사용자 등록 성공",
             content = {
                 "userId" : str(new_id),
-                "accessToken" : new_user.access_token,
+                "accessToken" : self.jwt.create_access_token(phone, new_id),
                 "refreshToken" : new_user.refresh_token
             }
         )
