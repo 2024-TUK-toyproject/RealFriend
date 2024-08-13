@@ -25,6 +25,7 @@ s3 = boto3.client(
 
 
 
+
 class User_service:
     def __init__(self, db: Session = Depends(Database().get_session)):
         self.db = db
