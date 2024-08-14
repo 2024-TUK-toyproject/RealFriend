@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -92,12 +93,13 @@ fun PhoneOutLineTextField(
 fun SearchTextField(
     modifier: Modifier = Modifier,
     padding: Pair<Dp, Dp>,
+    backgroundColor: Color = Color.White,
+    contentColor: Color = Gray400,
     text: String,
     placeholder: String,
     updateText: (String) -> Unit,
     onSearch: () -> Unit
 ) {
-    val backgroundColor = Color.White
     val shape = RoundedCornerShape(200.dp)
 
     BasicTextField(
@@ -110,9 +112,9 @@ fun SearchTextField(
             .fillMaxWidth(),
         singleLine = true,
         textStyle = LocalTextStyle.current.copy(
-            color = Color.Black,
+            color = contentColor,
             fontSize = 12.sp,
-            lineHeight = 12.sp
+            lineHeight = 15.sp
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
@@ -122,22 +124,22 @@ fun SearchTextField(
     ) { innerTextField ->
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(horizontal = padding.first, vertical = padding.second),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = null,
-                tint = Gray400,
+                tint = contentColor,
                 modifier = Modifier.size(14.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Box(modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.weight(1f).align(Alignment.CenterVertically)) {
                 if (text.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = TextStyle(color = Gray400, fontSize = 12.sp, lineHeight = 12.sp)
+                        style = TextStyle(color = contentColor, fontSize = 12.sp, lineHeight = 0.sp)
                     )
                 }
                 innerTextField()

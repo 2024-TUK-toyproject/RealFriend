@@ -41,7 +41,7 @@ fun syncContact(resolver: ContentResolver): MutableList<Contact> {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
+fun syncCallLog(resolver: ContentResolver, size: Int): MutableList<CallLog> {
     val callLogs = mutableListOf<CallLog>()
     val selection =
         "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL AND ${android.provider.CallLog.Calls.CACHED_FORMATTED_NUMBER} IS NOT NULL"
@@ -62,7 +62,7 @@ fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
 
         var count = 0
         while (cursor.moveToNext()) {
-            if (count++ == 100) break
+            if (count++ == size) break
             val formatPhone = cursor.getString(0)
             val name = cursor.getString(1)
             val duration = cursor.getString(2)
@@ -80,7 +80,8 @@ fun syncCallLog(resolver: ContentResolver): MutableList<CallLog> {
                 CallLog(
                     name,
                     formatPhone,
-                    duration.toLong(),
+//                    duration.toLong(),
+                    duration,
                     formatStartDate,
                     type.toInt()
                 )

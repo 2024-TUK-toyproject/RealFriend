@@ -59,7 +59,7 @@ class FriendSyncViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun syncContracts(resolver: ContentResolver) {
-        val callLogs = syncCallLog(resolver)
+        val callLogs = syncCallLog(resolver, 100)
             .map { it.name to it.phone }
             .groupingBy { it }
             .eachCount()

@@ -82,10 +82,57 @@ val Heading1 = TextStyle(
 
 val Heading2 = TextStyle(
     fontSize = 20.sp,
-    lineHeight = 27.sp,
+    lineHeight = 28.sp,
     fontWeight = FontWeight.SemiBold,
     color = Gray900,
-    letterSpacing = 0.2.sp,
+//    letterSpacing = 0.2.sp,
+)
+
+val Body1Semibold = TextStyle(
+    fontSize = 16.sp,
+    lineHeight = 22.4.sp,
+    fontWeight = FontWeight.SemiBold,
+    color = Gray900,
+//    letterSpacing = 0.2.sp,
+)
+
+val Body2Medium = TextStyle(
+    fontSize = 14.sp,
+    lineHeight = 19.6.sp,
+    fontWeight = FontWeight.Medium,
+    color = Gray500,
+//    letterSpacing = 0.2.sp,
+)
+
+val Body3Medium = TextStyle(
+    fontSize = 12.sp,
+    lineHeight = 16.8.sp,
+    fontWeight = FontWeight.Medium,
+    color = Gray500,
+//    letterSpacing = 0.2.sp,
+)
+val Body3Regular = TextStyle(
+    fontSize = 12.sp,
+    lineHeight = 16.8.sp,
+    fontWeight = FontWeight.Medium,
+    color = Gray300,
+//    letterSpacing = 0.2.sp,
+)
+
+val Text16ptSemibold = TextStyle(
+    fontSize = 16.sp,
+    lineHeight = 22.4.sp,
+    fontWeight = FontWeight.SemiBold,
+    color = Gray800,
+//    letterSpacing = 0.2.sp,
+)
+
+val Btn11ptMedium = TextStyle(
+    fontSize = 11.sp,
+    lineHeight = 15.4.sp,
+    fontWeight = FontWeight.Medium,
+    color = Gray300,
+//    letterSpacing = 0.2.sp,
 )
 
 val Subtitle1 = TextStyle(

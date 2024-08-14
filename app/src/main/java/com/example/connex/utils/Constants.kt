@@ -1,8 +1,10 @@
 package com.example.connex.utils
 
+import androidx.compose.ui.unit.dp
 import com.example.connex.ui.Screen
 
 object Constants {
+    val BottomNavigationHeight = 56.dp
 
     val BOTTOM_NAV_ITEMS = listOf<Screen>(Screen.Home, Screen.Friends,Screen.Analyze, Screen.Mypage)
     /** navigation id */

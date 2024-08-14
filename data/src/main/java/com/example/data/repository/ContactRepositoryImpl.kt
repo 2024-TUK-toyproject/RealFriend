@@ -2,10 +2,13 @@ package com.example.data.repository
 
 import com.example.data.network.ContactApi
 import com.example.domain.model.ApiState
+import com.example.domain.model.login.CallLog
 import com.example.domain.model.login.Contact
+import com.example.domain.model.request.CallLogRequest
 import com.example.domain.model.request.ContactDTO
 import com.example.domain.model.request.ContactsRequest
 import com.example.domain.model.request.toDTO
+import com.example.domain.model.response.CallLogResponse
 import com.example.domain.model.response.MostCalledDateTimeResponse
 import com.example.domain.model.safeFlow
 import com.example.domain.repository.ContactRepository
@@ -35,6 +38,15 @@ class ContactRepositoryImpl @Inject constructor(
             error.message?.let { emit(ApiState.Error(it)) }
         }
     }.flowOn(Dispatchers.IO)
+
+    override fun syncCallLogs(userId: Long, callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>> = safeFlow {
+        val callLogRequest = CallLogRequest(
+            userId = userId.toString(),
+            content = callLogs
+        )
+        contactApi.syncCallLogs(callLogRequest)
+    }
+
 
     override fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>> = safeFlow {
         contactApi.readMostCalledUsers(userId.toString())

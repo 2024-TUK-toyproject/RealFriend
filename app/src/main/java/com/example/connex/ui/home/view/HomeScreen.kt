@@ -56,6 +56,7 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Heading2
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Subtitle2
+import com.example.connex.utils.Constants
 
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
@@ -66,8 +67,9 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
 
     Column(
         modifier = Modifier
+//            .navigationBarsPadding()
+            .padding(bottom = Constants.BottomNavigationHeight)
             .fillMaxSize()
-            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
     ) {
         HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp))
