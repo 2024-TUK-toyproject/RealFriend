@@ -53,7 +53,6 @@ val Typography = Typography(
     ),
 
 
-
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -84,6 +83,14 @@ val Heading2 = TextStyle(
     fontSize = 20.sp,
     lineHeight = 28.sp,
     fontWeight = FontWeight.SemiBold,
+    color = Gray900,
+//    letterSpacing = 0.2.sp,
+)
+
+val Head3Medium = TextStyle(
+    fontSize = 18.sp,
+    lineHeight = 25.2.sp,
+    fontWeight = FontWeight.Medium,
     color = Gray900,
 //    letterSpacing = 0.2.sp,
 )
@@ -126,6 +133,11 @@ val Text16ptSemibold = TextStyle(
     color = Gray800,
 //    letterSpacing = 0.2.sp,
 )
+
+val Text11ptRegular = TextStyle(
+    fontSize = 11.sp,
+    lineHeight = 15.4.sp,
+    fontWeight = FontWeight.Normal)
 
 val Btn11ptMedium = TextStyle(
     fontSize = 11.sp,

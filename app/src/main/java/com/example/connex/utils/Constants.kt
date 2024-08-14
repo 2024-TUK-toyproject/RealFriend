@@ -13,6 +13,9 @@ object Constants {
     const val ANALYZE_ROUTE = "nav-analyze"
     const val MYPAGE_ROUTE = "nav-mypage"
 
+    const val NOTIFICATION_ROUTE = "nav-notification"
+
+
     const val WEB_VIEW_ROUTE = "nav-web-view"
 
     const val EDIT_CATEGORY_ROUTE = "nav-edit_category"

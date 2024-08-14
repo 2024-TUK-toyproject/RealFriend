@@ -13,6 +13,7 @@ import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.homeGraph
 import com.example.connex.ui.initSettingGraph
 import com.example.connex.ui.loginGraph
+import com.example.connex.ui.notificationComposable
 import com.example.connex.utils.Constants
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -35,6 +36,7 @@ fun RootNavhost(
             loginGraph(appState.navController)
             initSettingGraph(appState.navController)
             homeGraph(appState.navController)
+            notificationComposable(appState.navController)
         }
         BottomBar(appState)
     }

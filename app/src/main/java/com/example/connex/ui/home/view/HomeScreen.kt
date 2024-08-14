@@ -3,6 +3,7 @@ package com.example.connex.ui.home.view
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,9 +42,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.connex.ui.component.General2Button
 import com.example.connex.ui.component.General3Button
 import com.example.connex.ui.component.ShadowBox
+import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.home.HomeViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.Connexlogo2
@@ -57,9 +60,10 @@ import com.example.connex.ui.theme.Heading2
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
+import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchReadMostCallUsers()
@@ -72,14 +76,16 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp))
+        HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp)) {
+            navController.navigate(NOTIFICATION_ROUTE)
+        }
         HomeBody()
 
     }
 }
 
 @Composable
-fun HomeHeader(modifier: Modifier = Modifier) {
+fun HomeHeader(modifier: Modifier = Modifier, navigate: () -> Unit) {
     Column(modifier) {
         Row(
             modifier = Modifier
@@ -97,7 +103,7 @@ fun HomeHeader(modifier: Modifier = Modifier) {
             Image(
                 imageVector = IconPack.IcNotification,
                 contentDescription = "notification",
-//                modifier = Modifier.size(24.dp)
+                modifier = Modifier.noRippleClickable { navigate() }
             )
         }
         Spacer(modifier = Modifier.height(40.dp))

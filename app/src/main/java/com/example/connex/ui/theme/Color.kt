@@ -19,6 +19,7 @@ val PrimaryBlue1 = Color(0xFF365FF0)
 
 val Gray900 = Color(0xFF1C1B1F)
 val Gray800 = Color(0xFF303033)
+val Gray600 = Color(0xFF303033)
 val Gray500 = Color(0xFF505050)
 val Gray400 = Color(0xFF9B9C9F)
 val Gray300 = Color(0xFFC3C4C5)
