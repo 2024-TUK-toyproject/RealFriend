@@ -8,6 +8,6 @@ import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 
 fun NavGraphBuilder.notificationComposable(navController: NavController) {
     composable(route = NOTIFICATION_ROUTE) {
-        NotificationScreen()
+        NotificationScreen(navController)
     }
 }

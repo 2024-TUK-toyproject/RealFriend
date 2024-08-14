@@ -137,13 +137,20 @@ val Text16ptSemibold = TextStyle(
 val Text11ptRegular = TextStyle(
     fontSize = 11.sp,
     lineHeight = 15.4.sp,
-    fontWeight = FontWeight.Normal)
+    fontWeight = FontWeight.Normal
+)
+
+val Btn11ptRegular = TextStyle(
+    fontSize = 11.sp,
+    lineHeight = 15.4.sp,
+    fontWeight = FontWeight.Normal,
+//    letterSpacing = 0.2.sp,
+)
 
 val Btn11ptMedium = TextStyle(
     fontSize = 11.sp,
     lineHeight = 15.4.sp,
     fontWeight = FontWeight.Medium,
-    color = Gray300,
 //    letterSpacing = 0.2.sp,
 )
 

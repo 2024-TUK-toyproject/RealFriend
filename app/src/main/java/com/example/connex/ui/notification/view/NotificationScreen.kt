@@ -25,10 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.notification.NotificationViewModel
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray300
@@ -38,10 +40,14 @@ import com.example.connex.ui.theme.Head3Medium
 import com.example.connex.ui.theme.PrimaryBlue1
 import kotlinx.coroutines.launch
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun NotificationScreen(modifier: Modifier = Modifier) {
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = { NotificationAppBar {} }) {
+fun NotificationScreen(
+    navController: NavController,
+    notificationViewModel: NotificationViewModel = hiltViewModel(),
+) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { NotificationAppBar { navController.popBackStack() } }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

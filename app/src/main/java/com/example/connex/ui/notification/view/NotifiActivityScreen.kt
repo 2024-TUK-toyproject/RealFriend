@@ -23,8 +23,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,65 +50,75 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = listOf("", "")
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
-            )
+            ),
         ),
         "어제" to listOf(
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                time = "오후 4시 24분",
                 image = emptyList()
-            )
+            ),
         )
     )
 
@@ -130,6 +143,7 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
                     profile = list[it].profile,
                     name = list[it].name,
                     text = list[it].text,
+                    time = list[it].time,
                     image = list[it].image
                 )
             }
@@ -139,12 +153,12 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NotifiActivityCard(profile: String, name: String, text: String, image: List<String>) {
+fun NotifiActivityCard(profile: String, name: String, text: String, time: String, image: List<String>) {
 
     val commentStyle = TextStyle(
         fontSize = 12.sp,
         lineHeight = 16.8.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Normal,
         color = Gray500,
     )
     Row(
@@ -163,9 +177,14 @@ fun NotifiActivityCard(profile: String, name: String, text: String, image: List<
         // <--------------- 여기 까지
         RowSpacer(width = 12.dp)
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = "주히님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다", style = commentStyle)
+            Text(text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                    append(name)
+                }
+                append(text)
+            }, style = commentStyle)
             ColumnSpacer(height = 4.dp)
-            Text(text = "오후 4시 24분", style = Text11ptRegular, color = Gray300)
+            Text(text = time, style = Text11ptRegular, color = Gray300)
         }
         RowSpacer(width = 12.dp)
 
@@ -211,6 +230,7 @@ data class NotifiActivityDto(
     val profile: String,
     val name: String,
     val text: String,
+    val time: String,
     val image: List<String>,
 )
 
