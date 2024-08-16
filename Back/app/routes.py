@@ -45,9 +45,9 @@ async def create_album(request : Album_create_request, album_service : Album_ser
     
 #User/friend
 @router.get("/users/get/{user_id}/friend", responses = {200 : {"model" : Friend_list_response, "description" : "친구 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 리스트 조회 실패"}}, tags = ["Test/User/friend"], summary = "친구 리스트 조회(구현중)")
-async def get_friend_list(user_id : str, user_service : User_service = Depends()):
+async def get_friend_list(token = Depends(APIKeyHeader(name = 'Authorization')), user_service : User_service = Depends()):
     try:
-        return await user_service.get_friend_list(user_id)
+        return await user_service.get_friend_list(token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

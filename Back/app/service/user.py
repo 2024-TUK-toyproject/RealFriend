@@ -232,23 +232,27 @@ class User_service:
         return Login_response(status = "success", message = "로그인 성공", content = {"accessToken" : None, "refreshToken" : None})
 
     # 테스트 아직 안함/통화시간, 통화횟수 추가해야함
-    async def get_friend_list(self, userId : str) -> Friend_list_response:
-        user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
+    async def get_friend_list(self, token : str) -> Friend_list_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
         if user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         friends = self.db.query(models.is_friend).filter(
             and_(
                 or_(
-                    models.is_friend.user_id == userId,
-                    models.is_friend.from_user_id == userId
+                    models.is_friend.user_id == user["key"],
+                    models.is_friend.from_user_id == user["key"]
                 ),
                 models.is_friend.is_friend == True  
             )
         ).all()
         friend_list = []
         for friend in friends:
-            if friend.user_id == userId:
+            if friend.user_id == user["key"]:
                 friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
             else:
                 friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.user_id).first()
