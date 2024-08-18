@@ -101,12 +101,9 @@ fun NotificationAppBar(onBack: () -> Unit) {
 @Composable
 fun NotificationTabRow(modifier: Modifier = Modifier, pagerState: PagerState, list: List<String>) {
     val scope = rememberCoroutineScope()
-    ColumnSpacer(height = 24.dp)
 
     TabRow(
-        modifier = Modifier
-            .padding(start = 24.dp)
-            .fillMaxWidth(0.4f),
+        modifier = Modifier.fillMaxWidth(),
         selectedTabIndex = list.size,
         indicator = { tabPositions ->
             TabRowDefaults.SecondaryIndicator(

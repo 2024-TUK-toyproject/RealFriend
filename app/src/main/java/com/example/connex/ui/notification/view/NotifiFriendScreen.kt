@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.theme.Body2Medium
+import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Btn11ptMedium
 import com.example.connex.ui.theme.Btn11ptRegular
 import com.example.connex.ui.theme.Gray100
@@ -138,8 +139,8 @@ fun NotifiFriendAskBtn(onClick: () -> Unit) {
         .clip(RoundedCornerShape(30.dp))
         .clickable { onClick() }
         .background(PrimaryBlue2)
-        .padding(horizontal = 10.dp, vertical = 4.dp)) {
-        Text(text = "수락", style = Btn11ptRegular, color = White)
+        .padding(horizontal = 13.5.dp, vertical = 5.5.dp)) {
+        Text(text = "수락", style = Body3Regular, color = White)
     }
 }
 
@@ -151,8 +152,8 @@ fun NotifiFriendIgnoreBtn(onClick: () -> Unit) {
         .border(1.dp, Gray200, shape)
         .clickable { onClick() }
         .background(White)
-        .padding(horizontal = 10.dp, vertical = 4.dp)) {
-        Text(text = "무시", style = Btn11ptRegular, color = Gray400)
+        .padding(horizontal = 13.5.dp, vertical = 5.5.dp)) {
+        Text(text = "무시", style = Body3Regular, color = Gray400)
     }
 }
 
