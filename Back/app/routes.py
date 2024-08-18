@@ -42,55 +42,16 @@ async def create_album(request : Album_create_request, album_service : Album_ser
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-#User/friend
-@router.get("/users/get/{user_id}/friend", responses = {200 : {"model" : Friend_list_response, "description" : "친구 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 리스트 조회 실패"}}, tags = ["Test/User/friend"], summary = "친구 리스트 조회(구현중)")
-async def get_friend_list(token = Depends(APIKeyHeader(name = 'Authorization')), user_service : User_service = Depends()):
-    try:
-        return await user_service.get_friend_list(token)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    
-@router.post("/users/add/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 추가 성공"}, 400 : {"model" : Error_response, "description" : "친구 추가 실패"}}, tags = ["Test/User/friend"], summary = "친구 추가(구현중)")
-async def add_friend(request : Add_friend_request, user_service : User_service = Depends()):
-    try:
-        return await user_service.add_friend(request)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    
-@router.get("/users/get/{user_id}/friend/request", responses = {200 : {"model" : Friend_request_list_response, "description" : "친구 요청 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 리스트 조회"}}, tags = ["Test/User/friend"], summary = "친구 요청 리스트 조회(구현중)")
-async def get_friend_request_list(user_id : str, user_service : User_service = Depends()):
-    try:
-        return await user_service.get_friend_request_list(user_id)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/test/jwt/register", tags = ["Test/JWT"])
-async def test_current_user(phone : str, user_service : User_service = Depends()):
-    try:
-        return await user_service.test_register(phone)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@router.post("/test/jwt/access", tags = ["Test/JWT"])
-async def test_access_token(token: str = Depends(APIKeyHeader(name = "Authorization"))):
-    try:
-        return jwt.check_token_expired(token)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-@router.post("/test/jwt/makeAccessToken", tags = ["Test/JWT"], summary="테스트용 access_token 생성")
+@router.post("/test/jwt/makeAccessToken", tags = ["Test/JWT"], summary="테스트용 토큰 생성")
 async def test_make_access_token(phone : str, userId : str):
     try:
-        return jwt.create_access_token(phone, userId)
+        return jwt.create_access_token(phone, userId), jwt.create_refresh_token(phone, userId)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
 
 # 실제 라우트
 #autoLogin
@@ -172,4 +133,28 @@ async def get_last_call(token = Depends(APIKeyHeader(name = "Authorization")),do
         raise HTTPException(status_code=400, detail=str(e))
     
 
+#User/Friend
+@router.get("/users/get/friend", responses = {200 : {"model" : Friend_list_response, "description" : "친구 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 리스트 조회 실패"}}, tags = ["User/friend"], summary = "친구 리스트 조회 / is_friend는 서로 친구인지 여부를 나타냄")
+async def get_friend_list(token = Depends(APIKeyHeader(name = 'Authorization')), user_service : User_service = Depends()):
+    try:
+        return await user_service.get_friend_list(token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/users/add/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 성공"}, 400 : {"model" : Error_response, "description" : "친구 추가 실패"}}, tags = ["User/friend"], summary = "친구 추가(요청)")
+async def add_friend(request : Add_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+    try:
+        return await user_service.add_friend(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get("/users/get/friend/request", responses = {200 : {"model" : Friend_request_list_response, "description" : "친구 요청 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 리스트 조회"}}, tags = ["User/friend"], summary = "친구 요청 리스트 조회")
+async def get_friend_request_list(token = Depends(APIKeyHeader(name = "Authorization")),user_service : User_service = Depends()):
+    try:
+        return await user_service.get_friend_request_list(token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
