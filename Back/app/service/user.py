@@ -168,9 +168,13 @@ class User_service:
 
         return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : existing_user.profile_image})
     
-    async def add_friend(self, request : Add_friend_request) -> CommoneResponse:
-        user = self.db.query(models.user_info).filter(models.user_info.user_id == request.userId).first()
+    async def add_friend(self, request : Add_friend_request, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
         if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         friend = self.db.query(models.user_info).filter(models.user_info.user_id == request.friendId).first()
@@ -180,25 +184,28 @@ class User_service:
         is_friend = self.db.query(models.is_friend).filter(
             or_(
                 and_(
-                    models.is_friend.user_id == request.userId,
+                    models.is_friend.to_user_id == user["key"],
                     models.is_friend.from_user_id == request.friendId
                 ),
                 and_(
-                    models.is_friend.user_id == request.friendId,
-                    models.is_friend.from_user_id == request.userId
+                    models.is_friend.to_user_id == request.friendId,
+                    models.is_friend.from_user_id == user["key"]
                 )
             )
         ).first()
-        if is_friend.is_friend is True:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구입니다.")
+        if is_friend is not None:
+            if is_friend.is_friend == True:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구입니다.")
+            else:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 친구 요청을 보냈습니다.")
         
         for _ in range(10):
             new_id = self.rng.generate_unique_random_number(100000, 999999)
 
         new_friend = models.is_friend(
             friend_id = new_id,
-            user_id = request.userId,
-            from_user_id = request.friendId,
+            to_user_id = request.friendId,
+            from_user_id = user["key"],
             is_friend = False,
             create_date = self.today.strftime('%Y-%m-%d'),
             last_modified_date = self.today.strftime('%Y-%m-%d')
@@ -206,8 +213,9 @@ class User_service:
         self.db.add(new_friend)
         self.db.commit()
 
+        #추후 fcm 푸시알림 추가
 
-        return CommoneResponse(status = "success", message = "친구 추가 성공")
+        return CommoneResponse(status = "success", message = "친구 요청 성공")
 
     async def login(self, token : str) -> Login_response:
         user = self.jwt.check_token_expired(token)
@@ -231,20 +239,19 @@ class User_service:
 
         return Login_response(status = "success", message = "로그인 성공", content = {"accessToken" : None, "refreshToken" : None})
 
-    # 테스트 아직 안함/통화시간, 통화횟수 추가해야함
     async def get_friend_list(self, token : str) -> Friend_list_response:
         user = self.jwt.check_token_expired(token)
         if user is None:
             raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
         
         existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
-        if user is None:
+        if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
         friends = self.db.query(models.is_friend).filter(
             and_(
                 or_(
-                    models.is_friend.user_id == user["key"],
+                    models.is_friend.to_user_id == user["key"],
                     models.is_friend.from_user_id == user["key"]
                 ),
                 models.is_friend.is_friend == True  
@@ -260,11 +267,52 @@ class User_service:
                 "userId" : friend.user_id,
                 "name" : friend.name,
                 "phone" : friend.phone,
-                "profileImage" : friend.profile_image
+                "profileImage" : friend.profile_image,
+                "isFriend" : True
             })
+        phone_list = self.db.query(models.phone_info).filter(models.phone_info.user_id == user["key"]).all()
+
+        for phone in phone_list:
+            if phone.is_frien == False:
+                friend_list.append({
+                    "userId" : None,
+                    "name" : phone.name,
+                    "phone" : phone.phone,
+                    "profileImage" : None,
+                    "isFriend" : False
+                })
         
         return Friend_list_response(status = "success", message = "친구 리스트 조회 성공", content = friend_list)
     
+    async def get_friend_request_list(self, token : str) -> Friend_request_list_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if existing_user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        friends = self.db.query(models.is_friend).filter(
+            and_(
+                models.is_friend.to_user_id == user["key"],
+                models.is_friend.is_friend == False
+            )
+        ).all()
+        friend_list = []
+        for friend in friends:
+            friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
+            friend_list.append({
+                "userId" : friend.user_id,
+                "name" : friend.name,
+                "phone" : friend.phone,
+                "profileImage" : friend.profile_image
+            })
+        
+        return Friend_request_list_response(status = "success", message = "친구 요청 리스트 조회 성공", content = friend_list)
+
+
+
     async def test_register(self, phone : str) -> token_response:
         existing_user = self.db.query(models.user_info).filter(models.user_info.phone == phone).first()
 
