@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 
 
 # Response Model
@@ -71,12 +71,44 @@ class Album_create_response(BaseModel):
 class Friend_list_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
+    content: List[Dict[str, Optional[Union[str, bool]]]] = Field(
+    [
+        {
+            "userId": "123456",
+            "name": "홍길동",
+            "phone": "010-1234-5678",
+            "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+            "isFriend": True  # 불린 타입 예시
+        }
+    ],
+    example=[
+        {
+            "userId": "123456",
+            "name": "홍길동",
+            "phone": "010-1234-5678",
+            "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+            "isActive": True  # 불린 타입 예시
+        }
+    ]
+)
 
 class Friend_request_list_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str, str]] = Field([{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}], example = [{"userId" : "123456", "name" : "홍길동", "phone" : "010-1234-5678", "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
+    content : List[Dict[str, Optional[Union[str, None]]]] = Field(
+        [{
+            "userId" : "123456", 
+            "name" : "홍길동", 
+            "phone" : "010-1234-5678",
+            "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+        }], 
+        example = [{
+            "userId" : "123456",
+            "name" : "홍길동",
+            "phone" : "010-1234-5678", 
+            "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+        }]
+    )
 
 class token_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -130,5 +162,4 @@ class Album_create_request(BaseModel):
     albumName : str = Field(..., example = "가족사진")
 
 class Add_friend_request(BaseModel):
-    userId : str = Field(..., example = "123456")
     friendId : str = Field(..., example = "654321")
