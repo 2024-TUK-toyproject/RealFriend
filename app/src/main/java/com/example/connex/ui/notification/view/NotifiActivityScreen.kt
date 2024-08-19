@@ -34,12 +34,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
+import com.example.connex.ui.theme.Body1Medium
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray500
+import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Text11ptRegular
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,35 +52,35 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = listOf("", "")
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
@@ -87,35 +89,35 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
             NotifiActivityDto(
                 profile = "",
                 name = "주히",
-                text = "님이 새로운 코멘트를 남겼습니다:\n여기 또 가고 싶다",
+                text = "님이 새로운 코멘트를 남겼습니다: 여기 또 가고 싶다",
                 time = "오후 4시 24분",
                 image = emptyList()
             ),
@@ -134,7 +136,7 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(start = 28.dp, bottom = 10.dp),
-                    style = Body2Medium,
+                    style = Body1Medium,
                     color = Gray400
                 )
             }
@@ -156,10 +158,10 @@ fun NotifiActivityScreen(modifier: Modifier = Modifier) {
 fun NotifiActivityCard(profile: String, name: String, text: String, time: String, image: List<String>) {
 
     val commentStyle = TextStyle(
-        fontSize = 12.sp,
-        lineHeight = 16.8.sp,
+        fontSize = 14.sp,
+//        lineHeight = 16.8.sp,
         fontWeight = FontWeight.Normal,
-        color = Gray500,
+        color = Gray600,
     )
     Row(
         modifier = Modifier

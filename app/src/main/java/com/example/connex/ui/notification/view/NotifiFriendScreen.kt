@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
+import com.example.connex.ui.theme.Body1Medium
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Btn11ptMedium
@@ -38,6 +39,7 @@ import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray500
+import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Text11ptRegular
 import com.example.connex.ui.theme.White
@@ -71,7 +73,7 @@ fun NotifiFriendScreen(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .background(Color.White)
                         .padding(start = 28.dp, bottom = 10.dp),
-                    style = Body2Medium,
+                    style = Body1Medium,
                     color = Gray400
                 )
             }
@@ -91,10 +93,10 @@ fun NotifiFriendScreen(modifier: Modifier = Modifier) {
 fun NotifiFriendAskCard(profile: String, name: String, time: String) {
 
     val commentStyle = TextStyle(
-        fontSize = 12.sp,
-        lineHeight = 16.8.sp,
+        fontSize = 14.sp,
+//        lineHeight = 16.8.sp,
         fontWeight = FontWeight.Normal,
-        color = Gray500,
+        color = Gray600,
     )
     Row(
         modifier = Modifier

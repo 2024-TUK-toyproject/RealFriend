@@ -22,9 +22,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.notification.NotificationViewModel
+import com.example.connex.ui.theme.Body1Medium
+import com.example.connex.ui.theme.Body1Regular
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray600
+import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.PrimaryBlue1
 import kotlinx.coroutines.launch
 
@@ -81,7 +84,7 @@ fun NotificationTabRow(modifier: Modifier = Modifier, pagerState: PagerState, li
                 text = {
                     Text(
                         text = s,
-                        style = Body1Semibold.copy(color = if (pagerState.currentPage != index) Gray300 else Gray600),
+                        style = if (pagerState.currentPage == index) Body1Medium.copy(color = Gray800) else Body1Regular.copy(color = Gray300)
                     )
                 })
         }

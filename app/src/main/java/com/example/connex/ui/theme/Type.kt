@@ -102,6 +102,20 @@ val Body1Semibold = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
+val Body1Medium = TextStyle(
+    fontSize = 16.sp,
+    lineHeight = 22.4.sp,
+    fontWeight = FontWeight.Medium,
+)
+
+val Body1Regular = TextStyle(
+    fontSize = 16.sp,
+    lineHeight = 22.4.sp,
+    fontWeight = FontWeight.Normal,
+)
+
+
+
 val Body2Medium = TextStyle(
     fontSize = 14.sp,
     lineHeight = 19.6.sp,
