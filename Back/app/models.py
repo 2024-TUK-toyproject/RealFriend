@@ -29,7 +29,7 @@ class is_friend(Base):
     from_user_id = Column(String(255))
     to_user_id = Column(String(255))
     create_date = Column(String(255))
-    last_modified_date = Column(String(255))
+    create_time = Column(String(255))
     is_friend = Column(Boolean)
     shared_album_id = Column(String(255))
 
