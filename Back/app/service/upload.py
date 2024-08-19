@@ -34,7 +34,7 @@ class upload_service:
                 name = phone.name,
                 phone = phone_num,
                 create_date = self.today.strftime('%Y-%m-%d'),
-                last_modified_date = self.today.strftime('%Y-%m-%d')
+                is_friend = False
             )
             self.db.add(new_phone)
         self.db.commit()
