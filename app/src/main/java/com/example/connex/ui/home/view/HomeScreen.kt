@@ -3,7 +3,6 @@ package com.example.connex.ui.home.view
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -56,7 +54,7 @@ import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Heading2
+import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
@@ -126,7 +124,7 @@ fun HomeTitle(name: String) {
             .fillMaxWidth()
             .padding(start = 28.dp)
     ) {
-        Text(text = "${name}님", style = Heading2)
+        Text(text = "${name}님", style = Head2Semibold)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "오늘 하루는 어땠는지\n친구에게 공유해 볼까요?", style = introductionStyle)
     }

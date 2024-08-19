@@ -46,8 +46,13 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.okhttp)
 
+    // datastore
+    implementation(libs.androidx.dataStore.preferences)
+
     implementation(libs.androidx.monitor)
     implementation(libs.androidx.junit.ktx)
+
+
 }
 
 

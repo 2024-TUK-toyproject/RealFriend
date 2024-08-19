@@ -28,10 +28,10 @@ sealed class Screen(
             R.drawable.ic_nav_user_on,
         )
 
-    object Analyze :
+    object Album :
         Screen(
             ANALYZE_ROUTE,
-            "분석",
+            "앨범",
             R.drawable.ic_nav_album_off,
             R.drawable.ic_nav_album_on,
         )

@@ -9,6 +9,7 @@ import com.example.domain.model.request.ContactDTO
 import com.example.domain.model.request.ContactsRequest
 import com.example.domain.model.request.toDTO
 import com.example.domain.model.response.CallLogResponse
+import com.example.domain.model.response.ContactResponse
 import com.example.domain.model.response.MostCalledDateTimeResponse
 import com.example.domain.model.safeFlow
 import com.example.domain.repository.ContactRepository
@@ -50,5 +51,9 @@ class ContactRepositoryImpl @Inject constructor(
 
     override fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>> = safeFlow {
         contactApi.readMostCalledUsers(userId.toString())
+    }
+
+    override fun readAllFriends(): Flow<ApiState<List<ContactResponse>>> = safeFlow {
+        contactApi.readAllFriends()
     }
 }

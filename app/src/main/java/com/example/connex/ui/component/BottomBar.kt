@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.connex.ui.Screen
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.Btn11ptMedium
+import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.PrimaryBlue1
 import com.example.connex.utils.Constants
 
@@ -39,7 +40,7 @@ fun BoxScope.BottomBar(
     bottomNavItems: List<Screen> = Constants.BOTTOM_NAV_ITEMS,
 ) {
     fun nameStyle(isSelected: Boolean) =
-        if (isSelected) Btn11ptMedium.copy(color = PrimaryBlue1) else Btn11ptMedium
+        if (isSelected) Btn11ptMedium.copy(color = PrimaryBlue1) else Btn11ptMedium.copy(Gray300)
 
     AnimatedVisibility(
         visible = appState.bottomBarState.value,

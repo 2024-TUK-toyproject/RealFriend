@@ -70,7 +70,7 @@ fun FriendSyncCompleteScreen(navController: NavController, userId: Long, name: S
                 text = "추가하기",
                 enabled = true
             ) {
-                navController.navigate("${Screen.Home.route}/$userId")
+                navController.navigate(Screen.Home.route)
             }
 //            Spacer(modifier = Modifier.height(16.dp))
 //            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })

@@ -1,8 +1,10 @@
 package com.example.data.network
 
+import com.example.domain.DefaultResponse
 import com.example.domain.model.ApiResponse
 import com.example.domain.model.request.CertificateCodeRequest
 import com.example.domain.model.request.PhoneRequest
+import com.example.domain.model.response.CertificateCodeResponse
 import com.example.domain.model.response.UserIdResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -20,7 +22,7 @@ interface LoginApi {
 
     // 인증번호 요청
     @POST("/register/certificate")
-    suspend fun checkCertificateCode(@Body certificateCode: CertificateCodeRequest): ApiResponse<UserIdResponse>
+    suspend fun checkCertificateCode(@Body certificateCode: CertificateCodeRequest): DefaultResponse<CertificateCodeResponse>
 
     // 초기 프로필 등록
     @Multipart

@@ -25,16 +25,8 @@ fun syncContact(resolver: ContentResolver): MutableList<Contact> {
     )?.use { cursor ->
         while (cursor.moveToNext()) {
             val phone = cursor.getString(1)
-            val formatPhone = StringBuilder(phone)
-            if (phone.slice(0..2) == "010") {
-                if (phone[3] != '-') {
-                    formatPhone.insert(3, "-")
-                }
-                if (formatPhone[3] == '-' && phone[8] != '-') {
-                    formatPhone.insert(8, "-")
-                }
-            }
-            contactList.add(Contact(cursor.getString(0), formatPhone.toString()))
+            val formatPhone = phone.formatPhoneDashNumber()
+            contactList.add(Contact(cursor.getString(0), formatPhone))
         }
     }
     return contactList

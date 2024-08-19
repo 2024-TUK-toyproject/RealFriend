@@ -5,6 +5,7 @@ import com.example.domain.model.home.MostCalledDateTime
 import com.example.domain.model.login.CallLog
 import com.example.domain.model.login.Contact
 import com.example.domain.model.response.CallLogResponse
+import com.example.domain.model.response.ContactResponse
 import com.example.domain.model.response.MostCalledDateTimeResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -14,5 +15,7 @@ interface ContactRepository {
     fun syncCallLogs(userId: Long, callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>>
 
     fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>>
+
+    fun readAllFriends(): Flow<ApiState<List<ContactResponse>>>
 
 }

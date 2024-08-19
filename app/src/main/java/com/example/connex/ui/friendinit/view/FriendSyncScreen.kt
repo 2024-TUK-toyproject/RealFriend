@@ -1,7 +1,6 @@
 package com.example.connex.ui.friendinit.view
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,18 +46,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.connex.R
-import com.example.connex.ui.Screen
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.friendinit.FriendSyncViewModel
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
-import com.example.connex.ui.theme.Heading2
+import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.utils.Constants
-import com.example.domain.model.UserId
 import rememberConnexLogo1
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -117,7 +111,7 @@ fun FriendSyncScreen(
             ) {
                 Text(
                     text = "${name}님을 위한\n추천 친구 목록이에요.",
-                    style = Heading2,
+                    style = Head2Semibold,
                 )
                 Image(
                     imageVector = rememberConnexLogo1(),

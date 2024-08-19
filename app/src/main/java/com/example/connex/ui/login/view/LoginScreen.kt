@@ -176,8 +176,12 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         ) {
             when(loginScreenState) {
                 is LoginScreenState.CertificateCode -> {
-                    loginViewModel.fetchCheckCertificateCode {
-                        navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                    loginViewModel.fetchCheckCertificateCode { isExistedUser ->
+                        if (isExistedUser) {
+                            navController.navigate(Constants.HOME_ROUTE)
+                        } else {
+                            navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                        }
                     }
                 }
                 is LoginScreenState.MobileCarrier -> {

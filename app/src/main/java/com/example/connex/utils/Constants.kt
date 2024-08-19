@@ -6,7 +6,12 @@ import com.example.connex.ui.Screen
 object Constants {
     val BottomNavigationHeight = 56.dp
 
-    val BOTTOM_NAV_ITEMS = listOf<Screen>(Screen.Home, Screen.Friends,Screen.Analyze, Screen.Mypage)
+    val BOTTOM_NAV_ITEMS = listOf<Screen>(Screen.Home, Screen.Friends,Screen.Album, Screen.Mypage)
+
+    val DEFAULT_PROFILE = "https://shpbucket.s3.amazonaws.com/profile/default_profile/default.png"
+
+    val CONNEX_DATASTORE = "connex-datastore"
+
     /** navigation id */
     const val HOME_ROUTE = "nav-home"
     const val FRIENDS_ROUTE = "nav-friends"
@@ -14,6 +19,8 @@ object Constants {
     const val MYPAGE_ROUTE = "nav-mypage"
 
     const val NOTIFICATION_ROUTE = "nav-notification"
+
+    const val FRIEND_REMOVE_ROUTE = "nav-friend-remove"
 
 
     const val WEB_VIEW_ROUTE = "nav-web-view"

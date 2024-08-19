@@ -1,6 +1,5 @@
 package com.example.connex.ui.theme
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -79,7 +78,7 @@ val Heading1 = TextStyle(
     color = Gray900
 )
 
-val Heading2 = TextStyle(
+val Head2Semibold = TextStyle(
     fontSize = 20.sp,
     lineHeight = 28.sp,
     fontWeight = FontWeight.SemiBold,

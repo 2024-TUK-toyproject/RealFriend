@@ -3,16 +3,15 @@ package com.example.connex.ui.login
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.asMultipart
+import com.example.connex.utils.formatPhoneDashNumber
 import com.example.domain.model.ApiState
-import com.example.domain.model.UserId
 import com.example.domain.model.login.MobileCarrier
 import com.example.domain.model.login.Phone
+import com.example.domain.model.response.CertificateCodeResponse
+import com.example.domain.model.response.asDomain
 import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
 import com.example.domain.usecase.SignupProfileImageUseCase
@@ -57,7 +56,7 @@ class LoginViewModel @Inject constructor(
     private val _phone = MutableStateFlow(com.example.domain.model.login.Phone.default())
     val phone: StateFlow<com.example.domain.model.login.Phone> = _phone.asStateFlow()
 
-    private val _verificationCode = MutableStateFlow(" ")
+    private val _verificationCode = MutableStateFlow("")
     val verificationCode: StateFlow<String> = _verificationCode.asStateFlow()
 
     private val _imageUrl = MutableStateFlow<Uri>(Uri.EMPTY)
@@ -102,12 +101,13 @@ class LoginViewModel @Inject constructor(
         _name.value = name
     }
 
+
     fun fetchRequestCertificateCode(onSuccess: () -> Unit) {
 
         viewModelScope.launch {
             when (val result = postRequestCertificateCodeUseCase(
-                phone = _phone.value.number,
-                mobileCarrier = _phone.value.mobileCarrier.name
+                phone = phone.value.number.formatPhoneDashNumber(),
+                mobileCarrier = phone.value.mobileCarrier.name
             ).first()) {
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()
@@ -117,22 +117,22 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun fetchCheckCertificateCode(onSuccess: () -> Unit) {
+    fun fetchCheckCertificateCode(onSuccess: (Boolean) -> Unit) {
         viewModelScope.launch {
             when (val result = checkCertificateCodeUseCase(
-                phone = _phone.value.number,
-                mobileCarrier = _phone.value.mobileCarrier.name,
-                certificateCode = _verificationCode.value
+                phone = phone.value.number.formatPhoneDashNumber(),
+                mobileCarrier = phone.value.mobileCarrier.name,
+                certificateCode = verificationCode.value
             ).first()) {
-                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
+                is ApiState.Error -> Log.d("daeyoung", "ApiState.Error: ${result.errMsg}")
                 ApiState.Loading -> TODO()
                 is ApiState.Success<*> -> result.onSuccess {
-                    userId = (it as UserId).userId
+                    val isExist = (it as CertificateCodeResponse).asDomain()
+                    userId = isExist.userId
                     Log.d("daeyoung", "userId: $userId")
-                    onSuccess()
+                    onSuccess(isExist.isExist)
                 }
-
-                is ApiState.NotResponse -> TODO()
+                is ApiState.NotResponse -> Log.d("daeyoung", "ApiState.NotResponse: ${result.message}\n${result.exception}")
             }
         }
     }
@@ -141,7 +141,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = signupProfileImageUseCase(
                 userId = userId,
-                name = _name.value,
+                name = name.value,
                 file = imageUrl.value.asMultipart("file", context.contentResolver)!!
             ).first()) {
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")

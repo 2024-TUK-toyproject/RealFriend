@@ -14,6 +14,7 @@ import com.example.connex.ui.homeGraph
 import com.example.connex.ui.initSettingGraph
 import com.example.connex.ui.loginGraph
 import com.example.connex.ui.notificationComposable
+import com.example.connex.ui.splashComposable
 import com.example.connex.utils.Constants
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -30,13 +31,14 @@ fun RootNavhost(
         NavHost(
             navController = appState.navController,
 //            startDestination = Constants.LOGIN_GRAPH,
-            startDestination = Constants.HOME_GRAPH,
+            startDestination = Constants.SPLASH_ROUTE,
             modifier = Modifier.fillMaxSize()
         ) {
             loginGraph(appState.navController)
             initSettingGraph(appState.navController)
             homeGraph(appState.navController)
             notificationComposable(appState.navController)
+            splashComposable(appState.navController)
         }
         BottomBar(appState)
     }

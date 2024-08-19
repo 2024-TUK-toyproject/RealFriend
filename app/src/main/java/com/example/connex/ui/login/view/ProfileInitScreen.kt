@@ -133,7 +133,7 @@ fun ProfileInitScreen(
     )
 
 
-    Log.d("daeyoung", "isKeyboardOpen: $isKeyboardOpen")
+//    Log.d("daeyoung", "isKeyboardOpen: $isKeyboardOpen")
 
 
     LaunchedEffect(hasImage) {

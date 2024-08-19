@@ -1,7 +1,6 @@
 package com.example.connex.ui.home.view
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,20 +42,23 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
-import com.example.connex.ui.component.ColumnWhiteSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
+import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.ConnexLogoGreen
 import com.example.connex.ui.svg.iconpack.ConnexLogoWhite
 import com.example.connex.ui.svg.iconpack.IcAddUser
 import com.example.connex.ui.svg.iconpack.IcAlbumOff
 import com.example.connex.ui.svg.iconpack.IcCall
-import com.example.connex.ui.svg.iconpack.IcMenudot
 import com.example.connex.ui.svg.iconpack.IcSettingList
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Body2Medium
@@ -66,13 +67,14 @@ import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Heading2
+import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
+import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.BottomNavigationHeight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FriendsScreen(modifier: Modifier = Modifier) {
+fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navController: NavController) {
 
 
     var search by remember {
@@ -86,10 +88,6 @@ fun FriendsScreen(modifier: Modifier = Modifier) {
 
     val appbarAlphaPercent by remember {
         derivedStateOf {
-//            Log.d(
-//                "daeyoung",
-//                "subTitleHeight: $subTitleHeight\nscrollState.firstVisibleItemIndex: ${scrollState.firstVisibleItemIndex}\nscrollState.firstVisibleItemScrollOffset: ${scrollState.firstVisibleItemScrollOffset}"
-//            )
             if (subTitleHeight != 0 && scrollState.firstVisibleItemIndex >= 2) {
                 1f
             } else if (subTitleHeight != 0 && scrollState.firstVisibleItemIndex == 1 && scrollState.firstVisibleItemScrollOffset > 0) {
@@ -102,7 +100,11 @@ fun FriendsScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { FriendsScreenAppBar(alpha = appbarAlphaPercent) }) {
+        topBar = {
+            FriendsScreenAppBar(alpha = appbarAlphaPercent, onNavigate1 = {}) {
+                navController.navigate(Constants.FRIEND_REMOVE_ROUTE)
+            }
+        }) {
         Surface(modifier = Modifier.padding(it)) {
 //            FriendsLayout()
             LazyColumn(
@@ -146,7 +148,15 @@ fun FriendsScreen(modifier: Modifier = Modifier) {
                             .padding(horizontal = 24.dp, vertical = 20.dp),
                         name = "김민수",
                         phone = "010-1234-5678"
-                    )
+                    ) {
+                        Row {
+                            ContactCardIconButton(icon = IconPack.IcCall) {}
+                            RowSpacer(width = 12.dp)
+                            ContactCardIconButton(icon = IconPack.IcAlbumOff) {}
+                            //            RowSpacer(width = 10.dp)
+                            //            ContactCardIconButton(icon = IconPack.IcMenudot) {}
+                        }
+                    }
                     HorizontalDivider(
                         modifier = Modifier.fillMaxWidth(),
                         thickness = 0.5.dp,
@@ -159,7 +169,12 @@ fun FriendsScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun FriendsScreenAppBar(modifier: Modifier = Modifier, alpha: Float) {
+fun FriendsScreenAppBar(
+    modifier: Modifier = Modifier,
+    alpha: Float,
+    onNavigate1: () -> Unit,
+    onNavigate2: () -> Unit,
+) {
 
     Row(
         modifier = Modifier
@@ -177,18 +192,21 @@ fun FriendsScreenAppBar(modifier: Modifier = Modifier, alpha: Float) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row {
-            Text(text = "친구", style = Heading2)
+            Text(text = "친구", style = Head2Semibold)
             Text(
                 text = " 8명",
                 modifier = Modifier.alpha(alpha),
-                style = Heading2
+                style = Head2Semibold
             )
         }
 
         Row {
             Icon(imageVector = IconPack.IcAddUser, contentDescription = "addUser")
             Spacer(modifier = Modifier.width(20.dp))
-            Icon(imageVector = IconPack.IcSettingList, contentDescription = "notification")
+            Icon(
+                imageVector = IconPack.IcSettingList,
+                contentDescription = "notification",
+                modifier = Modifier.noRippleClickable { onNavigate2() })
         }
     }
 
@@ -234,7 +252,9 @@ fun FriendsScreenStickyHeader(
     onSearch: () -> Unit,
 ) {
 //    ColumnWhiteSpacer(height = 16.dp)
-    Box(modifier = modifier.background(Color.White).padding(top = 16.dp, bottom = 4.dp)) {
+    Box(modifier = modifier
+        .background(Color.White)
+        .padding(top = 16.dp, bottom = 4.dp)) {
         SearchTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -254,38 +274,32 @@ fun FriendsScreenStickyHeader(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun ColumnScope.FriendsScreenBody(
+fun ContactCard(
     modifier: Modifier = Modifier,
-    count: Int,
-    search: String,
-    updateSearch: (String) -> Unit,
-    onSearch: () -> Unit,
+    size: Dp = 60.dp,
+    name: String,
+    phone: String,
+    iconLayout: @Composable () -> Unit,
 ) {
-
-    LazyColumn(modifier = Modifier.fillMaxWidth()) {
-
-    }
-}
-
-@Composable
-fun ContactCard(modifier: Modifier = Modifier, name: String, phone: String) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Card(
-            modifier = Modifier.size(60.dp),
+            modifier = Modifier.size(size),
             shape = CircleShape,
             colors = CardDefaults.cardColors(containerColor = Gray100)
         ) {
             Box(Modifier.fillMaxSize()) {
                 Image(
-                    imageVector = IconPack.ConnexLogoWhite,
-                    contentDescription = null,
-                    modifier = Modifier.align(Alignment.Center)
+                    painter = rememberAsyncImagePainter(model = Constants.DEFAULT_PROFILE),
+                    contentDescription = "default_profile",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
                 )
             }
         }
@@ -296,19 +310,13 @@ fun ContactCard(modifier: Modifier = Modifier, name: String, phone: String) {
             Text(text = phone, style = Body3Regular)
         }
         RowSpacer(width = 12.dp)
-        Row {
-            ContactCardIconButton(icon = IconPack.IcCall) {}
-            RowSpacer(width = 10.dp)
-            ContactCardIconButton(icon = IconPack.IcAlbumOff) {}
-            RowSpacer(width = 10.dp)
-            ContactCardIconButton(icon = IconPack.IcMenudot) {}
-        }
+        iconLayout()
     }
 }
 
 @Composable
 fun ContactCardIconButton(
-    modifier: Modifier = Modifier.size(32.dp),
+    modifier: Modifier = Modifier.size(36.dp),
     icon: ImageVector,
     onClick: () -> Unit,
 ) {

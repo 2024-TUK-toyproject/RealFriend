@@ -111,3 +111,60 @@ fun MobileCarrierModalBottomSheet(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FriendRemoveModalBottomSheet(
+    onClose: () -> Unit,
+    onClick: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+//    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val titleStyle = TextStyle(
+        fontSize = 18.sp,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 18.sp,
+        color = FontBlack
+    )
+    val contentStyle = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        lineHeight = 16.sp,
+        color = Color(0xFFB3B5B6)
+    )
+
+
+    ModalBottomSheet(
+        onDismissRequest = onClose,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topEnd = 13.dp, topStart = 13.dp),
+        containerColor = Color.White,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier.padding(
+                bottom = 44.dp,
+                top = 44.dp
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 32.dp, end = 32.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "통신사 선택", style = titleStyle)
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = FontBlack,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .noRippleClickable { onClose() })
+
+            }
+            Spacer(modifier = Modifier.height(43.dp))
+        }
+    }
+}

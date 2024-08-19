@@ -1,5 +1,6 @@
 package com.example.domain.model
 
+import com.example.domain.model.response.CertificateCodeResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,6 +12,23 @@ fun <T : Any> safeFlow(apiFunc: suspend () -> Response<ApiResponse<T>>): Flow<Ap
         try {
             val res = apiFunc.invoke()
             if (res.isSuccessful) {
+                emit(ApiState.Success(res.body()?.content ?: throw NullPointerException()))
+            } else {
+                val errorBody = res.errorBody() ?: throw NullPointerException()
+                emit(ApiState.Error(errorBody.string()))
+            }
+        } catch (e: Exception) {
+            emit(ApiState.NotResponse(message = e.message ?: "", exception = e))
+        }
+    }.flowOn(Dispatchers.IO)
+
+fun safeFlowAndSaveToken(apiFunc: suspend () -> Response<ApiResponse<CertificateCodeResponse>>, saveToken: suspend (String, String) -> Unit): Flow<ApiState<CertificateCodeResponse>> =
+    flow {
+        try {
+            val res = apiFunc.invoke()
+            if (res.isSuccessful) {
+                val data = res.body()?.content
+                saveToken(data?.accessToken ?: "", data?.refreshToken ?: "")
                 emit(ApiState.Success(res.body()?.content ?: throw NullPointerException()))
             } else {
                 val errorBody = res.errorBody() ?: throw NullPointerException()
