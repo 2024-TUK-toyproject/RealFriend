@@ -99,23 +99,48 @@ class Friend_list_response(BaseModel):
     ]
 )
 
+from typing import List, Dict, Optional, Union
+from pydantic import BaseModel, Field
+
 class Friend_request_list_response(BaseModel):
-    status : str = Field("success", example = "success or error")
-    message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str, Optional[Union[str, None]]]] = Field(
-        [{
-            "userId" : "123456", 
-            "name" : "홍길동", 
-            "phone" : "010-1234-5678",
-            "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
-        }], 
-        example = [{
-            "userId" : "123456",
-            "name" : "홍길동",
-            "phone" : "010-1234-5678", 
-            "profileImage" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
-        }]
+    status: str = Field("success", example="success or error")
+    message: str = Field("성공메시지 or 오류메시지")
+    content: Dict[str, List[Dict[str, Optional[Union[str, bool]]]]] = Field(
+        {
+            "오늘": [
+                {
+                    "userId": "123456",
+                    "name": "홍길동",
+                    "phone": "010-1234-5678",
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                },
+                {
+                    "userId": "654321",
+                    "name": "김철수",
+                    "phone": "010-1234-5678",
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                }
+            ],
+            "어제": [
+                {
+                    "userId": "123456",
+                    "name": "홍길동",
+                    "phone": "010-1234-5678",
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                }
+            ],
+            "2024-08-10": [
+                {
+                    "userId": "654321",
+                    "name": "김철수",
+                    "phone": "010-1234-5678",
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                }
+            ]
+        }
     )
+
+
 
 class token_response(BaseModel):
     status : str = Field("success", example = "success or error")
