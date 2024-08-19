@@ -58,8 +58,9 @@ class User_service:
     async def certification_user(self, request : Certificate_request) -> Certificate_response:
         if request.code:
             pass
+        request_phone = self.format_phone_number(request.phone)
+        user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request_phone).first()
 
-        user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone, models.temp_user_info.create_date == self.today.strftime('%Y-%m-%d')).first()
         if user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
@@ -72,7 +73,7 @@ class User_service:
             existing_user.refresh_token = refresh_token
             self.db.commit()
             
-            return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(existing_user.user_id), "isExist" : str(True), "accessToken" : new_token, "refreshToken" : refresh_token})
+            return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(existing_user.user_id), "isExist" : True, "accessToken" : new_token, "refreshToken" : refresh_token})
         
         for _ in range(10):
             new_id = self.rng.generate_unique_random_number(100000, 999999)
@@ -93,27 +94,31 @@ class User_service:
         # temp_user_info 삭제
         self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == request.phone).delete()
         self.db.commit()
-        return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id), "isExist" : str(False), "accessToken" : new_token, "refreshToken" : new_user.refresh_token})
+        return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id), "isExist" : False, "accessToken" : new_token, "refreshToken" : new_user.refresh_token})
     
     async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
-        filen_name = f"{str(uuid.uuid4())}.jpeg"
-        s3_key = f"profile/{userId}/{filen_name}"
+        if file:
+            filen_name = f"{str(uuid.uuid4())}.jpeg"
+            s3_key = f"profile/{userId}/{filen_name}"
 
-        s3.upload_fileobj(
-            file.file,
-            Config.s3_bucket,
-            s3_key
-        )
+            s3.upload_fileobj(
+                file.file,
+                Config.s3_bucket,
+                s3_key
+            )
 
-        user.profile_image = f"https://%s.s3.amazonaws.com/profile/%s/%s" % (
-            Config.s3_bucket,
-            userId,
-            urllib.parse.quote(filen_name)
-        )
+            user.profile_image = f"https://%s.s3.amazonaws.com/profile/%s/%s" % (
+                Config.s3_bucket,
+                userId,
+                urllib.parse.quote(filen_name)
+            )
+        else:
+            user.profile_image = f"https://%s.s3.amazonaws.com/profile/default_profile/default.png" % Config.s3_bucket
+        
         user.name = name
 
         self.db.commit()
