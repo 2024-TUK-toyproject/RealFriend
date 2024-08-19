@@ -11,7 +11,7 @@ from ..config import Config
 from ..util import JWTService
 from ..httpException import CustomException, CustomException2
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import boto3
 import uuid
@@ -213,7 +213,7 @@ class User_service:
             from_user_id = user["key"],
             is_friend = False,
             create_date = self.today.strftime('%Y-%m-%d'),
-            last_modified_date = self.today.strftime('%Y-%m-%d')
+            create_time = self.today.strftime('%H:%M:%S')
         )
         self.db.add(new_friend)
         self.db.commit()
@@ -267,7 +267,7 @@ class User_service:
             if friend.user_id == user["key"]:
                 friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
             else:
-                friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.user_id).first()
+                friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.to_user_id).first()
             friend_list.append({
                 "userId" : friend.user_id,
                 "name" : friend.name,
@@ -298,21 +298,52 @@ class User_service:
         if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
-        friends = self.db.query(models.is_friend).filter(
+        request_friends = self.db.query(models.is_friend).filter(
             and_(
                 models.is_friend.to_user_id == user["key"],
                 models.is_friend.is_friend == False
             )
         ).all()
-        friend_list = []
-        for friend in friends:
-            friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
-            friend_list.append({
-                "userId" : friend.user_id,
-                "name" : friend.name,
-                "phone" : friend.phone,
-                "profileImage" : friend.profile_image
-            })
+        for re in request_friends:
+            print(re.from_user_id)
+        friend_list = {}
+        friend_list["오늘"] = []
+        friend_list["어제"] = []
+        yesterday = self.today - timedelta(days = 1)
+        #날짜별 분류
+        for request in request_friends:
+            friend = self.db.query(models.user_info).filter(models.user_info.user_id == request.from_user_id).first()
+            print(request.from_user_id)
+            if request.create_date == self.today.strftime('%Y-%m-%d'):
+                friend_list["오늘"].append({
+                    "userId" : request.from_user_id,
+                    "name" : friend.name,
+                    "phone" : friend.phone,
+                    "profileImage" : friend.profile_image, 
+                    "time" : request.create_time
+                })
+            elif friend.create_date == yesterday:
+                friend_list["어제"].append({
+                    "userId" : request.from_user_id,
+                    "name" : friend.name,
+                    "phone" : friend.phone,
+                    "profileImage" : friend.profile_image,
+                    "time" : request.create_time
+                })
+            else:
+                date = request.create_date
+                if friend_list.get(date) is None:
+                    friend_list[date] = []
+                friend_list[date].append({
+                    "userId" : request.from_user_id,
+                    "name" : friend.name,
+                    "phone" : friend.phone,
+                    "profileImage" : friend.profile_image,
+                    "time" : request.create_time
+                })
+            
+            friend_list = {key: value for key, value in friend_list.items() if value}
+
         
         return Friend_request_list_response(status = "success", message = "친구 요청 리스트 조회 성공", content = friend_list)
 
