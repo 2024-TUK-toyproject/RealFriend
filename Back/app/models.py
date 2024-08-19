@@ -41,7 +41,7 @@ class phone_info(Base):
     name = Column(String(255))
     phone = Column(String(255))
     create_date = Column(String(255))
-    last_modified_date = Column(String(255))
+    is_friend = Column(Boolean)
 
 class call_record_info(Base):
     __tablename__ = 'call_record_info'
