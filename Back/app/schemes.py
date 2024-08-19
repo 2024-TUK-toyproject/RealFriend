@@ -54,7 +54,14 @@ class Register_user_response(BaseModel):
 class Certificate_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, str] = Field({"userId" : "123456", "isExist" : True, "accessToken" : "asdasdasd", "refreshToken" : "asdasdasd"}, example = {"userId" : "123456", "isExist" : "true or false", "accessToken" : "asdasdasd", "refreshToken" : "asdasdasd"})
+    content : Dict[str, Optional[Union[str, bool]]] = Field(
+        {
+            "userId": "123456",
+            "isExist" : True,
+            "accessToken" : "asdasdasd",
+            "refreshToken" : "dsadsadas"
+        }
+    )
 
 #공유 앨범
 class Album_list_response(BaseModel):
