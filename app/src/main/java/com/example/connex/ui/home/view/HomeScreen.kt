@@ -49,7 +49,7 @@ import com.example.connex.ui.home.HomeViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.Connexlogo2
 import com.example.connex.ui.svg.iconpack.IcNotification
-import com.example.connex.ui.theme.FontBlack
+import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray800
@@ -421,7 +421,7 @@ fun LongTimeContact(name: String, date: Int) {
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
         lineHeight = 18.sp,
-        color = FontBlack
+        color = Gray900
     )
 
 

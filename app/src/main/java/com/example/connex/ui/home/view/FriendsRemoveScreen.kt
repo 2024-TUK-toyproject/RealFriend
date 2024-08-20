@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,10 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -53,19 +50,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.FriendRemoveModalBottomSheet
-import com.example.connex.ui.component.MobileCarrierModalBottomSheet
+import com.example.connex.ui.component.HalfRoundButton
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
-import com.example.connex.ui.svg.iconpack.myiconpack.IcCheck
+import com.example.connex.ui.svg.iconpack.IcCheck
 import com.example.connex.ui.theme.Body2Medium
-import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray400
@@ -73,9 +68,7 @@ import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.PrimaryBlue1
 import com.example.connex.ui.theme.PrimaryBlue2
-import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.ui.theme.White
-import com.example.connex.utils.Constants
 
 @Composable
 fun FriendsRemoveScreen(
@@ -100,6 +93,7 @@ fun FriendsRemoveScreen(
         topBar = { BackArrowAppBar(text = "친구 관리") { navController.popBackStack() } }) { paddingValue ->
         if (isShowFriendRemoveBottomSheet) {
             FriendRemoveModalBottomSheet(
+                names = friendsRemoveUiState.userList.filter { it.isSelect }.map { it.friend.name },
                 onClose = { isShowFriendRemoveBottomSheet = false }) {
 //                loginViewModel.updateMobileCarrier(it)
                 isShowFriendRemoveBottomSheet = false
@@ -159,7 +153,7 @@ fun FriendsRemoveScreen(
                 }
             }
             BottomButton(isShow = isShowBottomButton, onCancel = {}) {
-
+                isShowFriendRemoveBottomSheet = true
             }
         }
 
@@ -263,28 +257,12 @@ fun BoxScope.BottomButton(isShow: Boolean, onCancel: () -> Unit = {}, onDelete: 
 //                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 17.dp)
                 .padding(start = 24.dp, end = 24.dp, top = 16.dp)
         ) {
-            Button(
-                onClick = { onCancel() },
-                modifier = Modifier.weight(1f),
-                shape = shape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gray50,
-                    contentColor = Gray500
-                )
-            ) {
-                Text(text = "취소하기", style = style, modifier = Modifier.padding(vertical = 9.dp))
+            HalfRoundButton(modifier = Modifier.weight(1f), containerColor = Gray50, contentColor = Gray500, text = "취소하기") {
+                onCancel()
             }
             RowSpacer(width = 16.dp)
-            Button(
-                onClick = { onDelete() },
-                modifier = Modifier.weight(1f),
-                shape = shape,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryBlue1,
-                    contentColor = White
-                )
-            ) {
-                Text(text = "삭제하기", style = style, modifier = Modifier.padding(vertical = 9.dp))
+            HalfRoundButton(modifier = Modifier.weight(1f), containerColor = PrimaryBlue1, contentColor = White, text = "삭제하기") {
+                onDelete()
             }
         }
     }

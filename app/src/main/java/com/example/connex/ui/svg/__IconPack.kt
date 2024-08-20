@@ -11,7 +11,8 @@ import com.example.connex.ui.svg.iconpack.IcCall
 import com.example.connex.ui.svg.iconpack.IcMenudot
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.svg.iconpack.IcSettingList
-import com.example.connex.ui.svg.iconpack.myiconpack.IcCheck
+import com.example.connex.ui.svg.iconpack.IcWarning
+import com.example.connex.ui.svg.iconpack.IcCheck
 import kotlin.collections.List as ____KtList
 
 public object IconPack
@@ -34,7 +35,8 @@ public val IconPack.AllIcons: ____KtList<ImageVector>
             IcAlbumOff,
             IcMenudot,
             IcSettingList,
-            IcCheck
+            IcCheck,
+            IcWarning
         )
         return __AllIcons!!
     }
