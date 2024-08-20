@@ -182,9 +182,3 @@ class Album_create_request(BaseModel):
     userId : str = Field(..., example = "123456")
     withWhom : str = Field(..., example = "654321")
     albumName : str = Field(..., example = "가족사진")
-
-class Add_friend_request(BaseModel):
-    friendId : str = Field(..., example = "654321")
-
-class Accept_friend_request(BaseModel):
-    friendId : str = Field(..., example = "654321")
