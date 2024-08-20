@@ -147,9 +147,9 @@ async def get_friend_request_list(token = Depends(APIKeyHeader(name = "Authoriza
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/users/accept/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 수락 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 수락 실패"}}, tags = ["User/friend"], summary = "친구 요청 수락")
-async def accept_friend(friendId : str, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+async def accept_friend(friendRequestId : str, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.accept_friend(friendId, token)
+        return await user_service.accept_friend(friendRequestId, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
