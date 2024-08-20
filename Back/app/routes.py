@@ -1,8 +1,7 @@
 from fastapi import APIRouter, UploadFile, HTTPException, Depends
-from fastapi.responses import JSONResponse
 from fastapi.security import APIKeyHeader
+from typing import Optional
 
-from .config import Config
 from .schemes import *
 from .service.upload import upload_service
 from .service.download import download_service
@@ -10,22 +9,11 @@ from .service.user import User_service
 from .service.album import Album_service
 from .util import JWTService
 
-import boto3
-import uuid
-import urllib
-
 router = APIRouter()
 jwt = JWTService()
 
-s3 = boto3.client(
-    "s3",
-    aws_access_key_id=Config.s3_access_key,
-    aws_secret_access_key=Config.s3_secret_key
-)
-
 
 # 테스트 라우트
-
 #User/sharedAlbum
 @router.get("/users/get/{user_id}/albumId", responses = {200 : {"model" : Album_list_response, "description" : "앨범 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 리스트 조회 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 리스트 조회(구현중)")
 async def get_album_list(user_id : str, album_service : Album_service = Depends()):
@@ -81,7 +69,7 @@ async def certification_user(request : Certificate_request, user_service : User_
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/register/setprofile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 등록 성공"}, 400 : {"model" : Error_response, "description" : "프로필 등록 실패"}}, tags = ["Register"], summary = "프로필 사진과 사용자 이름을 서버로 전송(쿼리스트링으로 전송 바람) / 이 과정까지만 userId를 사용 이후엔 토큰을 사용")
-async def set_profile(userId : str, name : str, file : UploadFile, user_service : User_service = Depends()):
+async def set_profile(userId : str, name : str, file : Optional[UploadFile] = None, user_service : User_service = Depends()):
     try:
         return await user_service.set_profile(userId, name, file)
     
@@ -153,8 +141,18 @@ async def add_friend(request : Add_friend_request, token = Depends(APIKeyHeader(
 @router.get("/users/get/friend/request", responses = {200 : {"model" : Friend_request_list_response, "description" : "친구 요청 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 리스트 조회"}}, tags = ["User/friend"], summary = "친구 요청 리스트 조회")
 async def get_friend_request_list(token = Depends(APIKeyHeader(name = "Authorization")),user_service : User_service = Depends()):
     try:
-        return await user_service.get_friend_request_list(token)
+        return await user_service.get_friend_request_list(token) #친구요청 날짜 필요 / 오늘, 어제는 한글로 그 이전에는 날짜를 키로 map 형태로 반환
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/users/accept/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 수락 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 수락 실패"}}, tags = ["User/friend"], summary = "친구 요청 수락")
+async def accept_friend(request : Accept_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+    try:
+        return await user_service.accept_friend(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+#친구 삭제 필요
+#새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
