@@ -2,6 +2,7 @@ package com.example.connex.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,13 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -33,12 +33,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.home.view.BottomSheetAlbumCard
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcWarning
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
+import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Gray900
+import com.example.connex.ui.theme.Head3Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.White
 import com.example.domain.model.login.MobileCarrier
@@ -48,7 +50,7 @@ import com.example.domain.model.login.MobileCarrier
 fun MobileCarrierModalBottomSheet(
     currentCarrier: MobileCarrier,
     onClose: () -> Unit,
-    onClick: (MobileCarrier) -> Unit
+    onClick: (MobileCarrier) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState()
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -114,7 +116,7 @@ fun MobileCarrierModalBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .noRippleClickable { onClick(mobileCarrier) }
-                        .padding(start = 32.dp, end = 32.dp,))
+                        .padding(start = 32.dp, end = 32.dp))
                 if (index != carriers.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))
                 }
@@ -128,7 +130,7 @@ fun MobileCarrierModalBottomSheet(
 fun FriendRemoveModalBottomSheet(
     names: List<String>,
     onClose: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
 ) {
     val name = if (names.size == 1) {
         "${names[0]}님"
@@ -182,11 +184,21 @@ fun FriendRemoveModalBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth(),
             ) {
-                HalfRoundButton(modifier = Modifier.weight(1f), containerColor = Gray50, contentColor = Gray500, text = "뒤로가기") {
+                HalfRoundButton(
+                    modifier = Modifier.weight(1f),
+                    containerColor = Gray50,
+                    contentColor = Gray500,
+                    text = "뒤로가기"
+                ) {
                     onClose()
                 }
                 RowSpacer(width = 16.dp)
-                HalfRoundButton(modifier = Modifier.weight(1f), containerColor = Gray900, contentColor = White, text = "삭제하기") {
+                HalfRoundButton(
+                    modifier = Modifier.weight(1f),
+                    containerColor = Gray900,
+                    contentColor = White,
+                    text = "삭제하기"
+                ) {
                     onDelete()
                 }
 
@@ -195,3 +207,72 @@ fun FriendRemoveModalBottomSheet(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShareAlbumModalBottomSheet(
+    albums: List<TempleAlbumData>,
+    onClose: () -> Unit,
+    navigate: () -> Unit,
+) {
+
+    val sheetState = rememberModalBottomSheetState()
+    var current = albums.size
+
+    ModalBottomSheet(
+        onDismissRequest = onClose,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topEnd = 13.dp, topStart = 13.dp),
+        windowInsets = WindowInsets.displayCutout,
+        containerColor = Color.White,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 28.dp,
+                    top = 28.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "공유 앨범", style = Head3Semibold, color = Gray900)
+                Icon(
+                    imageVector = Icons.Default.ArrowForwardIos,
+                    contentDescription = "forward_icon",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .noRippleClickable { navigate() },
+                    tint = Gray600
+                )
+            }
+            ColumnSpacer(height = 16.dp)
+            Row(modifier = Modifier.fillMaxWidth()) {
+                albums.forEach {
+                    BottomSheetAlbumCard(
+                        modifier = Modifier.weight(1f),
+                        onClick = { /*TODO*/ },
+                        image = it.image,
+                        name = it.name
+                    )
+                }
+                while (current < 3) {
+                    Box(modifier = Modifier.weight(1f))
+                    current++
+                }
+            }
+        }
+    }
+}
+
+data class TempleAlbumData(
+    val image: String,
+    val name: String,
+)

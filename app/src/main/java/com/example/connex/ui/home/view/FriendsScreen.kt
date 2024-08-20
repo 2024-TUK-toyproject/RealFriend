@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,14 +45,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
+import com.example.connex.ui.component.ShareAlbumModalBottomSheet
+import com.example.connex.ui.component.TempleAlbumData
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
@@ -58,6 +64,7 @@ import com.example.connex.ui.svg.iconpack.ConnexLogoGreen
 import com.example.connex.ui.svg.iconpack.ConnexLogoWhite
 import com.example.connex.ui.svg.iconpack.IcAddUser
 import com.example.connex.ui.svg.iconpack.IcAlbumOff
+import com.example.connex.ui.svg.iconpack.IcAlbumOn
 import com.example.connex.ui.svg.iconpack.IcCall
 import com.example.connex.ui.svg.iconpack.IcSettingList
 import com.example.connex.ui.theme.Body1Semibold
@@ -66,6 +73,7 @@ import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
+import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
@@ -74,12 +82,29 @@ import com.example.connex.utils.Constants.BottomNavigationHeight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navController: NavController) {
+fun FriendsScreen(
+    friendsViewModel: FriendsViewModel = hiltViewModel(),
+    navController: NavController,
+) {
+    val dummys = listOf(
+        TempleAlbumData(
+            "https://shpbucket.s3.amazonaws.com/profile/default_profile/default.png",
+            "앨범 1"
+        ),
+        TempleAlbumData(
+            "https://shpbucket.s3.amazonaws.com/profile/default_profile/default.png",
+            "앨범 1"
+        ),
+        TempleAlbumData(
+            "https://shpbucket.s3.amazonaws.com/profile/default_profile/default.png",
+            "앨범 1"
+        )
+    )
 
 
-    var search by remember {
-        mutableStateOf("")
-    }
+    val focusManager = LocalFocusManager.current
+    val friendsUiState by friendsViewModel.friendsUiState.collectAsStateWithLifecycle()
+
 
     val scrollState = rememberLazyListState()
     var subTitleHeight by remember {
@@ -98,15 +123,28 @@ fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navContr
         }
     }
 
+    var isShowShareAlbumBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            FriendsScreenAppBar(alpha = appbarAlphaPercent, onNavigate1 = {}) {
+            FriendsScreenAppBar(
+                count = friendsUiState.userList.size,
+                alpha = appbarAlphaPercent,
+                onNavigate1 = {}) {
                 navController.navigate(Constants.FRIEND_REMOVE_ROUTE)
             }
-        }) {
-        Surface(modifier = Modifier.padding(it)) {
-//            FriendsLayout()
+        }) { paddingValue ->
+        if (isShowShareAlbumBottomSheet) {
+            ShareAlbumModalBottomSheet(
+                albums = dummys,
+                onClose = { isShowShareAlbumBottomSheet = false }) {
+
+            }
+        }
+        Surface(modifier = Modifier.padding(paddingValue)) {
             LazyColumn(
                 modifier = Modifier
                     .padding(bottom = BottomNavigationHeight)
@@ -124,7 +162,7 @@ fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navContr
                 item {
                     Text(
 //                        text = "내 친구 ${count}명",
-                        text = "내 친구 8명",
+                        text = "내 친구 ${friendsUiState.userList.size}명",
                         modifier = Modifier
                             .padding(horizontal = 24.dp)
                             .onSizeChanged {
@@ -136,25 +174,38 @@ fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navContr
                 stickyHeader {
                     FriendsScreenStickyHeader(
 //                        modifier = Modifier.layoutId(StickyHeaderLayoutID),
-                        updateSearch = { search = it },
-                        search = search,
-                        onSearch = {}
+                        updateSearch = {
+                            friendsViewModel.updateFriendsSearch(it)
+                            friendsViewModel.friendsUserSearch(it)
+                        },
+                        search = friendsUiState.search,
+                        onSearch = {
+                            friendsViewModel.friendsUserSearch(friendsUiState.search)
+                            focusManager.clearFocus()
+                        }
                     )
                 }
-                items(10, key = { it }) { itemNumber ->
+                items(items = friendsUiState.userList, key = { it.userId }) { item ->
                     ContactCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 20.dp),
-                        name = "김민수",
-                        phone = "010-1234-5678"
+                        image = item.profileImage,
+                        name = item.name,
+                        phone = item.phone
                     ) {
                         Row {
                             ContactCardIconButton(icon = IconPack.IcCall) {}
                             RowSpacer(width = 12.dp)
-                            ContactCardIconButton(icon = IconPack.IcAlbumOff) {}
-                            //            RowSpacer(width = 10.dp)
-                            //            ContactCardIconButton(icon = IconPack.IcMenudot) {}
+                            val iconAndEnabled = if (item.isFriend) {
+                                IconPack.IcAlbumOn to true
+                            } else {
+                                IconPack.IcAlbumOff to false
+                            }
+                            ContactCardIconButton(
+                                icon = iconAndEnabled.first,
+                                enabled = iconAndEnabled.second
+                            ) { isShowShareAlbumBottomSheet = true }
                         }
                     }
                     HorizontalDivider(
@@ -171,6 +222,7 @@ fun FriendsScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), navContr
 @Composable
 fun FriendsScreenAppBar(
     modifier: Modifier = Modifier,
+    count: Int,
     alpha: Float,
     onNavigate1: () -> Unit,
     onNavigate2: () -> Unit,
@@ -194,7 +246,7 @@ fun FriendsScreenAppBar(
         Row {
             Text(text = "친구", style = Head2Semibold)
             Text(
-                text = " 8명",
+                text = " ${count}명",
                 modifier = Modifier.alpha(alpha),
                 style = Head2Semibold
             )
@@ -252,9 +304,11 @@ fun FriendsScreenStickyHeader(
     onSearch: () -> Unit,
 ) {
 //    ColumnWhiteSpacer(height = 16.dp)
-    Box(modifier = modifier
-        .background(Color.White)
-        .padding(top = 16.dp, bottom = 4.dp)) {
+    Box(
+        modifier = modifier
+            .background(Color.White)
+            .padding(top = 16.dp, bottom = 4.dp)
+    ) {
         SearchTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -279,6 +333,7 @@ fun FriendsScreenStickyHeader(
 fun ContactCard(
     modifier: Modifier = Modifier,
     size: Dp = 60.dp,
+    image: String,
     name: String,
     phone: String,
     iconLayout: @Composable () -> Unit,
@@ -295,7 +350,7 @@ fun ContactCard(
         ) {
             Box(Modifier.fillMaxSize()) {
                 Image(
-                    painter = rememberAsyncImagePainter(model = Constants.DEFAULT_PROFILE),
+                    painter = rememberAsyncImagePainter(model = image),
                     contentDescription = "default_profile",
                     modifier = Modifier
                         .fillMaxSize()
@@ -318,11 +373,13 @@ fun ContactCard(
 fun ContactCardIconButton(
     modifier: Modifier = Modifier.size(36.dp),
     icon: ImageVector,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     Card(
         modifier = modifier,
         onClick = { onClick() },
+        enabled = enabled,
         shape = CircleShape,
         border = BorderStroke(width = 1.dp, color = Gray200),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
@@ -332,6 +389,40 @@ fun ContactCardIconButton(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@Composable
+fun BottomSheetAlbumCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    image: String,
+    name: String,
+) {
+    Box(modifier = modifier.noRippleClickable { onClick() }, contentAlignment = Alignment.Center) {
+        Column{
+
+            Card(
+                modifier = Modifier
+                    .height(112.dp)
+                    .width(96.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Gray100)
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = image),
+                    contentDescription = "album_image",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            ColumnSpacer(height = 7.dp)
+            Text(
+                text = name,
+                style = Body2Medium,
+                color = Gray600,
+                modifier = Modifier.padding(start = 3.dp)
             )
         }
     }

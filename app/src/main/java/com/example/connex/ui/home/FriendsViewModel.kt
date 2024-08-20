@@ -35,6 +35,11 @@ data class FriendsRemoveUiState(
     val userList: List<FriendUiState> = emptyList(),
 )
 
+data class FriendsUiState(
+    val search: String = "",
+    val userList: List<Friend> = emptyList(),
+)
+
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     val readAllFriendsUseCase: ReadAllFriendsUseCase,
@@ -54,6 +59,16 @@ class FriendsViewModel @Inject constructor(
     val filteredFriendsRemoveUserList: StateFlow<List<FriendUiState>> =
         _filteredFriendsRemoveUserList.asStateFlow()
 
+    private val _friendsSearch = MutableStateFlow("")
+    val friendsSearch: StateFlow<String> = _friendsSearch.asStateFlow()
+
+    private val _friendsUserList = MutableStateFlow(emptyList<Friend>())
+    val friendsUserList: StateFlow<List<Friend>> = _friendsUserList.asStateFlow()
+
+    private val _filteredFriendsUserList = MutableStateFlow(emptyList<Friend>())
+    val filteredFriendsUserList: StateFlow<List<Friend>> =
+        _filteredFriendsUserList.asStateFlow()
+
     val count by derivedStateOf {
         friendsRemoveUserList.value.count()
     }
@@ -68,8 +83,21 @@ class FriendsViewModel @Inject constructor(
             initialValue = FriendsRemoveUiState()
         )
 
+    val friendsUiState =
+        combine(_friendsSearch, _filteredFriendsUserList) { search, userList ->
+            FriendsUiState(search, userList)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = FriendsUiState()
+        )
+
     fun updateFriendsRemoveSearch(text: String) {
         _friendsRemoveSearch.value = text
+    }
+
+    fun updateFriendsSearch(text: String) {
+        _friendsSearch.value = text
     }
 
     fun selectFriend(userId: String, isSelect: Boolean) {
@@ -88,12 +116,20 @@ class FriendsViewModel @Inject constructor(
 
     }
 
-    fun search(name: String) {
+    fun friendsRemoveUserSearch(name: String) {
         val filtering = friendsRemoveUserList.value.filter { it.friend.name.contains(name) }
         if (name.isEmpty()) {
             _filteredFriendsRemoveUserList.value = friendsRemoveUserList.value
         } else {
             _filteredFriendsRemoveUserList.value = filtering
+        }
+    }
+    fun friendsUserSearch(name: String) {
+        val filtering = friendsUserList.value.filter { it.name.contains(name) }
+        if (name.isEmpty()) {
+            _filteredFriendsUserList.value = friendsUserList.value
+        } else {
+            _filteredFriendsUserList.value = filtering
         }
     }
 
@@ -108,9 +144,12 @@ class FriendsViewModel @Inject constructor(
                 )
 
                 is ApiState.Success -> {
-                    _friendsRemoveUserList.value =
-                        result.data.map { FriendUiState(it.asDomain(), false) }
+                    result.data.also { list ->
+                        _friendsRemoveUserList.value = list.map { FriendUiState(it.asDomain(), false) }
+                        _friendsUserList.value = list.map { it.asDomain().copy(isFriend = true) }
+                    }
                     _filteredFriendsRemoveUserList.value = friendsRemoveUserList.value
+                    _filteredFriendsUserList.value = friendsUserList.value
                 }
             }
         }

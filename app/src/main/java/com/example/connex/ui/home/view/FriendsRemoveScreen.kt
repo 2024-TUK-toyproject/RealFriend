@@ -23,8 +23,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -122,10 +120,10 @@ fun FriendsRemoveScreen(
                     text = friendsRemoveUiState.search,
                     updateText = {
                         friendsViewModel.updateFriendsRemoveSearch(it)
-                        friendsViewModel.search(it)
+                        friendsViewModel.friendsRemoveUserSearch(it)
                     }
                 ) {
-                    friendsViewModel.search(friendsRemoveUiState.search)
+                    friendsViewModel.friendsRemoveUserSearch(friendsRemoveUiState.search)
                     focusManager.clearFocus()
                 }
                 ColumnSpacer(height = 8.dp)
@@ -144,6 +142,7 @@ fun FriendsRemoveScreen(
                                 }
                                 .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 16.dp),
                             size = 56.dp,
+                            image = it.friend.profileImage,
                             name = it.friend.name,
                             phone = it.friend.phone
                         ) {

@@ -86,6 +86,14 @@ val Head2Semibold = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
+val Head3Semibold = TextStyle(
+    fontSize = 18.sp,
+    lineHeight = 25.2.sp,
+    fontWeight = FontWeight.SemiBold,
+    color = Gray900,
+//    letterSpacing = 0.2.sp,
+)
+
 val Head3Medium = TextStyle(
     fontSize = 18.sp,
     lineHeight = 25.2.sp,
