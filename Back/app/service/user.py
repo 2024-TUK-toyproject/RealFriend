@@ -173,7 +173,7 @@ class User_service:
 
         return Profile_modify_response(status = "success", message = "프로필 사진 수정 성공", content = {"profileImage" : existing_user.profile_image})
     
-    async def add_friend(self, request : Add_friend_request, token : str) -> CommoneResponse:
+    async def add_friend(self, friendId : str, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
         if user is None:
             raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
@@ -182,7 +182,7 @@ class User_service:
         if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
-        friend = self.db.query(models.user_info).filter(models.user_info.user_id == request.friendId).first()
+        friend = self.db.query(models.user_info).filter(models.user_info.user_id == friendId).first()
         if friend is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 정보가 없습니다.")
         
@@ -190,10 +190,10 @@ class User_service:
             or_(
                 and_(
                     models.is_friend.to_user_id == user["key"],
-                    models.is_friend.from_user_id == request.friendId
+                    models.is_friend.from_user_id == friendId
                 ),
                 and_(
-                    models.is_friend.to_user_id == request.friendId,
+                    models.is_friend.to_user_id == friendId,
                     models.is_friend.from_user_id == user["key"]
                 )
             )
@@ -209,7 +209,7 @@ class User_service:
 
         new_friend = models.is_friend(
             friend_id = new_id,
-            to_user_id = request.friendId,
+            to_user_id = friendId,
             from_user_id = user["key"],
             is_friend = False,
             create_date = self.today.strftime('%Y-%m-%d'),
@@ -349,7 +349,7 @@ class User_service:
         
         return Friend_request_list_response(status = "success", message = "친구 요청 리스트 조회 성공", content = friend_list)
 
-    async def accept_friend(self, request : Accept_friend_request, token : str) -> CommoneResponse:
+    async def accept_friend(self, friendId : str, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
         if user is None:
             raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
@@ -361,7 +361,7 @@ class User_service:
         friend = self.db.query(models.is_friend).filter(
             and_(
                 models.is_friend.to_user_id == user["key"],
-                models.is_friend.from_user_id == request.friendId
+                models.is_friend.from_user_id == friendId
             )
         ).first()
         if friend is None:
@@ -370,7 +370,7 @@ class User_service:
         friend.is_friend = True
 
         #기존 사용자였는지 확인
-        is_friend_before = self.db.query(models.user_info).filter(models.user_info.user_id == request.friendId).first()
+        is_friend_before = self.db.query(models.user_info).filter(models.user_info.user_id == friendId).first()
         if is_friend_before:
             phone = self.db.query(models.phone_info).filter(
                 and_(
@@ -385,6 +385,35 @@ class User_service:
         self.db.commit()
 
         return CommoneResponse(status = "success", message = "친구 요청 수락 성공")
+
+    async def delete_friend(self, friendId : str, token : str) -> CommoneResponse:  
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if existing_user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        friend = self.db.query(models.is_friend).filter(
+            or_(
+                and_(
+                    models.is_friend.to_user_id == user["key"],
+                    models.is_friend.from_user_id == friendId
+                ),
+                and_(
+                    models.is_friend.to_user_id == friendId,
+                    models.is_friend.from_user_id == user["key"]
+                )
+            )
+        ).first()
+        if friend is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 정보가 없습니다.")
+        
+        self.db.query(models.is_friend).filter(models.is_friend.friend_id == friend.friend_id).delete()
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = "친구 삭제 성공")
 
     async def test_register(self, phone : str) -> token_response:
         existing_user = self.db.query(models.user_info).filter(models.user_info.phone == phone).first()
