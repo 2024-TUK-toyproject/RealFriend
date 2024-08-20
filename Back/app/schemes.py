@@ -87,17 +87,7 @@ class Friend_list_response(BaseModel):
             "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
             "isFriend": True  # 불린 타입 예시
         }
-    ],
-    example=[
-        {
-            "userId": "123456",
-            "name": "홍길동",
-            "phone": "010-1234-5678",
-            "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
-            "isActive": True  # 불린 타입 예시
-        }
-    ]
-)
+    ])
 
 from typing import List, Dict, Optional, Union
 from pydantic import BaseModel, Field
@@ -194,4 +184,7 @@ class Album_create_request(BaseModel):
     albumName : str = Field(..., example = "가족사진")
 
 class Add_friend_request(BaseModel):
+    friendId : str = Field(..., example = "654321")
+
+class Accept_friend_request(BaseModel):
     friendId : str = Field(..., example = "654321")
