@@ -107,7 +107,7 @@ fun SearchTextField(
         onValueChange = updateText,
         modifier = modifier
             .shadow(elevation = 4.dp, shape = shape, spotColor = Color.Black.copy(0.12f))
-            .border(width = 1.dp, color = Gray200, shape)
+//            .border(width = 1.dp, color = Gray200, shape)
             .background(color = backgroundColor, shape = shape)
             .fillMaxWidth(),
         singleLine = true,

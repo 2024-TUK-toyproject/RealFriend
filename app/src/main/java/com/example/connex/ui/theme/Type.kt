@@ -142,8 +142,7 @@ val Body3Medium = TextStyle(
 val Body3Regular = TextStyle(
     fontSize = 12.sp,
     lineHeight = 16.8.sp,
-    fontWeight = FontWeight.Medium,
-    color = Gray300,
+    fontWeight = FontWeight.Normal,
 //    letterSpacing = 0.2.sp,
 )
 
