@@ -131,9 +131,17 @@ async def get_friend_list(token = Depends(APIKeyHeader(name = 'Authorization')),
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.post("/users/add/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 성공"}, 400 : {"model" : Error_response, "description" : "친구 추가 실패"}}, tags = ["User/friend"], summary = "친구 추가(요청)")
-async def add_friend(friendId : str, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+async def add_friend(request : Add_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.add_friend(friendId, token)
+        return await user_service.add_friend(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.delete("/users/delete/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 삭제 성공"}, 400 : {"model" : Error_response, "description" : "친구 삭제 실패"}}, tags = ["User/friend"], summary = "친구 삭제")
+async def delete_friend(request : Delete_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+    try:
+        return await user_service.delete_friend(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -147,19 +155,20 @@ async def get_friend_request_list(token = Depends(APIKeyHeader(name = "Authoriza
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/users/accept/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 수락 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 수락 실패"}}, tags = ["User/friend"], summary = "친구 요청 수락")
-async def accept_friend(friendRequestId : str, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+async def accept_friend(request : Accept_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.accept_friend(friendRequestId, token)
+        return await user_service.accept_friend(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/users/delete/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 삭제 성공"}, 400 : {"model" : Error_response, "description" : "친구 삭제 실패"}}, tags = ["User/friend"], summary = "친구 삭제")
-async def delete_friend(friendId : str, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+@router.post("/users/reject/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 거절 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 거절 실패"}}, tags = ["User/friend"], summary = "친구 요청 거절")
+async def reject_friend(request : Delete_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
-        return await user_service.delete_friend(friendId, token)
+        return await user_service.reject_friend(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 #친구 삭제 필요
 #새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
