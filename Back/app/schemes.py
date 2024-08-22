@@ -99,12 +99,14 @@ class Friend_request_list_response(BaseModel):
         {
             "오늘": [
                 {
+                    "friendRequestId" : "123456",
                     "userId": "123456",
                     "name": "홍길동",
                     "phone": "010-1234-5678",
                     "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
                 },
                 {
+                    "friendRequestId" : "123456",
                     "userId": "654321",
                     "name": "김철수",
                     "phone": "010-1234-5678",
@@ -113,6 +115,7 @@ class Friend_request_list_response(BaseModel):
             ],
             "어제": [
                 {
+                    "friendRequestId" : "123456",
                     "userId": "123456",
                     "name": "홍길동",
                     "phone": "010-1234-5678",
@@ -121,6 +124,7 @@ class Friend_request_list_response(BaseModel):
             ],
             "2024-08-10": [
                 {
+                    "friendRequestId" : "123456",
                     "userId": "654321",
                     "name": "김철수",
                     "phone": "010-1234-5678",
@@ -182,3 +186,14 @@ class Album_create_request(BaseModel):
     userId : str = Field(..., example = "123456")
     withWhom : str = Field(..., example = "654321")
     albumName : str = Field(..., example = "가족사진")
+
+class Add_friend_request(BaseModel):
+    friendId : str = Field(..., example = "654321")
+
+class Accept_friend_request(BaseModel):
+    friendRequestId : str = Field(..., example = "123456")
+
+class Delete_friend_request(BaseModel):
+    content : List[Dict[str, str]] = Field(
+        [{"friendId" : "654321"}]
+    )
