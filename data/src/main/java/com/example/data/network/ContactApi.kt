@@ -5,10 +5,14 @@ import com.example.domain.model.response.MostCalledDateTimeResponse
 import com.example.domain.DefaultResponse
 import com.example.domain.model.ApiResponse
 import com.example.domain.model.request.CallLogRequest
+import com.example.domain.model.request.ContentRequest
+import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.CallLogResponse
 import com.example.domain.model.response.ContactResponse
 import retrofit2.http.Body
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -26,7 +30,12 @@ interface ContactApi {
     @GET("/users/get/{user_id}/longestcall")
     suspend fun readMostCalledUsers(@Path("user_id") userId: String): DefaultResponse<MostCalledDateTimeResponse>
 
+    // 친구 리스트 조회
     @GET("/users/get/friend")
     suspend fun readAllFriends(): DefaultResponse<List<ContactResponse>>
+
+    // 친구 삭제
+    @HTTP(method = "DELETE", path = "/users/delete/friend", hasBody = true)
+    suspend fun deleteFriend(@Body contactId: ContentRequest<List<FriendIdRequest>>): DefaultResponse<Unit>
 
 }

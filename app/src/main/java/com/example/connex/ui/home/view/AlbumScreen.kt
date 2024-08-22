@@ -1,13 +1,10 @@
 package com.example.connex.ui.home.view
 
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,58 +13,59 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.captionBarPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
@@ -75,19 +73,24 @@ import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcNotification
+import com.example.connex.ui.theme.Black
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
+import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
+import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
-import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
-import kotlin.math.min
-import kotlin.math.roundToInt
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.CollapsingToolbarScope
+import me.onebone.toolbar.ExperimentalToolbarApi
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
+import com.example.connex.R
 
 data class TempleAlbumData(
     val id: Long = 0,
@@ -104,47 +107,14 @@ var AlbumBodyLayout = "AlbumBodyLayout"
 
 val HeaderGradientHeight = 24.dp
 
-//
-//internal class BackdropScrollConnection(
-//    private val scrollState: LazyGridState,
-//) : NestedScrollConnection {
-//    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-//        val dy = available.y
-//        return Offset.Zero
-//        return when {
-////            /**
-////             * 헤더가 보이지 않는 상태일 경우, onPreScroll에서 Offset.Zero를 반환하여 부모가 스크롤을 받지 않도록 한다.
-////             */
-////            isHeaderHide -> {
-////                Offset.Zero
-////            }
-////
-////            /**
-////             * 터치를 아래에서 위로, 즉 화면을 위로 올릴 때,
-////             * 부모가 스크롤 이벤트를 우선적으로 받는다.
-////             */
-//            dy < 0 -> {
-//                scrollState.dispatchRawDelta(dy * -1)
-//                Offset(0f, dy)
-//            }
-////
-////            /**
-////             * 터치를 위에서 아래로, 즉 화면을 아래로 내릴 때,
-////             * NestedScrollConnection을 통해 부모가 스크롤 이벤트를 받지 않도록 한다.
-////             */
-//            else -> {
-//                Offset.Zero
-//            }
-//        }
-//    }
-//}
-
 @OptIn(
     ExperimentalLayoutApi::class,
     ExperimentalFoundationApi::class
 )
 @Composable
 fun AlbumScreen(modifier: Modifier = Modifier) {
+
+    val state = rememberCollapsingToolbarScaffoldState()
     val scrollState = rememberLazyGridState()
     var headerHeight by remember { mutableIntStateOf(0) }
     var searchHeight by remember { mutableIntStateOf(0) }
@@ -152,14 +122,18 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
 
     val dummyList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
     var count = 110
-    Scaffold(topBar = { AlbumAppbar {} }) { paddingValues ->
-        LazyColumn(modifier = Modifier
-            .padding(paddingValues)
-            .onGloballyPositioned { }) {
-            item { ColumnSpacer(height = 28.dp) }
-            item { AlbumCreateBox() }
-            item { ColumnSpacer(height = 24.dp) }
-            item {
+    CollapsingToolbarScaffold(
+        modifier = Modifier
+//            .statusBarsPadding()
+            .navigationBarsPadding()
+            .fillMaxSize(),
+        state = state,
+        scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+        toolbar = {
+            Column(modifier = Modifier.padding(top = 200.dp).parallax(1f)) {
+                ColumnSpacer(height = 28.dp)
+                AlbumCreateBox()
+                ColumnSpacer(height = 24.dp)
                 NewUploadPictureSection(
                     listOf(
                         TempleAlbumData(id = 1),
@@ -170,114 +144,97 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
                         TempleAlbumData(id = 6),
                     )
                 )
+                ColumnSpacer(height = 24.dp)
             }
-            item { ColumnSpacer(height = 24.dp) }
-            stickyHeader { AlbumSearchSection(category = "즐겨찾기 순", search = "") {} }
-//            itemsIndexed(dummyList) { index, item ->
-//                FlowRow {
-//
-//                }
-//            }
-            item {
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    maxItemsInEachRow = 3,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    repeat(11) {
-                        Box(
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(160.dp)
-                                .background(Color.Red)
-                        )
-                    }
-                }
-            }
+            AlbumAppbar{}
 
         }
-//            item(count) {
-//                FlowRow(
-//                    maxItemsInEachRow = 3,
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-//                    verticalArrangement = Arrangement.spacedBy(20.dp),
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .width(100.dp)
-//                            .padding(end = 5.dp, bottom = 5.dp)
-//                            .height(160.dp)
-//                            .background(Color.Red)
-//                    )
-//                }
-//            }
-
+    ) {
+        Column {
+            AlbumSearchSection(category = "즐겨찾기 순", search = "") {}
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                items(11) {
+                    AlbumCard(
+                        modifier = Modifier
+//                        .weight(1f)
+                            .height(160.dp),
+                        navigate = { /*TODO*/ }
+                    ) {}
+                }
+            }
+        }
 
     }
-//        LazyVerticalGrid(
-//            columns = GridCells.Fixed(2),
-//            contentPadding = PaddingValues(
-//                top = headerHeight,
-//                bottom = HeaderGradientHeight,
-//                start = HeaderGradientHeight,
-//                end = HeaderGradientHeight
-//            ),
-//            horizontalArrangement = Arrangement.spacedBy(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(20.dp),
-//            modifier = Modifier.layoutId(AlbumBodyLayout),
-//            state = scrollState
-//        ) {
-//            items(110) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(160.dp)
-//                        .background(Color.Red)
-//                )
-//            }
-//        }
 }
-//    FavoriteContentLayout(
-//        firstVisibleItemIndex = {
-//            scrollState.firstVisibleItemIndex
-//        },
-//        firstVisibleItemScrollOffset = {
-//            scrollState.firstVisibleItemScrollOffset
-//        },
-//        scrollState = scrollState
-//    ) {
-//        LazyVerticalGrid(
-//            columns = GridCells.Fixed(2),
-//            contentPadding = PaddingValues(bottom = HeaderGradientHeight, start = HeaderGradientHeight, end = HeaderGradientHeight),
-//            horizontalArrangement = Arrangement.spacedBy(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(20.dp),
-//            modifier = Modifier.layoutId(AlbumBodyLayout),
-//            state = scrollState
-//        ) {
-//            items(110) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(160.dp)
-//                        .background(Color.Red)
-//                )
-//            }
-//        }
-//        AlbumSearchSection(category = "즐겨찾기 순", search = "") {}
-////        Spacer(modifier = Modifier
-////            .fillMaxWidth()
-////            .height(HeaderGradientHeight))
-//////        FavoriteHeaderContent()
-//        AlbumHeaderSection()
-//    }
+
+@Composable
+fun AlbumCard(
+    modifier: Modifier = Modifier,
+    name: String = "앨범이름",
+    image: String = Constants.DEFAULT_PROFILE,
+    userCount: Int = 4,
+    imageCount: Int = 27,
+    isFavorite: Boolean = false,
+    navigate: () -> Unit,
+    onFavorite: () -> Unit,
+) {
+
+    Box(
+        modifier = modifier
+    ) {
+
+        Card(
+            modifier = Modifier
+                .fillMaxSize(),
+            onClick = { navigate() },
+            shape = RoundedCornerShape(15.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Transparent,
+                contentColor = White
+            )
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(model = image),
+                contentDescription = "image_representative_album",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Column(
+            modifier = Modifier
+                .zIndex(1f)
+                .align(Alignment.BottomStart)
+                .offset(16.dp, (-16).dp)
+        ) {
+            Text(text = name, style = Text16ptSemibold, color = White)
+            Row {
+                Text(text = "🗣️ $userCount", style = Body3Regular, color = White)
+                RowSpacer(width = 2.dp)
+                Text(text = "📷 $userCount", style = Body3Regular, color = White)
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(15.dp))
+                .background(Black.copy(alpha = 0.2f))
+        ) {}
+    }
+}
 
 
 @Composable
-fun AlbumAppbar(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun CollapsingToolbarScope.AlbumAppbar(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(color = Color.White)
             .drawBehind {
                 drawLine(
                     start = Offset(0f, size.height),
@@ -286,7 +243,8 @@ fun AlbumAppbar(modifier: Modifier = Modifier, onClick: () -> Unit) {
                     strokeWidth = 0.5f
                 )
             }
-            .padding(vertical = 16.dp, horizontal = 24.dp),
+            .padding(vertical = 16.dp, horizontal = 24.dp)
+            .pin(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -299,68 +257,6 @@ fun AlbumAppbar(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 .noRippleClickable { onClick() },
             tint = Gray900
         )
-    }
-}
-
-//
-//@Composable
-//fun AlbumLayout(
-//    firstVisibleItemScrollOffset: () -> Int,
-//    firstVisibleItemIndex: () -> Int,
-////    scrollState: LazyGridState,
-//    modifier: Modifier = Modifier,
-//    content: @Composable () -> Unit,
-//) {
-//
-//    Layout(modifier = modifier, content = content) { measurables, constraints ->
-//        val fixedHeight = 40.dp.toPx().roundToInt()
-//
-//        val AlbumHeaderPlaceable =
-//            measurables.first { it.layoutId == AlbumHeaderLayout }.measure(constraints)
-//        val AlbumBodyPlaceable =
-//            measurables.first { it.layoutId == AlbumBodyLayout }.measure(constraints)
-//
-//        val scrollIndex = firstVisibleItemIndex()
-//        val scrollOffset = firstVisibleItemScrollOffset()
-//        val dynamicHeight = AlbumHeaderPlaceable.height - fixedHeight
-//        val offset = if (scrollIndex == 0) {
-//            -min(scrollOffset, dynamicHeight)
-//        } else {
-//            -dynamicHeight
-//        }
-//
-//        layout(width = constraints.maxWidth, height = constraints.maxHeight) {
-//            AlbumBodyPlaceable.placeRelative(x = 0, y = AlbumHeaderPlaceable.height + offset)
-//            AlbumHeaderPlaceable.placeRelative(x = 0, y = offset)
-//        }
-//    }
-//}
-//
-@Composable
-fun AlbumHeaderSection(onSizeChanged: (Int) -> Unit) {
-    Column(
-        modifier = Modifier
-            .layoutId(AlbumHeaderLayout)
-            .padding(horizontal = 24.dp)
-    ) {
-        ColumnSpacer(height = 28.dp)
-        AlbumCreateBox()
-        ColumnSpacer(height = 24.dp)
-        NewUploadPictureSection(
-            listOf(
-                TempleAlbumData(id = 1),
-                TempleAlbumData(id = 2),
-                TempleAlbumData(id = 3),
-                TempleAlbumData(id = 4),
-                TempleAlbumData(id = 5),
-                TempleAlbumData(id = 6),
-            )
-        )
-        ColumnSpacer(height = 24.dp)
-        AlbumSearchSection(
-            category = "즐겨찾기 순",
-            search = ""
-        ) {}
     }
 }
 
@@ -412,7 +308,12 @@ fun NewUploadPictureSection(newPictures: List<TempleAlbumData>) {
             .fillMaxWidth()
 
     ) {
-        Text(text = "새로 올라온 사진 모아보기 📷", style = Body1Semibold, color = Gray900, modifier = Modifier.padding(horizontal = 24.dp))
+        Text(
+            text = "새로 올라온 사진 모아보기 📷",
+            style = Body1Semibold,
+            color = Gray900,
+            modifier = Modifier.padding(horizontal = 24.dp)
+        )
         ColumnSpacer(height = 16.dp)
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
@@ -460,7 +361,6 @@ fun AlbumSearchSection(category: String = "즐겨찾기순", search: String, upd
             .background(Color.White)
             .padding(horizontal = 24.dp)
             .onSizeChanged {}
-            .layoutId(AlbumSearchLayout)
     ) {
         Row(
             modifier = Modifier
@@ -496,127 +396,78 @@ fun AlbumSearchSection(category: String = "즐겨찾기순", search: String, upd
     }
 }
 
-//@Composable
-//fun AlbumListSection(scrollState: LazyGridState) {
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(2),
-//        contentPadding = PaddingValues(horizontal = 24.dp),
-//        horizontalArrangement = Arrangement.spacedBy(16.dp),
-//        verticalArrangement = Arrangement.spacedBy(20.dp),
-//        modifier = Modifier.layoutId(AlbumBodyLayout),
-//        state = scrollState
-//    ) {
-//        items(7) {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(160.dp)
-//                    .background(Color.Red)
-//            )
-//        }
-//    }
-//}
-
-
-//@Composable
-//private fun FavoriteHeaderContent(modifier: Modifier = Modifier) {
-//    Column(
-//        modifier = modifier.layoutId(AlbumHeaderLayout)
-//    ) {
-//        // 1. TextHeader
-//        repeat(10) {
-//            Text(text = "뭉먼엄넝ㅂㅈ댜ㅏ암ㄴㅇ", modifier = Modifier.wrapContentHeight())
-//        }
-//        // 2. SearchTextField
-//        Box(modifier = Modifier
-//            .fillMaxWidth()
-//            .height(HeaderGradientHeight))
-//    }
-//}
 
 @Composable
-private fun FavoriteContentLayout(
-    firstVisibleItemScrollOffset: () -> Int,
-    firstVisibleItemIndex: () -> Int,
-    scrollState: LazyGridState,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    var scrollableHeight by remember { mutableIntStateOf(0) }
-    var appbarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // 여기에 있던 coerceIn을 SearchAppBar로 이동
-                appbarOffsetHeightPx += available.y
-//                Log.d("daeyoung", "appbarOffsetHeightPx: ${appbarOffsetHeightPx}")
-//                Log.d("daeyoung", "scrollableHeight: ${scrollableHeight}")
-//                if (appbarOffsetHeightPx.absoluteValue < scrollableHeight) {
-//                    coroutineScope.launch { scrollState.scrollBy(0f) }
-//                }
-                return Offset.Zero
-            }
+fun ParallaxEffect() {
+    val state = rememberCollapsingToolbarScaffoldState()
 
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource,
-            ): Offset {
-                appbarOffsetHeightPx -= available.y
-                return Offset.Zero
-            }
-        }
-    }
+    var enabled by remember { mutableStateOf(true) }
 
-    Layout(
-        modifier = modifier
-            .nestedScroll(nestedScrollConnection)
-            .offset {
-                IntOffset(
-                    x = 0, y = appbarOffsetHeightPx
-                        .coerceIn(-scrollableHeight.toFloat(), 0f) // 여기로 이동
-                        .roundToInt()
+    Box {
+        CollapsingToolbarScaffold(
+            modifier = Modifier.fillMaxSize(),
+            state = state,
+            scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
+            toolbarModifier = Modifier.background(Color.Transparent),
+            enabled = enabled,
+            toolbar = {
+                // Collapsing toolbar collapses its size as small as the that of
+                // a smallest child. To make the toolbar collapse to 50dp, we create
+                // a dummy Spacer composable.
+                // You may replace it with TopAppBar or other preferred composable.
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
                 )
-            },
-        content = content
-    ) { measurables, constraints ->
-        val gridPlaceable =
-            measurables.first { it.layoutId == AlbumBodyLayout }.measure(constraints)
-        val headerPlaceable =
-            measurables.first { it.layoutId == AlbumHeaderLayout }.measure(constraints)
-        val searchPlaceable =
-            measurables.first { it.layoutId == AlbumSearchLayout }.measure(constraints)
-//        val fixedHeight = 40.dp.toPx().roundToInt()
 
-        val scrollIndex = firstVisibleItemIndex()
-        val scrollOffset = firstVisibleItemScrollOffset()
-        scrollableHeight = headerPlaceable.height
-        val dynamicHeight = headerPlaceable.height
-        val offset = if (scrollIndex == 0) {
-            -min(scrollOffset, dynamicHeight)
-        } else {
-            -dynamicHeight
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    modifier = Modifier
+                        .parallax(0.5f)
+                        .height(300.dp)
+                        .graphicsLayer {
+                            // change alpha of Image as the toolbar expands
+                            alpha = state.toolbarState.progress
+                        },
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null
+                )
+            }
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(
+                    List(100) { "Hello World!! $it" }
+                ) {
+                    Text(
+                        text = it,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp)
+                    )
+                }
+            }
+
+            @OptIn(ExperimentalToolbarApi::class)
+            Button(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.BottomEnd),
+                onClick = {  }
+            ) {
+                Text(text = "Floating Button!")
+            }
         }
 
-        Log.d("daeyoung", "scrollIndex: ${scrollIndex}")
-
-
-        Log.d(
-            "daeyoung",
-            "scrollOffset: ${scrollOffset}\nheaderPlaceable.height: ${headerPlaceable.height}\nsearchPlaceable: ${searchPlaceable.height}\ngridPlaceable: ${gridPlaceable.height}"
-        )
-        Log.d("daeyoung", "offset: ${offset}")
-
-        layout(
-            width = constraints.maxWidth,
-            height = constraints.maxHeight,
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-//            gridPlaceable.placeRelative(0, headerPlaceable.height + searchPlaceable.height + offset)
-//            headerPlaceable.placeRelative(0, offset)
-//            searchPlaceable.placeRelative(0, headerPlaceable.height + offset)
-            gridPlaceable.placeRelative(0, headerPlaceable.height + searchPlaceable.height)
-            headerPlaceable.placeRelative(0, 0)
-            searchPlaceable.placeRelative(0, headerPlaceable.height)
+            Checkbox(checked = enabled, onCheckedChange = { enabled = !enabled })
+
+            Text("Enable collapse/expand", fontWeight = FontWeight.Bold)
         }
     }
 }

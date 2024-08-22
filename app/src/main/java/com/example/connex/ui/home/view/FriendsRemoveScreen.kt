@@ -93,7 +93,7 @@ fun FriendsRemoveScreen(
             FriendRemoveModalBottomSheet(
                 names = friendsRemoveUiState.userList.filter { it.isSelect }.map { it.friend.name },
                 onClose = { isShowFriendRemoveBottomSheet = false }) {
-//                loginViewModel.updateMobileCarrier(it)
+                friendsViewModel.fetchDeleteFriend()
                 isShowFriendRemoveBottomSheet = false
             }
         }

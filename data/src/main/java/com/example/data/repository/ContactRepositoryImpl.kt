@@ -7,6 +7,8 @@ import com.example.domain.model.login.Contact
 import com.example.domain.model.request.CallLogRequest
 import com.example.domain.model.request.ContactDTO
 import com.example.domain.model.request.ContactsRequest
+import com.example.domain.model.request.ContentRequest
+import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.request.toDTO
 import com.example.domain.model.response.CallLogResponse
 import com.example.domain.model.response.ContactResponse
@@ -56,4 +58,18 @@ class ContactRepositoryImpl @Inject constructor(
     override fun readAllFriends(): Flow<ApiState<List<ContactResponse>>> = safeFlow {
         contactApi.readAllFriends()
     }
+
+    override fun deleteFriend(friendIds: List<String>): Flow<ApiState<Unit>> = flow {
+        try {
+            val res = contactApi.deleteFriend(ContentRequest(friendIds.map { FriendIdRequest(it) }))
+            if (res.isSuccessful) {
+                emit(ApiState.Success(Unit))
+            } else {
+                val errorBody = res.errorBody() ?: throw NullPointerException()
+                emit(ApiState.Error(errorBody.string()))
+            }
+        } catch (e: Exception) {
+            emit(ApiState.NotResponse(message = e.message ?: "", exception = e))
+        }
+    }.flowOn(Dispatchers.IO)
 }

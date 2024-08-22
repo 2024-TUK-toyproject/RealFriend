@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
 import com.example.domain.model.response.Friend
 import com.example.domain.model.response.asDomain
+import com.example.domain.usecase.DeleteFriendUseCase
 import com.example.domain.usecase.ReadAllFriendsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 
 
@@ -43,11 +45,9 @@ data class FriendsUiState(
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     val readAllFriendsUseCase: ReadAllFriendsUseCase,
+    val deleteFriendUseCase: DeleteFriendUseCase
 ) : ViewModel() {
 
-    init {
-        fetchReadAllFriends()
-    }
 
     private val _friendsRemoveSearch = MutableStateFlow("")
     val friendsRemoveSearch: StateFlow<String> = _friendsRemoveSearch.asStateFlow()
@@ -133,20 +133,26 @@ class FriendsViewModel @Inject constructor(
         }
     }
 
-    fun fetchReadAllFriends() {
+    fun fetchReadAllFriends(notResponse: () -> Unit) {
         viewModelScope.launch {
             when (val result = readAllFriendsUseCase().first()) {
                 is ApiState.Error -> TODO()
                 ApiState.Loading -> TODO()
-                is ApiState.NotResponse -> Log.d(
-                    "daeyoung",
-                    "message: ${result.message}\nexception: ${result.exception}"
-                )
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        Log.d(
+                            "daeyoung",
+                            "message: ${result.message}\nexception: ${result.exception}"
+                        )
+                    }
+                }
+
 
                 is ApiState.Success -> {
                     result.data.also { list ->
-                        _friendsRemoveUserList.value = list.map { FriendUiState(it.asDomain(), false) }
-                        _friendsUserList.value = list.map { it.asDomain().copy(isFriend = true) }
+                        _friendsRemoveUserList.value = list.map { FriendUiState(it.asDomain(), false) }.filter { it.friend.isFriend }
+//                        _friendsUserList.value = list.map { it.asDomain().copy(isFriend = true) }
+                        _friendsUserList.value = list.map { it.asDomain()}
                     }
                     _filteredFriendsRemoveUserList.value = friendsRemoveUserList.value
                     _filteredFriendsUserList.value = friendsUserList.value
@@ -154,5 +160,31 @@ class FriendsViewModel @Inject constructor(
             }
         }
     }
+
+    fun fetchDeleteFriend() {
+        viewModelScope.launch {
+            val friendId = friendsRemoveUserList.value.filter { it.isSelect }.map { it.friend.userId }
+            when (val result = deleteFriendUseCase(friendId).first()) {
+                is ApiState.Error -> Log.d("daeyoung", "message: ${result.errMsg}")
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> {
+                    Log.d(
+                        "daeyoung",
+                        "message: ${result.message}\nexception: ${result.exception}"
+                    )
+                }
+
+                is ApiState.Success -> {
+                    val refreshFriendsRemoveUserList = friendsRemoveUserList.value.toMutableList().also {list ->
+                        list.removeAll { it.isSelect }
+                    }
+                    _friendsRemoveUserList.value = refreshFriendsRemoveUserList
+                    _filteredFriendsRemoveUserList.value = friendsRemoveUserList.value
+                }
+            }
+        }
+    }
+
+
 
 }

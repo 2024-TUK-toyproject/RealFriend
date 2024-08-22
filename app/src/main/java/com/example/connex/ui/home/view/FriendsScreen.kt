@@ -1,6 +1,7 @@
 package com.example.connex.ui.home.view
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -31,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -59,6 +61,7 @@ import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.ShareAlbumModalBottomSheet
 import com.example.connex.ui.component.TempleAlbumData
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.ConnexLogoGreen
@@ -85,7 +88,7 @@ import com.example.connex.utils.Constants.BottomNavigationHeight
 @Composable
 fun FriendsScreen(
     friendsViewModel: FriendsViewModel = hiltViewModel(),
-    navController: NavController,
+    applicationState: ApplicationState,
 ) {
     val dummys = listOf(
         TempleAlbumData(
@@ -128,6 +131,11 @@ fun FriendsScreen(
         mutableStateOf(false)
     }
 
+    LaunchedEffect(Unit) {
+        Log.d("FriendsScreen", "LaunchedEffect")
+        friendsViewModel.fetchReadAllFriends {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")}
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -135,7 +143,7 @@ fun FriendsScreen(
                 count = friendsUiState.userList.size,
                 alpha = appbarAlphaPercent,
                 onNavigate1 = {}) {
-                navController.navigate(Constants.FRIEND_REMOVE_ROUTE)
+                applicationState.navigate(Constants.FRIEND_REMOVE_ROUTE)
             }
         }) { paddingValue ->
         if (isShowShareAlbumBottomSheet) {
@@ -148,7 +156,7 @@ fun FriendsScreen(
         Surface(modifier = Modifier.padding(paddingValue)) {
             LazyColumn(
                 modifier = Modifier
-                    .padding(bottom = BottomNavigationHeight)
+//                    .padding(bottom = BottomNavigationHeight)
                     .fillMaxSize(),
                 state = scrollState
             ) {

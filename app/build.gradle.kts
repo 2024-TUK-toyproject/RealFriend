@@ -66,4 +66,8 @@ dependencies {
 
     // compose-keyboard-controller
     implementation(libs.compose.keyboard.controller)
+
+    // compose-collapsingtoolbar
+    implementation(libs.compose.collapsingtoolbar)
+
 }

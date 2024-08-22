@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -31,15 +31,12 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
             ConnexTheme {
                 ManageBottomBarState(navBackStackEntry, appState)
-                Log.d("daeyoung", "bottomState: ${appState.bottomBarState}")
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                    ) {
-                        RootNavhost(navBackStackEntry, appState)
-                    }
+//                Log.d("daeyoung", "bottomState: ${appState.bottomBarState}")
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
+                    RootNavhost(navBackStackEntry, appState)
                 }
             }
         }

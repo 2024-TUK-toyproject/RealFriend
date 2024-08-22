@@ -4,8 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import com.example.connex.ui.component.BottomBar
@@ -23,25 +28,32 @@ fun RootNavhost(
     navBackStackEntry: NavBackStackEntry?,
     appState: ApplicationState,
 ) {
-    Box(
-        modifier = Modifier
-            .customNavigationBarPaading(navBackStackEntry, appState)
-            .fillMaxSize()
-    ) {
-        NavHost(
-            navController = appState.navController,
-//            startDestination = Constants.LOGIN_GRAPH,
-            startDestination = Constants.SPLASH_ROUTE,
-            modifier = Modifier.fillMaxSize()
+    Scaffold(
+        modifier = Modifier,
+        snackbarHost = { SnackbarHost(appState.snackbarHostState) }) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            loginGraph(appState.navController)
-            initSettingGraph(appState.navController)
-            homeGraph(appState.navController)
-            notificationComposable(appState.navController)
-            splashComposable(appState.navController)
+            NavHost(
+                navController = appState.navController,
+//            startDestination = Constants.LOGIN_GRAPH,
+                startDestination = Constants.SPLASH_ROUTE,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .customNavigationBarPaading(navBackStackEntry, appState),
+            ) {
+                loginGraph(appState.navController)
+                initSettingGraph(appState.navController)
+                homeGraph(appState)
+                notificationComposable(appState.navController)
+                splashComposable(appState)
+            }
+            BottomBar(appState)
         }
-        BottomBar(appState)
     }
+
 }
 
 
@@ -53,9 +65,10 @@ private fun Modifier.customNavigationBarPaading(
 //        return Modifier
 //    }
     if (appState.bottomBarState.value) {
-        return Modifier
-    }
-//    return Modifier.navigationBarsPadding()
-    return Modifier
+        return Modifier.padding(bottom = Constants.BottomNavigationHeight)
+//        return Modifier.navigationBarsPadding()
 
+    }
+    return Modifier
+//    return Modifier.padding(bottom = Constants.BottomNavigationHeight)
 }

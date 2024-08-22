@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.home.view.AlbumScreen
@@ -86,28 +87,28 @@ fun NavGraphBuilder.initSettingGraph(navController: NavController) {
     }
 }
 
-fun NavGraphBuilder.homeGraph(navController: NavController) {
+fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
     navigation(startDestination = HOME_ROUTE, route = HOME_GRAPH) {
         composable(Screen.Home.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            HomeScreen(navController = navController)
+            HomeScreen(navController = applicationState.navController)
         }
         composable(Screen.Friends.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            FriendsScreen(friendsViewModel = hiltViewModel(backStackEntry), navController = navController)
+            FriendsScreen(friendsViewModel = hiltViewModel(backStackEntry), applicationState = applicationState)
         }
         composable(Screen.Album.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
             AlbumScreen()
@@ -115,7 +116,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         composable(Screen.Mypage.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
             MypageScreen()
@@ -124,7 +125,7 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         composable(Screen.Mypage.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
             MypageScreen()
@@ -133,10 +134,10 @@ fun NavGraphBuilder.homeGraph(navController: NavController) {
         composable(FRIEND_REMOVE_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            FriendsRemoveScreen(friendsViewModel = hiltViewModel(backStackEntry), navController = navController)
+            FriendsRemoveScreen(friendsViewModel = hiltViewModel(backStackEntry), navController = applicationState.navController)
         }
     }
 }

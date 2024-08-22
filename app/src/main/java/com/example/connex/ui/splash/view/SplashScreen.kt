@@ -8,16 +8,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.splash.SplashViewModel
 import com.example.connex.utils.Constants
 
 @Composable
-fun SplashScreen(splashViewModel: SplashViewModel = hiltViewModel(), navController: NavController) {
+fun SplashScreen(splashViewModel: SplashViewModel = hiltViewModel(), applicationState: ApplicationState) {
 
     LaunchedEffect(Unit) {
         splashViewModel.fetchAutoLogin(
-            onSuccess = { navController.navigate(Constants.HOME_ROUTE) },
-            onFail = { navController.navigate(Constants.SIGNUP_START_ROUTE) })
+            onSuccess = { applicationState.navigate(Constants.HOME_ROUTE) },
+            onFail = { applicationState.navigate(Constants.SIGNUP_START_ROUTE) },
+            notResponse = {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")})
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

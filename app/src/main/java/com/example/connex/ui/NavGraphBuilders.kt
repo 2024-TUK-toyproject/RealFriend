@@ -3,6 +3,7 @@ package com.example.connex.ui
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.notification.view.NotificationScreen
 import com.example.connex.ui.splash.view.SplashScreen
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
@@ -14,8 +15,8 @@ fun NavGraphBuilder.notificationComposable(navController: NavController) {
     }
 }
 
-fun NavGraphBuilder.splashComposable(navController: NavController) {
+fun NavGraphBuilder.splashComposable(applicationState: ApplicationState) {
     composable(route = SPLASH_ROUTE) {
-        SplashScreen(navController = navController)
+        SplashScreen(applicationState = applicationState)
     }
 }

@@ -24,6 +24,8 @@ compose-ui = "1.7.0-alpha05"
 activityCompose = "1.9.0"
 dagger-hilt-navigation-compose = "1.0.0"
 compose-keyboard-controller = "1.7.0-beta06"
+compose-callapsingToolbar = "2.3.5"
+
 
 androidxAppCompat = "1.6.1"
 androidxCore = "1.10.1"
@@ -104,6 +106,8 @@ activity-compose = { group = "androidx.activity", name = "activity-compose", ver
 lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 compose-keyboard-controller = { group = "tech.thdev", name = "extensions-compose-keyboard-state", version.ref = "compose-keyboard-controller" }
+compose-collapsingtoolbar = { group = "me.onebone", name = "toolbar-compose", version.ref = "compose-callapsingToolbar" }
+
 
 # junit
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
