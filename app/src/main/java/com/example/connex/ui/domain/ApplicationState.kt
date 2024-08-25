@@ -7,6 +7,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavHostController
+import com.example.connex.utils.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -37,5 +38,16 @@ class ApplicationState(
 
     fun navigate(route: String) {
         navController.navigate(route)
+    }
+
+    fun navigatePopBackStack(previousRoute: String, route: String) {
+        navController.navigate(route) {
+            popUpTo(previousRoute) {
+                inclusive = true
+//                saveState = true
+            }
+//            launchSingleTop = true
+//            restoreState = true
+        }
     }
 }

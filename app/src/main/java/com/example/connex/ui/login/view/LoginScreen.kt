@@ -1,5 +1,6 @@
 package com.example.connex.ui.login.view
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,7 @@ import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
 import com.example.connex.ui.component.PhoneOutLineTextField
 import com.example.connex.ui.component.util.addFocusCleaner
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.login.LoginScreenState
 import com.example.connex.ui.login.LoginViewModel
 import com.example.connex.ui.theme.Gray200
@@ -50,7 +52,10 @@ import com.example.domain.model.login.MobileCarrier
 
 
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
+fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewModel) {
+
+    Log.d("daeyoung", "LoginScreen: ${applicationState.navController.currentBackStack.value}")
+
 
     val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
@@ -103,7 +108,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
         ) {
 //            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
             ArrowBackIcon {
-                navController.popBackStack()
+                applicationState.popBackStack()
             }
             Spacer(modifier = Modifier.height(64.dp))
             Text(
@@ -178,9 +183,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                 is LoginScreenState.CertificateCode -> {
                     loginViewModel.fetchCheckCertificateCode { isExistedUser ->
                         if (isExistedUser) {
-                            navController.navigate(Constants.HOME_ROUTE)
+                            applicationState.navigate(Constants.HOME_ROUTE)
                         } else {
-                            navController.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                            applicationState.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
                         }
                     }
                 }

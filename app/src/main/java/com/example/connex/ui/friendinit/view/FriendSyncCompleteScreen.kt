@@ -23,11 +23,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.connex.ui.Screen
 import com.example.connex.ui.component.GeneralButton
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.Heading1
 import com.example.connex.utils.Constants
 
 @Composable
-fun FriendSyncCompleteScreen(navController: NavController, userId: Long, name: String) {
+fun FriendSyncCompleteScreen(applicationState: ApplicationState, userId: Long, name: String) {
 //    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     val bodyStyle = TextStyle(
@@ -70,7 +71,8 @@ fun FriendSyncCompleteScreen(navController: NavController, userId: Long, name: S
                 text = "추가하기",
                 enabled = true
             ) {
-                navController.navigate(Screen.Home.route)
+
+                applicationState.navigatePopBackStack(Constants.INIT_SETTING_GRAPH, Screen.Home.route)
             }
 //            Spacer(modifier = Modifier.height(16.dp))
 //            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })

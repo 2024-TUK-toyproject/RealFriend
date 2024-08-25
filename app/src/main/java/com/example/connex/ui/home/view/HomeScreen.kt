@@ -1,5 +1,6 @@
 package com.example.connex.ui.home.view
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -63,6 +64,13 @@ import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 
 @Composable
 fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
+
+    Log.d("navigate", "HomeScreen")
+
+    navController.currentBackStack.value.forEach {
+        Log.d("navigate", "$it")
+    }
+
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchReadMostCallUsers()

@@ -9,9 +9,9 @@ import com.example.connex.ui.splash.view.SplashScreen
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 import com.example.connex.utils.Constants.SPLASH_ROUTE
 
-fun NavGraphBuilder.notificationComposable(navController: NavController) {
+fun NavGraphBuilder.notificationComposable(applicationState: ApplicationState) {
     composable(route = NOTIFICATION_ROUTE) {
-        NotificationScreen(navController)
+        NotificationScreen(applicationState = applicationState)
     }
 }
 

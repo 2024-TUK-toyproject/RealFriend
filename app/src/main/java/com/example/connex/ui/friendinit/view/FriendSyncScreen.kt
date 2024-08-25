@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.addFocusCleaner
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.FriendSyncViewModel
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
@@ -60,7 +61,7 @@ import rememberConnexLogo1
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FriendSyncScreen(
-    navController: NavController,
+    applicationState: ApplicationState,
     name: String,
     userId: Long,
     friendSyncViewModel: FriendSyncViewModel = hiltViewModel()
@@ -170,7 +171,7 @@ fun FriendSyncScreen(
                     .height(55.dp),
                 text = "다음", enabled = true
             ) {
-                friendSyncViewModel.fetchSyncContacts { navController.navigate("${Constants.FRIEND_SYNC_COMPLETE_ROUTE}/${userId}/${name}") }
+                friendSyncViewModel.fetchSyncContacts { applicationState.navigate("${Constants.FRIEND_SYNC_COMPLETE_ROUTE}/${userId}/${name}") }
             }
         }
     }

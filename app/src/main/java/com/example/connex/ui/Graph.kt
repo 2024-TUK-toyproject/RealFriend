@@ -33,33 +33,33 @@ import com.example.connex.utils.Constants.SIGNUP_PROFILE_INIT_ROUTE
 import com.example.connex.utils.Constants.SIGNUP_START_ROUTE
 
 
-fun NavGraphBuilder.loginGraph(navController: NavController) {
+fun NavGraphBuilder.loginGraph(applicationState: ApplicationState) {
     navigation(startDestination = SIGNUP_START_ROUTE, route = LOGIN_GRAPH) {
         composable(SIGNUP_START_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = LOGIN_GRAPH
             )
             LoginScreen(
-                navController = navController,
+                applicationState = applicationState,
                 loginViewModel = hiltViewModel(backStackEntry)
             )
         }
         composable(SIGNUP_PROFILE_INIT_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
-                navController = navController,
+                navController = applicationState.navController,
                 graph = LOGIN_GRAPH
             )
             ProfileInitScreen(
-                navController = navController,
+                applicationState = applicationState,
                 loginViewModel = hiltViewModel(backStackEntry)
             )
         }
         composable("${SIGNUP_COMPLETE_ROUTE}/{userId}/{name}") { entry ->
             LoginCompleteScreen(
-                navController = navController,
+                applicationState = applicationState,
                 userId = entry.arguments?.getString("userId") ?: "111_111",
                 name = entry.arguments?.getString("name") ?: "새싹"
             )
@@ -68,18 +68,18 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.initSettingGraph(navController: NavController) {
+fun NavGraphBuilder.initSettingGraph(applicationState: ApplicationState) {
     navigation(startDestination = FRIEND_SYNC_ROUTE, route = INIT_SETTING_GRAPH) {
         composable("${FRIEND_SYNC_ROUTE}/{userId}/{name}") { entry ->
             FriendSyncScreen(
-                navController = navController,
+                applicationState = applicationState,
                 name = entry.arguments?.getString("name") ?: "새싹",
                 userId = entry.arguments?.getString("userId")?.toLong() ?: 111_111L,
             )
         }
         composable("${FRIEND_SYNC_COMPLETE_ROUTE}/{userId}/{name}") { entry ->
             FriendSyncCompleteScreen(
-                navController = navController,
+                applicationState = applicationState,
                 name = entry.arguments?.getString("name") ?: "새싹",
                 userId = entry.arguments?.getString("userId")?.toLong() ?: 111_111L,
             )

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.connex.ui.component.BackArrowAppBar
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.notification.NotificationViewModel
 import com.example.connex.ui.theme.Body1Medium
 import com.example.connex.ui.theme.Body1Regular
@@ -33,12 +34,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NotificationScreen(
-    navController: NavController,
+    applicationState: ApplicationState,
     notificationViewModel: NotificationViewModel = hiltViewModel(),
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { BackArrowAppBar(text = "알림") { navController.popBackStack() } }) {
+        topBar = { BackArrowAppBar(text = "알림") { applicationState.popBackStack() } }) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

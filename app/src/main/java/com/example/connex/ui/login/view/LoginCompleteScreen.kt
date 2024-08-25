@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.Heading1
 import com.example.connex.utils.Constants
 
 @Composable
-fun LoginCompleteScreen(navController: NavController, userId: String, name: String) {
+fun LoginCompleteScreen(applicationState: ApplicationState, userId: String, name: String) {
 //    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
 
     val bodyStyle = TextStyle(
@@ -66,7 +67,7 @@ fun LoginCompleteScreen(navController: NavController, userId: String, name: Stri
                 text = "다음",
                 enabled = true
             ) {
-                navController.navigate("${Constants.FRIEND_SYNC_ROUTE}/$userId/$name")
+                applicationState.navigate("${Constants.FRIEND_SYNC_ROUTE}/$userId/$name")
             }
 //            Spacer(modifier = Modifier.height(16.dp))
 //            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })

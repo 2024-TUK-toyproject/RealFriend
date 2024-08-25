@@ -67,6 +67,7 @@ import com.example.connex.ui.component.PictureChoiceDialog
 import com.example.connex.ui.component.UserNameTextField
 import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.contentprovider.ComposeFileProvider
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.domain.keyboardAsState
 import com.example.connex.ui.domain.model.KeyboardStatus
 import com.example.connex.ui.domain.takePhotoFromAlbumIntent
@@ -81,7 +82,7 @@ import java.io.File
 
 @Composable
 fun ProfileInitScreen(
-    navController: NavController,
+    applicationState: ApplicationState,
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val profileInitUiState by loginViewModel.profileInitUiState.collectAsStateWithLifecycle()
@@ -170,7 +171,7 @@ fun ProfileInitScreen(
     ) {
 //        Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
         ArrowBackIcon() {
-            navController.popBackStack()
+            applicationState.popBackStack()
         }
         Column(
             modifier = Modifier
@@ -261,7 +262,7 @@ fun ProfileInitScreen(
                 .height(55.dp),
             text = "확인", enabled = buttonEnabled
         ) {
-            loginViewModel.fetchSignupProfileImage { navController.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }
+            loginViewModel.fetchSignupProfileImage { applicationState.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }
         }
     }
 

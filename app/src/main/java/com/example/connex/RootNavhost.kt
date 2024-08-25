@@ -44,10 +44,10 @@ fun RootNavhost(
                     .fillMaxSize()
                     .customNavigationBarPaading(navBackStackEntry, appState),
             ) {
-                loginGraph(appState.navController)
-                initSettingGraph(appState.navController)
+                loginGraph(appState)
+                initSettingGraph(appState)
                 homeGraph(appState)
-                notificationComposable(appState.navController)
+                notificationComposable(appState)
                 splashComposable(appState)
             }
             BottomBar(appState)
