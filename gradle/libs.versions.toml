@@ -16,7 +16,8 @@ material = "1.9.0"
 ksp = "1.9.10-1.0.13"
 googleService = "4.3.15"
 googleServiceMap = "18.2.0"
-firebaseBom = "31.2.0"
+firebaseBom = "33.2.0"
+firebaseCloudMessage = "24.0.1"
 
 compose-compiler = "1.5.13"
 composeBom = "2024.06.00"
@@ -162,8 +163,8 @@ lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie"
 # firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
-firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
-
+firebase-cloud-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx"}
+#, version.ref = "firebaseCloudMessage"
 # room
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

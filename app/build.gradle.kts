@@ -1,7 +1,7 @@
 plugins {
     id("daeyoung.plugin.application")
     id("daeyoung.plugin.application.compose")
-//    alias(libs.plugins.google.services)
+    alias(libs.plugins.google.services)
     id("daeyoung.plugin.hilt")
 //    id("com.google.android.gms.oss-licenses-plugin")
 }
@@ -69,5 +69,10 @@ dependencies {
 
     // compose-collapsingtoolbar
     implementation(libs.compose.collapsingtoolbar)
+
+    // firebase fcm
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.cloud.messaging)
 
 }

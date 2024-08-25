@@ -2,6 +2,7 @@ package com.example.connex
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,12 +20,30 @@ import com.example.connex.ui.component.util.addFocusCleaner
 import com.example.connex.ui.domain.ManageBottomBarState
 import com.example.connex.ui.domain.rememberApplicationState
 import com.example.connex.ui.theme.ConnexTheme
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("daeyoung", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+//            val msg = getString(R.string.msg_token_fmt, token)
+            Log.d("daeyoung", token)
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
+
         enableEdgeToEdge()
         setContent {
             val appState = rememberApplicationState()
