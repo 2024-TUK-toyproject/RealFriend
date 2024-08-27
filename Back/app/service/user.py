@@ -10,6 +10,7 @@ from ..random_generator import RandomNumberGenerator
 from ..config import Config
 from ..util import JWTService
 from ..httpException import CustomException, CustomException2
+from ..fcm_service import send_push_notification
 
 from datetime import datetime, timedelta
 
@@ -33,9 +34,6 @@ class User_service:
         self.jwt = JWTService()
 
     async def register_user(self, user_info : User_info_request) -> CommoneResponse:
-        '''exiting_user = self.db.query(models.user_info).filter(models.user_info.phone == user_info.phone).first()
-        if exiting_user is not None:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")'''
         
         existing_temp_user = self.db.query(models.temp_user_info).filter(models.temp_user_info.phone == user_info.phone).first()
 
@@ -96,10 +94,20 @@ class User_service:
         self.db.commit()
         return Certificate_response(status = "success", message = "인증 성공", content = {"userId" : str(new_id), "isExist" : False, "accessToken" : new_token, "refreshToken" : new_user.refresh_token})
     
-    async def set_profile(self, userId : str, name : str, file : UploadFile) -> CommoneResponse:
+    async def set_profile(self, userId : str, name : str, fcmToken : str, file : UploadFile) -> CommoneResponse:
         user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
         if user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        existing_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == userId).first()
+        if existing_fcm_token:
+            existing_fcm_token.fcm_token = fcmToken
+        else:
+            new_fcm_token = models.fcm_token_info(
+                user_id = userId,
+                fcm_token = fcmToken
+            )
+            self.db.add(new_fcm_token)
         
         if file:
             filen_name = f"{str(uuid.uuid4())}.jpeg"
@@ -218,11 +226,19 @@ class User_service:
         self.db.add(new_friend)
         self.db.commit()
 
-        #추후 fcm 푸시알림 추가
+        #fcm 알림
+        friend_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == request.friendId).first()
+
+        if friend_fcm_token:
+            data = {
+                "title" : "CONNEX",
+                "body" : "%s(으)로 부터 친구 요청이 왔습니다."%{existing_user.name},
+            }
+            await send_push_notification(friend_fcm_token.fcm_token, data)
 
         return CommoneResponse(status = "success", message = "친구 요청 성공")
 
-    async def reject_friend(self, request : Accept_friend_request, token : str) -> CommoneResponse:
+    async def reject_friend(self, request : Reject_friend_request, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
 
         if user is None:
@@ -337,7 +353,6 @@ class User_service:
             print(request.create_date)
             print(self.today.strftime('%Y-%m-%d'))
             if request.create_date == self.today.strftime('%Y-%m-%d'):
-                print(1)
                 friend_list["오늘"].append({
                     "friendRequestId" : request.friend_id,
                     "userId" : request.from_user_id,
@@ -347,7 +362,6 @@ class User_service:
                     "time" : request.create_time
                 })
             elif friend.create_date == yesterday:
-                print(2)
                 friend_list["어제"].append({
                     "friendRequestId" : request.friend_id,
                     "userId" : request.from_user_id,
@@ -357,7 +371,6 @@ class User_service:
                     "time" : request.create_time
                 })
             else:
-                print(3)
                 date = request.create_date
                 if friend_list.get(date) is None:
                     friend_list[date] = []
