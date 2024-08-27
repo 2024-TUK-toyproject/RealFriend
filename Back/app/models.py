@@ -63,3 +63,9 @@ class album_info(Base):
     create_user_id = Column(String(255))
     with_whom = Column(String(255))
     directory = Column(String(255))
+
+class fcm_token_info(Base):
+    __tablename__ = 'fcm_token_info'
+
+    user_id = Column(String(255), primary_key=True)
+    fcm_token = Column(String(255))
