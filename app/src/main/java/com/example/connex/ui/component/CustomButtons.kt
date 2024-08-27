@@ -1,5 +1,8 @@
 package com.example.connex.ui.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,16 +13,19 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.PrimaryBlue1
 import com.example.connex.ui.theme.PrimaryBlue2
+import com.example.connex.ui.theme.White
 
 @Composable
 fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
@@ -109,5 +115,16 @@ fun HalfRoundButton(
         )
     ) {
         Text(text = text, style = style, modifier = Modifier.padding(vertical = 4.dp))
+    }
+}
+
+@Composable
+fun SmallBlueBtn(onClick: () -> Unit, textStyle: TextStyle, text: String) {
+    Box(modifier = Modifier
+        .clip(RoundedCornerShape(30.dp))
+        .clickable { onClick() }
+        .background(PrimaryBlue2)
+        .padding(horizontal = 13.5.dp, vertical = 5.5.dp)) {
+        Text(text = text, style = textStyle, color = White)
     }
 }

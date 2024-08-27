@@ -133,7 +133,7 @@ fun FriendsScreen(
 
     LaunchedEffect(Unit) {
         Log.d("FriendsScreen", "LaunchedEffect")
-        friendsViewModel.fetchReadAllFriends {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")}
+        friendsViewModel.fetchReadAllFriends { applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.") }
     }
 
     Scaffold(
@@ -142,7 +142,7 @@ fun FriendsScreen(
             FriendsScreenAppBar(
                 count = friendsUiState.userList.size,
                 alpha = appbarAlphaPercent,
-                onNavigate1 = {}) {
+                onNavigate1 = { applicationState.navigate(Constants.FRIEND_ADD_ROUTE) }) {
                 applicationState.navigate(Constants.FRIEND_REMOVE_ROUTE)
             }
         }) { paddingValue ->
@@ -262,7 +262,10 @@ fun FriendsScreenAppBar(
         }
 
         Row {
-            Icon(imageVector = IconPack.IcAddUser, contentDescription = "addUser")
+            Icon(
+                imageVector = IconPack.IcAddUser,
+                contentDescription = "addUser",
+                modifier = Modifier.noRippleClickable { onNavigate1() })
             Spacer(modifier = Modifier.width(20.dp))
             Icon(
                 imageVector = IconPack.IcSettingList,
@@ -411,7 +414,7 @@ fun BottomSheetAlbumCard(
     name: String,
 ) {
     Box(modifier = modifier.noRippleClickable { onClick() }, contentAlignment = Alignment.Center) {
-        Column{
+        Column {
 
             Card(
                 modifier = Modifier

@@ -28,7 +28,7 @@ data class ContactResponse (
 //)
 
 data class Friend(
-    val userId: String,
+    val userId: Long,
     val name: String,
     val phone: String,
     val profileImage: String,
@@ -36,7 +36,7 @@ data class Friend(
 )
 
 fun ContactResponse.asDomain() = Friend(
-    userId = userId ?: "",
+    userId = userId?.toLong() ?: 0L,
     name = name ?: "",
     phone = phone ?: "",
     profileImage = profileImage ?: "",

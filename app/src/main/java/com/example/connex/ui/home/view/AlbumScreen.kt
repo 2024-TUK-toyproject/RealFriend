@@ -91,6 +91,7 @@ import me.onebone.toolbar.ExperimentalToolbarApi
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 import com.example.connex.R
+import com.example.connex.ui.component.SkyBlueBox
 
 data class TempleAlbumData(
     val id: Long = 0,
@@ -130,9 +131,22 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
         state = state,
         scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
         toolbar = {
-            Column(modifier = Modifier.padding(top = 200.dp).parallax(1f)) {
+            Column(
+                modifier = Modifier
+                    .padding(top = 200.dp)
+                    .parallax(1f)
+            ) {
                 ColumnSpacer(height = 28.dp)
-                AlbumCreateBox()
+                SkyBlueBox(
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                    leadingImage = Icons.Rounded.Add,
+                    leadingImageSize = 32.dp,
+                    title = "우리만 볼 수 있는",
+                    body = "공유 앨범 생성하기",
+                    enabled = true,
+                ) {
+
+                }
                 ColumnSpacer(height = 24.dp)
                 NewUploadPictureSection(
                     listOf(
@@ -146,7 +160,7 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
                 )
                 ColumnSpacer(height = 24.dp)
             }
-            AlbumAppbar{}
+            AlbumAppbar {}
 
         }
     ) {
@@ -456,7 +470,7 @@ fun ParallaxEffect() {
                 modifier = Modifier
                     .padding(16.dp)
                     .align(Alignment.BottomEnd),
-                onClick = {  }
+                onClick = { }
             ) {
                 Text(text = "Floating Button!")
             }

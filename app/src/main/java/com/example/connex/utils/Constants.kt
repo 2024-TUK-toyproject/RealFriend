@@ -23,6 +23,7 @@ object Constants {
     const val NOTIFICATION_ROUTE = "nav-notification"
 
     const val FRIEND_REMOVE_ROUTE = "nav-friend-remove"
+    const val FRIEND_ADD_ROUTE = "nav-friend-add"
 
 
     const val WEB_VIEW_ROUTE = "nav-web-view"

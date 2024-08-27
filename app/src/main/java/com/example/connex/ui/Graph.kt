@@ -14,6 +14,7 @@ import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.home.view.AlbumScreen
+import com.example.connex.ui.home.view.FriendsAddScreen
 import com.example.connex.ui.home.view.FriendsRemoveScreen
 import com.example.connex.ui.home.view.FriendsScreen
 import com.example.connex.ui.home.view.HomeScreen
@@ -21,6 +22,7 @@ import com.example.connex.ui.home.view.MypageScreen
 import com.example.connex.ui.login.view.LoginCompleteScreen
 import com.example.connex.ui.login.view.LoginScreen
 import com.example.connex.ui.login.view.ProfileInitScreen
+import com.example.connex.utils.Constants.FRIEND_ADD_ROUTE
 import com.example.connex.utils.Constants.FRIEND_REMOVE_ROUTE
 import com.example.connex.utils.Constants.FRIEND_SYNC_COMPLETE_ROUTE
 import com.example.connex.utils.Constants.FRIEND_SYNC_ROUTE
@@ -122,15 +124,6 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
             MypageScreen()
         }
 
-        composable(Screen.Mypage.route) { entry ->
-            val backStackEntry = rememberNavControllerBackEntry(
-                entry = entry,
-                navController = applicationState.navController,
-                graph = HOME_GRAPH
-            )
-            MypageScreen()
-        }
-
         composable(FRIEND_REMOVE_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
                 entry = entry,
@@ -138,6 +131,14 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 graph = HOME_GRAPH
             )
             FriendsRemoveScreen(friendsViewModel = hiltViewModel(backStackEntry), navController = applicationState.navController)
+        }
+        composable(FRIEND_ADD_ROUTE) { entry ->
+            val backStackEntry = rememberNavControllerBackEntry(
+                entry = entry,
+                navController = applicationState.navController,
+                graph = HOME_GRAPH
+            )
+            FriendsAddScreen(friendsViewModel = hiltViewModel(backStackEntry), applicationState = applicationState)
         }
     }
 }

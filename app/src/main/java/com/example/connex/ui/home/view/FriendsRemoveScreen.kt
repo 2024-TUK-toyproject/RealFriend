@@ -146,7 +146,7 @@ fun FriendsRemoveScreen(
                             name = it.friend.name,
                             phone = it.friend.phone
                         ) {
-                            ContactCardRemoveButton(isCheck = it.isSelect)
+                            ContactCardCheckBox(isCheck = it.isSelect)
                         }
                     }
                 }
@@ -197,7 +197,7 @@ fun AllSelectButton(isCheck: Boolean, onClick: (Boolean) -> Unit) {
 }
 
 @Composable
-fun ContactCardRemoveButton(
+fun ContactCardCheckBox(
     modifier: Modifier = Modifier.size(28.dp),
     isCheck: Boolean = false,
 ) {

@@ -14,8 +14,9 @@ val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF000000)
 //val Gray900 = Color(0xFF1C1B1F)
 
-val PrimaryBlue2 = Color(0xFF416BFF)
 val PrimaryBlue1 = Color(0xFF365FF0)
+val PrimaryBlue2 = Color(0xFF416BFF)
+val PrimaryBlue3 = Color(0XFF459AFE)
 
 val Gray900 = Color(0xFF1C1B1F)
 val Gray800 = Color(0xFF303033)

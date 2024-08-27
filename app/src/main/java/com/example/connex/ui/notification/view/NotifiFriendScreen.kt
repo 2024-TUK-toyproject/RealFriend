@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
+import com.example.connex.ui.component.SmallBlueBtn
 import com.example.connex.ui.theme.Body1Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
@@ -142,21 +143,10 @@ fun NotifiFriendAskCard(
         Row(modifier = Modifier.padding(top = 9.dp)) {
             NotifiFriendIgnoreBtn { reject() }
             RowSpacer(width = 8.dp)
-            NotifiFriendAskBtn { accept() }
+            SmallBlueBtn(onClick = { accept() }, textStyle = Body3Regular, text = "수락")
         }
 
 
-    }
-}
-
-@Composable
-fun NotifiFriendAskBtn(onClick: () -> Unit) {
-    Box(modifier = Modifier
-        .clip(RoundedCornerShape(30.dp))
-        .clickable { onClick() }
-        .background(PrimaryBlue2)
-        .padding(horizontal = 13.5.dp, vertical = 5.5.dp)) {
-        Text(text = "수락", style = Body3Regular, color = White)
     }
 }
 
