@@ -20,7 +20,7 @@ interface ContactApi {
 
     // 연락처 동기화
     @POST("/users/upload/phone")
-    suspend fun syncContacts(@Body contactsRequest: ContactsRequest): ApiResponse<Unit>
+    suspend fun syncContacts(@Body contactsRequest: ContactsRequest): DefaultResponse<Unit>
 
     // 통화기록 동기화
     @POST("/users/upload/callrecord")

@@ -18,7 +18,7 @@ interface LoginApi {
 
     // 인증번호 요청
     @POST("/register/users")
-    suspend fun requestCertificateCode(@Body phone: PhoneRequest): Response<Unit>
+    suspend fun requestCertificateCode(@Body phone: PhoneRequest): DefaultResponse<Unit>
 
     // 인증번호 요청
     @POST("/register/certificate")
@@ -31,7 +31,7 @@ interface LoginApi {
         @Query("userId") userId: String,
         @Query("name") name: String,
         @Part file: MultipartBody.Part
-    ): ApiResponse<Unit>
+    ): DefaultResponse<Unit>
 
 
 }

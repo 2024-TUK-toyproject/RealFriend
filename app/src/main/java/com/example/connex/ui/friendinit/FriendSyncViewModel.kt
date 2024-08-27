@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 
 class PhoneUiState(
@@ -107,7 +108,7 @@ class FriendSyncViewModel @Inject constructor(
             it.isSelect = isSelect
         }
     }
-    fun fetchSyncContacts(onSuccess: () -> Unit) {
+    fun fetchSyncContacts(onSuccess: () -> Unit, notResponse: () -> Unit) {
         viewModelScope.launch {
             val selectedContacts = contacts.value.filter { it.isSelect }.map { it.contact }
 
@@ -118,7 +119,11 @@ class FriendSyncViewModel @Inject constructor(
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()
                 is ApiState.Success<*> -> result.onSuccess { onSuccess() }
-                is ApiState.NotResponse -> TODO()
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        notResponse()
+                    }
+                }
             }
         }
     }

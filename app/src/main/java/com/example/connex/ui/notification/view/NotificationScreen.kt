@@ -53,7 +53,7 @@ fun NotificationScreen(
     }
 
     LaunchedEffect(Unit) {
-        notificationViewModel.fetchReadAllFriendRequest()
+        notificationViewModel.fetchReadAllFriendRequest { applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.") }
     }
 
 
@@ -70,13 +70,18 @@ fun NotificationScreen(
                 list.size
             }
             NotificationTabRow(pagerState = pagerState, list = list)
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {page ->
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                 when (page) {
                     0 -> NotifiActivityScreen()
                     1 -> NotifiFriendScreen(
                         notificationFriendUiState,
-                        acceptFriendRequest = { notificationViewModel.fetchAcceptFriendRequest(it) }) {
-
+                        acceptFriendRequest = {
+                            notificationViewModel.fetchAcceptFriendRequest(it) {
+                                applicationState.showSnackbar(
+                                    "인터넷이 연결이 되어 있지 않습니다."
+                                )
+                            }
+                        }) {
                     }
                 }
             }

@@ -15,6 +15,7 @@ import com.example.domain.model.response.UserIdResponse
 import com.example.domain.model.response.asDomain
 import com.example.domain.model.safeFlow
 import com.example.domain.model.safeFlowAndSaveToken
+import com.example.domain.model.safeFlowUnit
 import com.example.domain.repository.LoginRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -33,37 +34,13 @@ class LoginRepositoryImpl @Inject constructor(
     override fun checkAccessToken(): Flow<ApiState<Token>> = safeFlow {
         authApi.loginToken()
     }
-//    override fun requestCertificateCode(phone: String, mobileCarrier: String): Flow<ApiState<Unit>> = flow {
-//        kotlin.runCatching {
-//            val phoneRequest = PhoneRequest(phone, mobileCarrier)
-//            loginApi.requestCertificateCode(phoneRequest).content
-//        }.onSuccess {
-//            emit(ApiState.Success(Unit))
-//        }.onFailure { error ->
-//            error.message?.let { emit(ApiState.Error(it)) }
-//        }
-//    }.flowOn(Dispatchers.IO)
 
     override fun requestCertificateCode(
         phone: String,
         mobileCarrier: String,
-    ): Flow<ApiState<Unit>> = flow {
-        kotlin.runCatching {
-            val phoneRequest = PhoneRequest(phone, mobileCarrier)
-            loginApi.requestCertificateCode(phoneRequest)
-        }.onSuccess { res ->
-            if (res.isSuccessful) {
-                emit(ApiState.Success(Unit))
-            } else {
-                Log.d("daeyoung", "errorbody: ${res.errorBody()}")
-            }
-        }.onFailure { error ->
-            if (error is java.net.ConnectException) {
-                Log.d("daeyoung", "exception: ${error}, message: ${error.message}")
-            }
-            error.message?.let { emit(ApiState.Error(it)) }
-        }
-    }.flowOn(Dispatchers.IO)
+    ): Flow<ApiState<Unit>> = safeFlowUnit {
+        loginApi.requestCertificateCode(PhoneRequest(phone, mobileCarrier))
+    }
 
     override fun checkCertificateCode(
         phone: String,
@@ -88,15 +65,7 @@ class LoginRepositoryImpl @Inject constructor(
         userId: Long,
         name: String,
         file: MultipartBody.Part,
-    ): Flow<ApiState<Unit>> = flow {
-        kotlin.runCatching {
-            loginApi.signupProfileImage(userId.toString(), name, file)
-        }.onSuccess {
-            emit(ApiState.Success(Unit))
-        }.onFailure { error ->
-            error.message?.let { emit(ApiState.Error(it)) }
-        }
-    }.flowOn(Dispatchers.IO)
-
-
+    ): Flow<ApiState<Unit>> = safeFlowUnit {
+        loginApi.signupProfileImage(userId.toString(), name, file)
+    }
 }

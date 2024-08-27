@@ -64,7 +64,7 @@ fun FriendSyncScreen(
     applicationState: ApplicationState,
     name: String,
     userId: Long,
-    friendSyncViewModel: FriendSyncViewModel = hiltViewModel()
+    friendSyncViewModel: FriendSyncViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
         friendSyncViewModel.userId = userId
@@ -171,7 +171,9 @@ fun FriendSyncScreen(
                     .height(55.dp),
                 text = "다음", enabled = true
             ) {
-                friendSyncViewModel.fetchSyncContacts { applicationState.navigate("${Constants.FRIEND_SYNC_COMPLETE_ROUTE}/${userId}/${name}") }
+                friendSyncViewModel.fetchSyncContacts(onSuccess = { applicationState.navigate("${Constants.FRIEND_SYNC_COMPLETE_ROUTE}/${userId}/${name}") }) {
+                    applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
+                }
             }
         }
     }

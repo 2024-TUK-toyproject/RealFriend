@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 
 data class LoginUiState(
@@ -102,7 +103,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    fun fetchRequestCertificateCode(onSuccess: () -> Unit) {
+    fun fetchRequestCertificateCode(onSuccess: () -> Unit, notResponse: () -> Unit) {
 
         viewModelScope.launch {
             when (val result = postRequestCertificateCodeUseCase(
@@ -112,12 +113,16 @@ class LoginViewModel @Inject constructor(
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()
                 is ApiState.Success<*> -> result.onSuccess { onSuccess() }
-                is ApiState.NotResponse -> TODO()
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        notResponse()
+                    }
+                }
             }
         }
     }
 
-    fun fetchCheckCertificateCode(onSuccess: (Boolean) -> Unit) {
+    fun fetchCheckCertificateCode(onSuccess: (Boolean) -> Unit, notResponse: () -> Unit) {
         viewModelScope.launch {
             when (val result = checkCertificateCodeUseCase(
                 phone = phone.value.number.formatPhoneDashNumber(),
@@ -132,12 +137,20 @@ class LoginViewModel @Inject constructor(
                     Log.d("daeyoung", "userId: $userId")
                     onSuccess(isExist.isExist)
                 }
-                is ApiState.NotResponse -> Log.d("daeyoung", "ApiState.NotResponse: ${result.message}\n${result.exception}")
+                is ApiState.NotResponse -> {
+                    Log.d(
+                        "daeyoung",
+                        "ApiState.NotResponse: ${result.message}\n${result.exception}"
+                    )
+                    if (result.exception is ConnectException) {
+                        notResponse()
+                    }
+                }
             }
         }
     }
 
-    fun fetchSignupProfileImage(onSuccess: () -> Unit) {
+    fun fetchSignupProfileImage(onSuccess: () -> Unit, notResponse: () -> Unit) {
         viewModelScope.launch {
             when (val result = signupProfileImageUseCase(
                 userId = userId,
@@ -147,7 +160,11 @@ class LoginViewModel @Inject constructor(
                 is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                 ApiState.Loading -> TODO()
                 is ApiState.Success<*> -> result.onSuccess { onSuccess() }
-                is ApiState.NotResponse -> TODO()
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        notResponse()
+                    }
+                }
             }
         }
     }

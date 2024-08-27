@@ -262,7 +262,11 @@ fun ProfileInitScreen(
                 .height(55.dp),
             text = "확인", enabled = buttonEnabled
         ) {
-            loginViewModel.fetchSignupProfileImage { applicationState.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }
+            loginViewModel.fetchSignupProfileImage(onSuccess = { applicationState.navigate("${Constants.SIGNUP_COMPLETE_ROUTE}/${loginViewModel.userId}/${profileInitUiState.name}") }) {
+                applicationState.showSnackbar(
+                    "인터넷이 연결이 되어 있지 않습니다."
+                )
+            }
         }
     }
 

@@ -65,13 +65,15 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
 
     val buttonEnabled by remember {
         derivedStateOf {
-            when(loginScreenState) {
+            when (loginScreenState) {
                 is LoginScreenState.Phone -> {
                     loginPhoneAuthUiState.phoneNumber.checkValidation()
                 }
+
                 is LoginScreenState.MobileCarrier -> {
                     loginPhoneAuthUiState.phoneNumber.mobileCarrier != MobileCarrier.NOT
                 }
+
                 is LoginScreenState.CertificateCode -> {
                     loginPhoneAuthUiState.verificationCode.isNotEmpty()
                 }
@@ -140,7 +142,10 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
             }
 
             if (loginScreenState !is LoginScreenState.Phone) {
-                LoginOutLineTextField(label = "통신사", isCompleted = loginScreenState !is LoginScreenState.MobileCarrier) {
+                LoginOutLineTextField(
+                    label = "통신사",
+                    isCompleted = loginScreenState !is LoginScreenState.MobileCarrier
+                ) {
                     MobileCarrierBox(
                         isCompleted = loginScreenState !is LoginScreenState.MobileCarrier,
                         mobileCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier.getName()
@@ -151,7 +156,10 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
-            LoginOutLineTextField(label = "휴대전화 번호", isCompleted = loginScreenState !is LoginScreenState.Phone) {
+            LoginOutLineTextField(
+                label = "휴대전화 번호",
+                isCompleted = loginScreenState !is LoginScreenState.Phone
+            ) {
                 PhoneOutLineTextField(
 //                    text = loginPhoneAuthUiState.phoneNumber.number,
 //                    updatePhone = {
@@ -176,21 +184,25 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
             text = "다음",
             enabled = buttonEnabled
         ) {
-            when(loginScreenState) {
+            when (loginScreenState) {
                 is LoginScreenState.CertificateCode -> {
-                    loginViewModel.fetchCheckCertificateCode { isExistedUser ->
+                    loginViewModel.fetchCheckCertificateCode(onSuccess = { isExistedUser ->
                         if (isExistedUser) {
                             applicationState.navigatePopBackStack(Constants.HOME_ROUTE)
                         } else {
                             applicationState.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
                         }
+                    }) {
+                        applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
                     }
                 }
+
                 is LoginScreenState.MobileCarrier -> {
-                    loginViewModel.fetchRequestCertificateCode {
-                        loginScreenState = LoginScreenState.CertificateCode()
+                    loginViewModel.fetchRequestCertificateCode(onSuccess = {loginScreenState = LoginScreenState.CertificateCode()}) {
+                        applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
                     }
                 }
+
                 is LoginScreenState.Phone -> {
                     loginScreenState = LoginScreenState.MobileCarrier()
                 }
@@ -205,7 +217,7 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
 fun LoginOutLineTextField(
     label: String,
     isCompleted: Boolean = false,
-    textField: @Composable () -> Unit
+    textField: @Composable () -> Unit,
 ) {
 
     val completedColor = Gray400
@@ -230,7 +242,7 @@ fun MobileCarrierBox(
     modifier: Modifier = Modifier,
     isCompleted: Boolean = false,
     mobileCarrier: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val borderColor = if (isCompleted) Gray200 else PrimaryBlue2
     val backgroundColor = if (isCompleted) Gray50 else Color.White

@@ -14,6 +14,7 @@ import com.example.domain.model.response.CallLogResponse
 import com.example.domain.model.response.ContactResponse
 import com.example.domain.model.response.MostCalledDateTimeResponse
 import com.example.domain.model.safeFlow
+import com.example.domain.model.safeFlowUnit
 import com.example.domain.repository.ContactRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -27,20 +28,15 @@ class ContactRepositoryImpl @Inject constructor(
     override fun syncContacts(
         userId: Long,
         contacts: List<Contact>
-    ): Flow<ApiState<Unit>> = flow {
-        kotlin.runCatching {
-            val contactList = mutableListOf<ContactDTO>()
-            contacts.forEach {
-                contactList.add(it.toDTO())
-            }
-            val contactsRequest = ContactsRequest(userId.toString(), contactList)
-            contactApi.syncContacts(contactsRequest)
-        }.onSuccess {
-            emit(ApiState.Success(Unit))
-        }.onFailure {error ->
-            error.message?.let { emit(ApiState.Error(it)) }
+    ): Flow<ApiState<Unit>> = safeFlowUnit {
+        val contactList = mutableListOf<ContactDTO>()
+        contacts.forEach {
+            contactList.add(it.toDTO())
         }
-    }.flowOn(Dispatchers.IO)
+        val contactsRequest = ContactsRequest(userId.toString(), contactList)
+        contactApi.syncContacts(contactsRequest)
+    }
+
 
     override fun syncCallLogs(userId: Long, callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>> = safeFlow {
         val callLogRequest = CallLogRequest(

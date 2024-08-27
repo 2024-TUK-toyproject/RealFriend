@@ -55,9 +55,9 @@ class ApplicationState(
 //                saveState = true
                 }
             }
-
 //            launchSingleTop = true
 //            restoreState = true
         }
+        currentRoute = route
     }
 }

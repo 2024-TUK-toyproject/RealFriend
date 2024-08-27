@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 
 sealed interface Event {
@@ -44,13 +45,16 @@ class NotificationViewModel @Inject constructor(
     }
 
 
-    suspend fun fetchReadAllFriendRequest() {
+    suspend fun fetchReadAllFriendRequest(notResponse: () -> Unit) {
 //        viewModelScope.launch {
         when (val result = readAllFriendRequestUseCase().first()) {
             is ApiState.Error -> TODO()
             ApiState.Loading -> TODO()
             is ApiState.NotResponse -> {
                 Log.d("daeyoung", "message: ${result.message}\nexception: ${result.exception}")
+                if (result.exception is ConnectException) {
+                    notResponse()
+                }
             }
 
             is ApiState.Success -> {
@@ -59,13 +63,16 @@ class NotificationViewModel @Inject constructor(
         }
     }
 
-    fun fetchAcceptFriendRequest(friendRequestId: Long) {
+    fun fetchAcceptFriendRequest(friendRequestId: Long, notResponse: () -> Unit) {
         viewModelScope.launch {
             when (val result = acceptFriendRequestUseCase(friendRequestId).first()) {
                 is ApiState.Error -> TODO()
                 ApiState.Loading -> TODO()
                 is ApiState.NotResponse -> {
                     Log.d("daeyoung", "message: ${result.message}\nexception: ${result.exception}")
+                    if (result.exception is ConnectException) {
+                        notResponse()
+                    }
                 }
 
                 is ApiState.Success -> {
