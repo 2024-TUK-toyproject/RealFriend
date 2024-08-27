@@ -103,14 +103,16 @@ class Friend_request_list_response(BaseModel):
                     "userId": "123456",
                     "name": "홍길동",
                     "phone": "010-1234-5678",
-                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+                    "time" : "14:20:01"
                 },
                 {
                     "friendRequestId" : "123456",
                     "userId": "654321",
                     "name": "김철수",
                     "phone": "010-1234-5678",
-                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+                    "time" : "14:20:01"
                 }
             ],
             "어제": [
@@ -119,7 +121,8 @@ class Friend_request_list_response(BaseModel):
                     "userId": "123456",
                     "name": "홍길동",
                     "phone": "010-1234-5678",
-                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+                    "time" : "14:20:01"
                 }
             ],
             "2024-08-10": [
@@ -128,7 +131,8 @@ class Friend_request_list_response(BaseModel):
                     "userId": "654321",
                     "name": "김철수",
                     "phone": "010-1234-5678",
-                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"
+                    "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+                    "time" : "14:20:01"
                 }
             ]
         }
@@ -190,6 +194,9 @@ class Album_create_request(BaseModel):
 class Add_friend_request(BaseModel):
     friendId : str = Field(..., example = "654321")
 
+class Reject_friend_request(BaseModel):
+    friendRequestId : str = Field(..., example = "123456")
+
 class Accept_friend_request(BaseModel):
     friendRequestId : str = Field(..., example = "123456")
 
@@ -197,3 +204,9 @@ class Delete_friend_request(BaseModel):
     content : List[Dict[str, str]] = Field(
         [{"friendId" : "654321"}]
     )
+
+class FCM_request(BaseModel):
+    token : str = Field(..., example = "ksjdnfjkdasnfljsknafljansdfjlsakn")
+    title : str = Field(..., example = "CONNEX")
+    body : str = Field(..., example = "친구 요청이 왔습니다.")
+
