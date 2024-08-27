@@ -8,6 +8,7 @@ from .service.download import download_service
 from .service.user import User_service
 from .service.album import Album_service
 from .util import JWTService
+from .fcm_service import send_push_notification
 
 router = APIRouter()
 jwt = JWTService()
@@ -39,6 +40,17 @@ async def test_make_access_token(phone : str, userId : str):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/test/fcm/send", tags = ["Test/FCM"], summary = "푸시 알림 테스트")
+async def test_send_fcm(request : FCM_request):
+    try:
+        data = {
+            "title" : request.title,
+            "body" : request.body
+        }
+        return await send_push_notification(request.token, data)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # 실제 라우트
@@ -69,9 +81,9 @@ async def certification_user(request : Certificate_request, user_service : User_
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/register/setprofile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 등록 성공"}, 400 : {"model" : Error_response, "description" : "프로필 등록 실패"}}, tags = ["Register"], summary = "프로필 사진과 사용자 이름을 서버로 전송(쿼리스트링으로 전송 바람) / 이 과정까지만 userId를 사용 이후엔 토큰을 사용")
-async def set_profile(userId : str, name : str, file : Optional[UploadFile] = None, user_service : User_service = Depends()):
+async def set_profile(userId : str, name : str, fcmToken : str,file : Optional[UploadFile] = None, user_service : User_service = Depends()):
     try:
-        return await user_service.set_profile(userId, name, file)
+        return await user_service.set_profile(userId, name, fcmToken, file)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -163,7 +175,7 @@ async def accept_friend(request : Accept_friend_request, token = Depends(APIKeyH
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/users/reject/friend", responses = {200 : {"model" : CommoneResponse, "description" : "친구 요청 거절 성공"}, 400 : {"model" : Error_response, "description" : "친구 요청 거절 실패"}}, tags = ["User/friend"], summary = "친구 요청 거절")
-async def reject_friend(request : Delete_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+async def reject_friend(request : Reject_friend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
     try:
         return await user_service.reject_friend(request, token)
     
