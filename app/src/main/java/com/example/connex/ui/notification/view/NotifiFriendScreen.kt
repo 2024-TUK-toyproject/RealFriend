@@ -1,6 +1,7 @@
 package com.example.connex.ui.notification.view
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,13 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,42 +30,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.theme.Body1Medium
-import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Regular
-import com.example.connex.ui.theme.Btn11ptMedium
-import com.example.connex.ui.theme.Btn11ptRegular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
-import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Text11ptRegular
 import com.example.connex.ui.theme.White
+import com.example.domain.model.notification.FriendRequest
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun NotifiFriendScreen(modifier: Modifier = Modifier) {
-    val dummy = hashMapOf<String, List<NotifiFriendAskDto>>(
-        "오늘" to listOf(
-            NotifiFriendAskDto(
-                profile = "",
-                name = "주히",
-                time = "오후 4시 24분",
-            ),
-            NotifiFriendAskDto(
-                profile = "",
-                name = "주히",
-                time = "오후 4시 24분",
-            ),
-        )
-    )
+fun NotifiFriendScreen(
+    friendRequests: Map<String, List<FriendRequest>>,
+    acceptFriendRequest: (Long) -> Unit,
+    rejectFriendRequest: (Long) -> Unit,
+) {
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        dummy.forEach { (date, list) ->
+        friendRequests.forEach { (date, list) ->
             item {
                 ColumnSpacer(height = 24.dp)
             }
@@ -77,12 +69,16 @@ fun NotifiFriendScreen(modifier: Modifier = Modifier) {
                     color = Gray400
                 )
             }
-            items(list.size) {
+
+            items(items = list, key = { it.friendRequestId }) { friendRequests ->
                 NotifiFriendAskCard(
-                    profile = list[it].profile,
-                    name = list[it].name,
-                    time = list[it].time,
-                )
+                    profile = friendRequests.profileImage,
+                    name = friendRequests.name,
+                    time = friendRequests.time,
+                    accept = { acceptFriendRequest(friendRequests.friendRequestId) }
+                ) {
+
+                }
             }
         }
 
@@ -90,7 +86,13 @@ fun NotifiFriendScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NotifiFriendAskCard(profile: String, name: String, time: String) {
+fun NotifiFriendAskCard(
+    profile: String,
+    name: String,
+    time: String,
+    accept: () -> Unit,
+    reject: () -> Unit,
+) {
 
     val commentStyle = TextStyle(
         fontSize = 14.sp,
@@ -105,12 +107,24 @@ fun NotifiFriendAskCard(profile: String, name: String, time: String) {
             .padding(horizontal = 28.dp, vertical = 10.dp)
     ) {
         // TODO(Box를 기본 사진으로 바꿀 것)
-        Box(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(Gray100)
-                .size(40.dp)
-        )
+        if (profile.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(Gray100)
+                    .size(40.dp)
+            )
+        } else {
+            Image(
+                painter = rememberAsyncImagePainter(model = profile),
+                contentDescription = "image_profile",
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(40.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+
         // <--------------- 여기 까지
         RowSpacer(width = 12.dp)
         Column(modifier = Modifier.weight(1f)) {
@@ -126,9 +140,9 @@ fun NotifiFriendAskCard(profile: String, name: String, time: String) {
         }
         RowSpacer(width = 11.dp)
         Row(modifier = Modifier.padding(top = 9.dp)) {
-            NotifiFriendIgnoreBtn {}
+            NotifiFriendIgnoreBtn { reject() }
             RowSpacer(width = 8.dp)
-            NotifiFriendAskBtn {}
+            NotifiFriendAskBtn { accept() }
         }
 
 

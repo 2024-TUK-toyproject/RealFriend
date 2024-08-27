@@ -54,9 +54,6 @@ import com.example.domain.model.login.MobileCarrier
 @Composable
 fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewModel) {
 
-    Log.d("daeyoung", "LoginScreen: ${applicationState.navController.currentBackStack.value}")
-
-
     val focusManager = LocalFocusManager.current
     val loginPhoneAuthUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
 
@@ -183,7 +180,7 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
                 is LoginScreenState.CertificateCode -> {
                     loginViewModel.fetchCheckCertificateCode { isExistedUser ->
                         if (isExistedUser) {
-                            applicationState.navigate(Constants.HOME_ROUTE)
+                            applicationState.navigatePopBackStack(Constants.HOME_ROUTE)
                         } else {
                             applicationState.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
                         }

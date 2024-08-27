@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
 import com.example.domain.model.response.Friend
 import com.example.domain.model.response.asDomain
-import com.example.domain.usecase.DeleteFriendUseCase
+import com.example.domain.usecase.friend.DeleteFriendUseCase
 import com.example.domain.usecase.ReadAllFriendsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

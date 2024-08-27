@@ -30,12 +30,8 @@ interface ContactApi {
     @GET("/users/get/{user_id}/longestcall")
     suspend fun readMostCalledUsers(@Path("user_id") userId: String): DefaultResponse<MostCalledDateTimeResponse>
 
-    // 친구 리스트 조회
+    // 연락처 리스트 조회
     @GET("/users/get/friend")
     suspend fun readAllFriends(): DefaultResponse<List<ContactResponse>>
-
-    // 친구 삭제
-    @HTTP(method = "DELETE", path = "/users/delete/friend", hasBody = true)
-    suspend fun deleteFriend(@Body contactId: ContentRequest<List<FriendIdRequest>>): DefaultResponse<Unit>
 
 }

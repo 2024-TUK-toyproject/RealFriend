@@ -18,7 +18,4 @@ interface ContactRepository {
     fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>>
 
     fun readAllFriends(): Flow<ApiState<List<ContactResponse>>>
-
-    fun deleteFriend(friendIds: List<String>): Flow<ApiState<Unit>>
-
 }

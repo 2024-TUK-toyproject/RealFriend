@@ -1,8 +1,10 @@
 package com.example.data.di
 
 import com.example.data.repository.ContactRepositoryImpl
+import com.example.data.repository.FriendRepositoryImpl
 import com.example.data.repository.LoginRepositoryImpl
 import com.example.domain.repository.ContactRepository
+import com.example.domain.repository.FriendRepository
 import com.example.domain.repository.LoginRepository
 import dagger.Binds
 import dagger.Module
@@ -27,4 +29,10 @@ abstract class RepositoryModule {
     abstract fun bindContactRepository(
         contactRepositoryImpl: ContactRepositoryImpl,
     ): ContactRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindFriendRepository(
+        friendRepositoryImpl: FriendRepositoryImpl,
+    ): FriendRepository
 }

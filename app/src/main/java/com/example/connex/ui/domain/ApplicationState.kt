@@ -1,5 +1,6 @@
 package com.example.connex.ui.domain
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material3.SnackbarDuration
@@ -21,6 +22,7 @@ class ApplicationState(
 //    val systmeUiController: SystemUiController,
     private val coroutineScope: CoroutineScope,
 ) {
+    private var currentRoute: String? = Constants.SPLASH_ROUTE
 
     fun changeBottomBarVisibility(visibility: Boolean) {
         bottomBarState.value = visibility
@@ -38,14 +40,22 @@ class ApplicationState(
 
     fun navigate(route: String) {
         navController.navigate(route)
+        currentRoute = route
     }
 
-    fun navigatePopBackStack(previousRoute: String, route: String) {
+    fun navigate(uri: Uri) {
+        navController.navigate(uri)
+    }
+
+    fun navigatePopBackStack(route: String) {
         navController.navigate(route) {
-            popUpTo(previousRoute) {
-                inclusive = true
+            currentRoute?.let {
+                popUpTo(it) {
+                    inclusive = true
 //                saveState = true
+                }
             }
+
 //            launchSingleTop = true
 //            restoreState = true
         }

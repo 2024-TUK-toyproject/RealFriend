@@ -16,17 +16,17 @@ import com.example.connex.utils.Constants
 @Composable
 fun SplashScreen(splashViewModel: SplashViewModel = hiltViewModel(), applicationState: ApplicationState) {
 
-    Log.d("navigate", "SplashScreen")
+    Log.d("test", "SplashScreen")
     applicationState.navController.currentBackStack.value.forEach {
-        Log.d("navigate", "$it")
+        Log.d("test", "navBackStackEntry: ${it.destination.route}")
 
     }
 
 
     LaunchedEffect(Unit) {
         splashViewModel.fetchAutoLogin(
-            onSuccess = { applicationState.navigatePopBackStack(Constants.SPLASH_ROUTE, Constants.HOME_ROUTE) },
-            onFail = { applicationState.navigatePopBackStack(Constants.SPLASH_ROUTE, Constants.SIGNUP_START_ROUTE) },
+            onSuccess = { applicationState.navigatePopBackStack(Constants.HOME_ROUTE) },
+            onFail = { applicationState.navigatePopBackStack(Constants.SIGNUP_START_ROUTE) },
             notResponse = {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")})
     }
 

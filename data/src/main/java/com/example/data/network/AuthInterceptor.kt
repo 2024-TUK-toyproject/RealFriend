@@ -32,7 +32,7 @@ class AuthInterceptor @Inject constructor(
 
         Log.d("daeyoung", "token: $token")
 
-//        val request = chain.request().newBuilder().header(AUTHORIZATION, "Bearer $token").build()
+//        val request = chain.request().newBuilder().header(AUTHORIZATION, "Bearer token").build()
         val request = chain.request().newBuilder().header(AUTHORIZATION, "$token").build()
 
         val response = chain.proceed(request)

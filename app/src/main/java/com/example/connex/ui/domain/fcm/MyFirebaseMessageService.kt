@@ -3,12 +3,15 @@ package com.example.connex.ui.domain.fcm
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import com.example.connex.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -33,14 +36,30 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         // Log.d(TAG, "Notification Message Body: " + remoteMessage.notification?.body!!)
 
         Log.d("daeyoung", "remoteMessage: ${remoteMessage.data}")
+        Log.d("test", "onMessageReceived: ${remoteMessage}")
 
-        if((remoteMessage.notification != null)){
+        if ((remoteMessage.notification != null)) {
             sendNotification(remoteMessage)
-        }
-        else {
+        } else {
             Log.i("daeyoung", "수신에러: 메시지를 수신하지 못했습니다. \n${remoteMessage.notification}")
         }
     }
+
+//    override fun handleIntent(intent: Intent?) {
+//        Log.d("test", "handleIntent 전: ${intent}")
+//
+//        val new = intent?.apply {
+//            val temp = extras?.apply {
+//                remove(com.google.firebase.messaging.Constants.MessageNotificationKeys.ENABLE_NOTIFICATION)
+////                remove(keyWithOldPrefix(com.google.firebase.messaging.Constants.MessageNotificationKeys.ENABLE_NOTIFICATION))
+//            }
+//            replaceExtras(temp)
+//        }
+//        Log.d("test", "handleIntent 후: ${intent}")
+//
+//        super.handleIntent(new)
+//    }
+
 
     private fun sendNotification(remoteMessage: RemoteMessage) {
         // RequestCode, Id를 고유값으로 지정하여 알림이 개별 표시되도록 함
@@ -48,12 +67,29 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         val title = remoteMessage.notification?.title ?: "Connex"
         val body = remoteMessage.notification?.body ?: "Test"
         val image = remoteMessage.data["profileImage"] ?: Constants.DEFAULT_PROFILE
-        // 일회용 PendingIntent
-        // PendingIntent : Intent 의 실행 권한을 외부의 어플리케이션에게 위임한다.
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP) // Activity Stack 을 경로만 남긴다. A-B-C-D-B => A-B
-        val pendingIntent = PendingIntent.getActivity(this, uniId, intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+
+        val initialPage = 1
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("${Constants.DEEP_LINK_URI}${Constants.NOTIFICATION_ROUTE}/${initialPage}"),
+//            this,
+//            MainActivity::class.java
+        ).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+
+        val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//        val deepLinkPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+//            addNextIntentWithParentStack(deepLinkIntent)
+//            getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+//        }
+
+        val deepLinkPendingIntent = PendingIntent.getActivity(
+            this,
+            uniId,
+            deepLinkIntent,
+            flags
+        )
 
         // 알림 채널 이름
 //        val channelId = getString(R.string.firebase_notification_channel_id)
@@ -71,14 +107,16 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
             .setContentText(body) // 메시지 내용
             .setAutoCancel(true)
             .setSound(soundUri) // 알림 소리
-            .setContentIntent(pendingIntent) // 알림 실행 시 Intent
+//            .setContentIntent(pendingIntent) // 알림 실행 시 Intent
+            .setContentIntent(deepLinkPendingIntent) // 알림 실행 시 Intent
 
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // 오레오 버전 이후에는 채널이 필요하다.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Notice", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel =
+                NotificationChannel(channelId, "Notice", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
 

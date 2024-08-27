@@ -1,6 +1,8 @@
 package com.example.connex
 
+import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,8 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.util.Consumer
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import com.example.connex.ui.component.BottomBar
@@ -28,6 +32,7 @@ fun RootNavhost(
     navBackStackEntry: NavBackStackEntry?,
     appState: ApplicationState,
 ) {
+
     Scaffold(
         modifier = Modifier,
         snackbarHost = { SnackbarHost(appState.snackbarHostState) }) { innerPadding ->
@@ -44,6 +49,8 @@ fun RootNavhost(
                     .fillMaxSize()
                     .customNavigationBarPaading(navBackStackEntry, appState),
             ) {
+                Log.d("test", "RootNavhost")
+
                 loginGraph(appState)
                 initSettingGraph(appState)
                 homeGraph(appState)

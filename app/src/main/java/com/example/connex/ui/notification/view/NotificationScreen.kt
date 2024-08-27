@@ -1,5 +1,6 @@
 package com.example.connex.ui.notification.view
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +15,14 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.domain.ApplicationState
@@ -35,25 +39,45 @@ import kotlinx.coroutines.launch
 @Composable
 fun NotificationScreen(
     applicationState: ApplicationState,
+    initialPage: Int,
     notificationViewModel: NotificationViewModel = hiltViewModel(),
 ) {
+
+    val notificationFriendUiState =
+        notificationViewModel.requestedFriend.collectAsStateWithLifecycle().value
+
+
+    Log.d("test", "NotificationScreen")
+    applicationState.navController.currentBackStack.value.forEach {
+        Log.d("test", "navBackStackEntry: ${it.destination.route}")
+    }
+
+    LaunchedEffect(Unit) {
+        notificationViewModel.fetchReadAllFriendRequest()
+    }
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { BackArrowAppBar(text = "알림") { applicationState.popBackStack() } }) {
+        topBar = { BackArrowAppBar(text = "알림") { applicationState.popBackStack() } }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(innerPadding)
         ) {
             val list = listOf("활동", "친구")
-            val pagerState = rememberPagerState {
+            val pagerState = rememberPagerState(initialPage) {
                 list.size
             }
             NotificationTabRow(pagerState = pagerState, list = list)
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {
-                when (it) {
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) {page ->
+                when (page) {
                     0 -> NotifiActivityScreen()
-                    1 -> NotifiFriendScreen()
+                    1 -> NotifiFriendScreen(
+                        notificationFriendUiState,
+                        acceptFriendRequest = { notificationViewModel.fetchAcceptFriendRequest(it) }) {
+
+                    }
                 }
             }
         }
@@ -85,7 +109,9 @@ fun NotificationTabRow(modifier: Modifier = Modifier, pagerState: PagerState, li
                 text = {
                     Text(
                         text = s,
-                        style = if (pagerState.currentPage == index) Body1Medium.copy(color = Gray800) else Body1Regular.copy(color = Gray300)
+                        style = if (pagerState.currentPage == index) Body1Medium.copy(color = Gray800) else Body1Regular.copy(
+                            color = Gray300
+                        )
                     )
                 })
         }

@@ -72,7 +72,7 @@ fun FriendSyncCompleteScreen(applicationState: ApplicationState, userId: Long, n
                 enabled = true
             ) {
 
-                applicationState.navigatePopBackStack(Constants.INIT_SETTING_GRAPH, Screen.Home.route)
+                applicationState.navigatePopBackStack(Screen.Home.route)
             }
 //            Spacer(modifier = Modifier.height(16.dp))
 //            Text(text = "건너뛰기", style = body2Style, modifier = Modifier.clickable { navController.navigate(Constants.HOME_GRAPH) })

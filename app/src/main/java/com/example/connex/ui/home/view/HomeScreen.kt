@@ -65,12 +65,11 @@ import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 @Composable
 fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    Log.d("navigate", "HomeScreen")
+    Log.d("test", "HomeScreen")
 
     navController.currentBackStack.value.forEach {
-        Log.d("navigate", "$it")
+        Log.d("test", "navBackStackEntry: ${it.destination.route}")
     }
-
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchReadMostCallUsers()

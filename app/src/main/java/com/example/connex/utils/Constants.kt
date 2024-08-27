@@ -12,6 +12,8 @@ object Constants {
 
     val CONNEX_DATASTORE = "connex-datastore"
 
+    val DEEP_LINK_URI = "Connex://"
+
     /** navigation id */
     const val HOME_ROUTE = "nav-home"
     const val FRIENDS_ROUTE = "nav-friends"

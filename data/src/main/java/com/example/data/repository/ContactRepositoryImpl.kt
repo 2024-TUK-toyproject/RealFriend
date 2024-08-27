@@ -58,18 +58,4 @@ class ContactRepositoryImpl @Inject constructor(
     override fun readAllFriends(): Flow<ApiState<List<ContactResponse>>> = safeFlow {
         contactApi.readAllFriends()
     }
-
-    override fun deleteFriend(friendIds: List<String>): Flow<ApiState<Unit>> = flow {
-        try {
-            val res = contactApi.deleteFriend(ContentRequest(friendIds.map { FriendIdRequest(it) }))
-            if (res.isSuccessful) {
-                emit(ApiState.Success(Unit))
-            } else {
-                val errorBody = res.errorBody() ?: throw NullPointerException()
-                emit(ApiState.Error(errorBody.string()))
-            }
-        } catch (e: Exception) {
-            emit(ApiState.NotResponse(message = e.message ?: "", exception = e))
-        }
-    }.flowOn(Dispatchers.IO)
 }
