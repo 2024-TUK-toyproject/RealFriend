@@ -72,8 +72,7 @@ private fun Modifier.customNavigationBarPaading(
 //        return Modifier
 //    }
     if (appState.bottomBarState.value) {
-        return Modifier.padding(bottom = Constants.BottomNavigationHeight)
-//        return Modifier.navigationBarsPadding()
+        return Modifier.navigationBarsPadding().padding(bottom = Constants.BottomNavigationHeight)
 
     }
     return Modifier

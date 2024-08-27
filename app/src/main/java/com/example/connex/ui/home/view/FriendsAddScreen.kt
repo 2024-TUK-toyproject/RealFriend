@@ -39,7 +39,7 @@ fun FriendsAddScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), appli
 
     Scaffold(topBar = {
         BackArrowAppBar(text = "친구 추가") {
-
+            applicationState.popBackStack()
         }
     }) { innerPadding ->
         LazyColumn(

@@ -77,7 +77,6 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
 
     Column(
         modifier = Modifier
-//            .navigationBarsPadding()
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {

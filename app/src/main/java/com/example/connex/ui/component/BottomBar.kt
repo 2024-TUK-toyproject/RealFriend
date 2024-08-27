@@ -6,6 +6,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,8 +50,7 @@ fun BoxScope.BottomBar(
         modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.BottomCenter)
-            .background(color = Color.Transparent)
-//            .navigationBarsPadding(),
+            .background(color = Color.Transparent),
     ) {
         BottomNavigation(
             modifier = Modifier

@@ -156,7 +156,6 @@ fun FriendsScreen(
         Surface(modifier = Modifier.padding(paddingValue)) {
             LazyColumn(
                 modifier = Modifier
-//                    .padding(bottom = BottomNavigationHeight)
                     .fillMaxSize(),
                 state = scrollState
             ) {

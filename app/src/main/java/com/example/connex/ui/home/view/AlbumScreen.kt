@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.rounded.Add
@@ -123,68 +124,69 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
 
     val dummyList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
     var count = 110
-    CollapsingToolbarScaffold(
-        modifier = Modifier
-//            .statusBarsPadding()
-            .navigationBarsPadding()
-            .fillMaxSize(),
-        state = state,
-        scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
-        toolbar = {
-            Column(
-                modifier = Modifier
-                    .padding(top = 200.dp)
-                    .parallax(1f)
-            ) {
-                ColumnSpacer(height = 28.dp)
-                SkyBlueBox(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    leadingImage = Icons.Rounded.Add,
-                    leadingImageSize = 32.dp,
-                    title = "우리만 볼 수 있는",
-                    body = "공유 앨범 생성하기",
-                    enabled = true,
+    Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
+        CollapsingToolbarScaffold(
+            modifier = Modifier
+                .fillMaxSize(),
+            state = state,
+            scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+            toolbar = {
+                Column(
+                    modifier = Modifier
+                        .padding(top = 85.dp)
+                        .parallax(1f)
                 ) {
+//                ColumnSpacer(height = 28.dp)
+                    SkyBlueBox(
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        leadingImage = Icons.Rounded.Add,
+                        leadingImageSize = 32.dp,
+                        title = "우리만 볼 수 있는",
+                        body = "공유 앨범 생성하기",
+                        enabled = true,
+                    ) {
 
-                }
-                ColumnSpacer(height = 24.dp)
-                NewUploadPictureSection(
-                    listOf(
-                        TempleAlbumData(id = 1),
-                        TempleAlbumData(id = 2),
-                        TempleAlbumData(id = 3),
-                        TempleAlbumData(id = 4),
-                        TempleAlbumData(id = 5),
-                        TempleAlbumData(id = 6),
+                    }
+                    ColumnSpacer(height = 24.dp)
+                    NewUploadPictureSection(
+                        listOf(
+                            TempleAlbumData(id = 1),
+                            TempleAlbumData(id = 2),
+                            TempleAlbumData(id = 3),
+                            TempleAlbumData(id = 4),
+                            TempleAlbumData(id = 5),
+                            TempleAlbumData(id = 6),
+                        )
                     )
-                )
-                ColumnSpacer(height = 24.dp)
-            }
-            AlbumAppbar {}
+                    ColumnSpacer(height = 24.dp)
+                }
+                AlbumAppbar {}
 
-        }
-    ) {
-        Column {
-            AlbumSearchSection(category = "즐겨찾기 순", search = "") {}
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                items(11) {
-                    AlbumCard(
-                        modifier = Modifier
+            }
+        ) {
+            Column {
+                AlbumSearchSection(category = "즐겨찾기 순", search = "") {}
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(start = 24.dp, end = 24.dp),
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                ) {
+                    items(11) {
+                        AlbumCard(
+                            modifier = Modifier
 //                        .weight(1f)
-                            .height(160.dp),
-                        navigate = { /*TODO*/ }
-                    ) {}
+                                .height(160.dp),
+                            navigate = { /*TODO*/ }
+                        ) {}
+                    }
                 }
             }
-        }
 
+        }
     }
 }
 
