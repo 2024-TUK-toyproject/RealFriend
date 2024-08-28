@@ -13,6 +13,6 @@ interface LoginRepository {
     fun requestCertificateCode(phone: String, mobileCarrier: String): Flow<ApiState<Unit>>
     fun checkCertificateCode(phone: String, mobileCarrier: String, certificateCode: String): Flow<ApiState<CertificateCodeResponse>>
 
-    fun signupProfileImage(userId: Long, name: String, file: MultipartBody.Part): Flow<ApiState<Unit>>
+    fun signupProfileImage(userId: Long, name: String, fcmToken: String, file: MultipartBody.Part): Flow<ApiState<Unit>>
 
 }

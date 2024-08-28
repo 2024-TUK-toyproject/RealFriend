@@ -57,35 +57,21 @@ class ApplicationState(
         navController.navigate(uri)
     }
 
-    fun navigate() {
-        deepLink?.let {
-            navController.navigate(it)
-        }
-//        navController.
-    }
-
-    fun clearPreviousNavBackStackEntry() {
-        navController.previousBackStackEntry?.destination?.id?.let {
-            Log.d("test", "clearPreviousNavBackStackEntry: ${it}")
-            navController.clearBackStack(it)
-        }
-        navController
-        navController.currentBackStack.value.forEach {
-            Log.d("test", "navBackStackEntry: ${it.destination.route}")
-        }
-    }
-
     fun navigatePopBackStack(route: String) {
         navController.navigate(route) {
-            currentRoute?.let {
-                popUpTo(it) {
-                    inclusive = true
-//                saveState = true
-                }
+            popUpTo(navController.graph.id) {
+                inclusive = true
             }
-//            launchSingleTop = true
-//            restoreState = true
+//            currentRoute?.let {
+//                popUpTo(it) {
+//                    inclusive = true
+////                saveState = true
+//                }
+//            }
         }
+////            launchSingleTop = true
+////            restoreState = true
+//        }
         currentRoute = route
     }
 }

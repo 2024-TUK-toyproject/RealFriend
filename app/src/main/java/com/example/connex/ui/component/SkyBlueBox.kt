@@ -1,6 +1,10 @@
 package com.example.connex.ui.component
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,7 +36,7 @@ import com.example.connex.ui.theme.White
 @Composable
 fun SkyBlueBox(
     modifier: Modifier = Modifier,
-    leadingImage: ImageVector,
+    leadingImage: @Composable BoxScope.() -> Unit,
     leadingImageSize: Dp,
     imageAndTextPadding: Dp = 24.dp,
     title: String,
@@ -63,13 +67,11 @@ fun SkyBlueBox(
                     containerColor = PrimaryBlue3,
                     contentColor = White
                 ),
-                elevation = if(elevation) CardDefaults.cardElevation(defaultElevation = 5.dp) else CardDefaults.cardElevation()
+                elevation = if (elevation) CardDefaults.cardElevation(defaultElevation = 5.dp) else CardDefaults.cardElevation()
             ) {
-                Icon(
-                    imageVector = leadingImage,
-                    contentDescription = "ic_...",
-                    modifier = Modifier.fillMaxSize()
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    leadingImage()
+                }
             }
             RowSpacer(width = imageAndTextPadding)
             Column {

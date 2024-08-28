@@ -121,7 +121,7 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            MypageScreen()
+            MypageScreen(applicationState = applicationState)
         }
 
         composable(FRIEND_REMOVE_ROUTE) { entry ->

@@ -54,20 +54,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("test", "onCreate, intent: $intent")
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("daeyoung", "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and toast
-//            val msg = getString(R.string.msg_token_fmt, token)
-            Log.d("daeyoung", token)
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
-        })
 
         enableEdgeToEdge()
         setContent {
@@ -75,25 +61,6 @@ class MainActivity : ComponentActivity() {
 
             val appState = rememberApplicationState()
             val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
-
-//            val event by notificationViewModel.event.collectAsStateWithLifecycle()
-//            intent?.data?.let {
-//                Log.d("test", "intent, deepLink: ${it}")
-//                appState.handleDeepLink(it)
-//            }
-//            LaunchedEffect(event) {
-//                Log.d("test", "LaunchedEffect, event: $event")
-//                when (val currentEvent = event) {
-//                    is Event.NavigateWithDeeplink -> appState.navigate(currentEvent.deeplink)
-//                    Event.None -> Unit
-//                }
-//                notificationViewModel.consumeEvent()
-//            }
-
-//            LaunchedEffect(appState.deepLink) {
-//                Log.d("test", "LaunchedEffect, deepLink: ${appState.deepLink}")
-//                appState.navigate()
-//            }
 
             DisposableEffect(appState.navController) {
                 val consumer = Consumer<Intent> { intent ->

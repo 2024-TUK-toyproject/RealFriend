@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.asMultipart
 import com.example.connex.utils.formatPhoneDashNumber
+import com.example.data.datastore.TokenManager
 import com.example.domain.model.ApiState
 import com.example.domain.model.login.MobileCarrier
 import com.example.domain.model.login.Phone
@@ -15,6 +16,8 @@ import com.example.domain.model.response.asDomain
 import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
 import com.example.domain.usecase.SignupProfileImageUseCase
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +44,8 @@ data class ProfileInitUiState(
 sealed class LoginScreenState(open val title: String) {
     data class Phone(override val title: String = "휴대전화 번호를\n입력해 주세요") : LoginScreenState(title)
     data class MobileCarrier(override val title: String = "통신사를\n선택해 주세요") : LoginScreenState(title)
-    data class CertificateCode(override val title: String = "안중번호를\n입력해 주세요") : LoginScreenState(title)
+    data class CertificateCode(override val title: String = "안중번호를\n입력해 주세요") :
+        LoginScreenState(title)
 }
 
 @HiltViewModel
@@ -49,6 +53,7 @@ class LoginViewModel @Inject constructor(
     val postRequestCertificateCodeUseCase: PostRequestCertificateCodeUseCase,
     val checkCertificateCodeUseCase: CheckCertificateCodeUseCase,
     val signupProfileImageUseCase: SignupProfileImageUseCase,
+    val tokenManager: TokenManager,
     @ApplicationContext val context: Context,
 ) : ViewModel() {
 
@@ -102,6 +107,21 @@ class LoginViewModel @Inject constructor(
         _name.value = name
     }
 
+    private fun getFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("daeyoung", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            } else {
+                viewModelScope.launch {
+                    val token = task.result
+                    tokenManager.saveFCMToken(token)
+                    Log.d("daeyoung", "FCMToken: $token")
+                }
+            }
+        })
+    }
+
 
     fun fetchRequestCertificateCode(onSuccess: () -> Unit, notResponse: () -> Unit) {
 
@@ -136,7 +156,9 @@ class LoginViewModel @Inject constructor(
                     userId = isExist.userId
                     Log.d("daeyoung", "userId: $userId")
                     onSuccess(isExist.isExist)
+                    getFCMToken()
                 }
+
                 is ApiState.NotResponse -> {
                     Log.d(
                         "daeyoung",
@@ -152,17 +174,20 @@ class LoginViewModel @Inject constructor(
 
     fun fetchSignupProfileImage(onSuccess: () -> Unit, notResponse: () -> Unit) {
         viewModelScope.launch {
-            when (val result = signupProfileImageUseCase(
-                userId = userId,
-                name = name.value,
-                file = imageUrl.value.asMultipart("file", context.contentResolver)!!
-            ).first()) {
-                is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
-                ApiState.Loading -> TODO()
-                is ApiState.Success<*> -> result.onSuccess { onSuccess() }
-                is ApiState.NotResponse -> {
-                    if (result.exception is ConnectException) {
-                        notResponse()
+            tokenManager.getFCMToken().first()?.let { FCMToken ->
+                when (val result = signupProfileImageUseCase(
+                    userId = userId,
+                    name = name.value,
+                    fcmToken = FCMToken,
+                    file = imageUrl.value.asMultipart("file", context.contentResolver)!!
+                ).first()) {
+                    is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
+                    ApiState.Loading -> TODO()
+                    is ApiState.Success<*> -> result.onSuccess { onSuccess() }
+                    is ApiState.NotResponse -> {
+                        if (result.exception is ConnectException) {
+                            notResponse()
+                        }
                     }
                 }
             }

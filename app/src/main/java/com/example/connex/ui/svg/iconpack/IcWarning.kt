@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.svg.IconPack
 
-public val IconPack.IcWarning: ImageVector
+public val IconPack.IcRedWarning: ImageVector
     get() {
         if (_icwarning != null) {
             return _icwarning!!

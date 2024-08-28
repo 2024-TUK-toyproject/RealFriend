@@ -123,7 +123,13 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
 //                ColumnSpacer(height = 28.dp)
                     SkyBlueBox(
                         modifier = Modifier.padding(horizontal = 24.dp),
-                        leadingImage = Icons.Rounded.Add,
+                        leadingImage = {
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = "image_mail",
+                                modifier = Modifier.size(27.dp).align(Alignment.Center)
+                            )
+                        },
                         leadingImageSize = 32.dp,
                         title = "우리만 볼 수 있는",
                         body = "공유 앨범 생성하기",

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +36,9 @@ import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.home.view.BottomSheetAlbumCard
 import com.example.connex.ui.svg.IconPack
-import com.example.connex.ui.svg.iconpack.IcWarning
+import com.example.connex.ui.svg.iconpack.IcBlackWarning
+import com.example.connex.ui.svg.iconpack.IcConnexUsedUser
+import com.example.connex.ui.svg.iconpack.IcRedWarning
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
@@ -84,7 +87,8 @@ fun MobileCarrierModalBottomSheet(
         dragHandle = null
     ) {
         Column(
-            modifier = Modifier.padding(
+//            Spacer(modifier = Modifier.height(43.dp))
+            modifier = Modifier.navigationBarsPadding().padding(
                 bottom = 44.dp,
                 top = 44.dp
             )
@@ -166,6 +170,7 @@ fun FriendRemoveModalBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .padding(
                     start = 24.dp,
                     end = 24.dp,
@@ -174,7 +179,7 @@ fun FriendRemoveModalBottomSheet(
                 ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(imageVector = IconPack.IcWarning, contentDescription = "warning_icon")
+            Image(imageVector = IconPack.IcRedWarning, contentDescription = "warning_icon")
             ColumnSpacer(height = 20.dp)
             Text(text = "정말 삭제하시겠어요?", style = titleStyle)
             ColumnSpacer(height = 12.dp)
@@ -203,7 +208,6 @@ fun FriendRemoveModalBottomSheet(
                 }
 
             }
-//            Spacer(modifier = Modifier.height(43.dp))
         }
     }
 }
@@ -230,6 +234,7 @@ fun ShareAlbumModalBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .navigationBarsPadding()
                 .padding(
                     start = 24.dp,
                     end = 24.dp,
@@ -268,6 +273,62 @@ fun ShareAlbumModalBottomSheet(
                     current++
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FriendAddModalBottomSheet(
+    onClose: () -> Unit,
+) {
+
+    val sheetState = rememberModalBottomSheetState()
+    val titleStyle = TextStyle(
+        fontSize = 20.sp,
+        lineHeight = 28.sp,
+        fontWeight = FontWeight(600),
+        color = Gray900
+    )
+    val contentStyle = TextStyle(
+        fontSize = 16.sp,
+        lineHeight = 22.4.sp,
+        fontWeight = FontWeight(400),
+        color = Gray900,
+        textAlign = TextAlign.Center,
+    )
+
+
+    ModalBottomSheet(
+        onDismissRequest = onClose,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topEnd = 13.dp, topStart = 13.dp),
+        windowInsets = WindowInsets.displayCutout,
+        containerColor = Color.White,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 40.dp,
+                    top = 36.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(imageVector = IconPack.IcBlackWarning, contentDescription = "warning_icon")
+            ColumnSpacer(height = 20.dp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "이름 옆, ", style = titleStyle)
+                Image(imageVector = IconPack.IcConnexUsedUser, contentDescription = "ic_connex_used_user", modifier = Modifier.size(24.dp))
+                Text(text = "는 무엇인가요?", style = titleStyle)
+            }
+            ColumnSpacer(height = 12.dp)
+            Text(text = "이미 Connex의 회원인\n친구임을 나타내는 표시입니다.", style = contentStyle)
         }
     }
 }

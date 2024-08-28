@@ -30,8 +30,7 @@ interface LoginApi {
     suspend fun signupProfileImage(
         @Query("userId") userId: String,
         @Query("name") name: String,
+        @Query("fcmToken") fcmToken: String,
         @Part file: MultipartBody.Part
     ): DefaultResponse<Unit>
-
-
 }

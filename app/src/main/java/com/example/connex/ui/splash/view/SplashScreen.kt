@@ -19,7 +19,6 @@ fun SplashScreen(splashViewModel: SplashViewModel = hiltViewModel(), application
     Log.d("test", "SplashScreen")
     applicationState.navController.currentBackStack.value.forEach {
         Log.d("test", "navBackStackEntry: ${it.destination.route}")
-
     }
 
 

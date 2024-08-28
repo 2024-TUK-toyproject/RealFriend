@@ -38,28 +38,12 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         Log.d("daeyoung", "remoteMessage: ${remoteMessage.data}")
         Log.d("test", "onMessageReceived: ${remoteMessage}")
 
-        if (remoteMessage.data["name"] != null) {
+        if (remoteMessage.data["title"] != null && remoteMessage.data["body"] != null) {
             sendNotification(remoteMessage)
         } else {
             Log.i("daeyoung", "수신에러: 메시지를 수신하지 못했습니다. \n${remoteMessage.notification}")
         }
     }
-
-//    override fun handleIntent(intent: Intent?) {
-//        Log.d("test", "handleIntent 전: ${intent}")
-//
-//        val new = intent?.apply {
-//            val temp = extras?.apply {
-//                remove(com.google.firebase.messaging.Constants.MessageNotificationKeys.ENABLE_NOTIFICATION)
-////                remove(keyWithOldPrefix(com.google.firebase.messaging.Constants.MessageNotificationKeys.ENABLE_NOTIFICATION))
-//            }
-//            replaceExtras(temp)
-//        }
-//        Log.d("test", "handleIntent 후: ${intent}")
-//
-//        super.handleIntent(new)
-//    }
-
 
     private fun sendNotification(remoteMessage: RemoteMessage) {
         // RequestCode, Id를 고유값으로 지정하여 알림이 개별 표시되도록 함

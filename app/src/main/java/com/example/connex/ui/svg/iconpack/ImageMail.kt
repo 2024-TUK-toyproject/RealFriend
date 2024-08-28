@@ -14,11 +14,11 @@ public val IconPack.ImageMail: ImageVector
         if (_imagemail != null) {
             return _imagemail!!
         }
-        _imagemail = Builder(name = "Imagemail", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
-                viewportWidth = 24.0f, viewportHeight = 24.0f).apply {
+        _imagemail = Builder(name = "Imagemail", defaultWidth = 32.0.dp, defaultHeight = 32.0.dp,
+                viewportWidth = 32.0f, viewportHeight = 32.0f).apply {
             path(fill = null, stroke = null, strokeLineWidth = 0.0f, strokeLineCap = Butt,
                     strokeLineJoin = Miter, strokeLineMiter = 4.0f, pathFillType = NonZero) {
-                moveTo(0.0f, 0.0f)
+                moveTo(4.0f, 0.0f)
                 horizontalLineToRelative(24.0f)
                 verticalLineToRelative(24.0f)
                 horizontalLineToRelative(-24.0f)

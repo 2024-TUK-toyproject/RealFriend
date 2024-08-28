@@ -64,8 +64,9 @@ class LoginRepositoryImpl @Inject constructor(
     override fun signupProfileImage(
         userId: Long,
         name: String,
+        fcmToken: String,
         file: MultipartBody.Part,
     ): Flow<ApiState<Unit>> = safeFlowUnit {
-        loginApi.signupProfileImage(userId.toString(), name, file)
+        loginApi.signupProfileImage(userId.toString(), name, fcmToken, file)
     }
 }

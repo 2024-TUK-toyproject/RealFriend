@@ -17,14 +17,16 @@ class SplashViewModel @Inject constructor(val autoLoginUseCase: AutoLoginUseCase
     fun fetchAutoLogin(onSuccess: () -> Unit, onFail: () -> Unit, notResponse: () -> Unit) {
         viewModelScope.launch {
             when (val result = autoLoginUseCase().first()) {
-                is ApiState.Error -> onFail()
+                is ApiState.Error -> {
+                    Log.d("daeyoung", "Error: ${result.errMsg}")
+                    onFail()
+                }
                 ApiState.Loading -> TODO()
                 is ApiState.NotResponse -> {
                     Log.d("daeyoung", "fetchAutoLogin NotResponse: ${result.message}\n${result.exception}")
 
                     if (result.exception is ConnectException) {
                         Log.d("daeyoung", "ConnectException: ${result.message}\n${result.exception}")
-
                         notResponse()
                     }
                 }
