@@ -1,6 +1,7 @@
 package com.example.connex.ui.notification.view
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.PrimaryBlue1
+import com.example.connex.utils.Constants
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,42 +48,42 @@ fun NotificationScreen(
     val notificationFriendUiState =
         notificationViewModel.requestedFriend.collectAsStateWithLifecycle().value
 
-
-    Log.d("test", "NotificationScreen")
-    applicationState.navController.currentBackStack.value.forEach {
-        Log.d("test", "navBackStackEntry: ${it.destination.route}")
-    }
-
     LaunchedEffect(Unit) {
         notificationViewModel.fetchReadAllFriendRequest { applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.") }
+    }
+
+    BackHandler {
+        applicationState.popBackStackHome()
     }
 
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { BackArrowAppBar(text = "알림") { applicationState.popBackStack() } }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            val list = listOf("활동", "친구")
-            val pagerState = rememberPagerState(initialPage) {
-                list.size
-            }
-            NotificationTabRow(pagerState = pagerState, list = list)
-            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-                when (page) {
-                    0 -> NotifiActivityScreen()
-                    1 -> NotifiFriendScreen(
-                        notificationFriendUiState,
-                        acceptFriendRequest = {
-                            notificationViewModel.fetchAcceptFriendRequest(it) {
-                                applicationState.showSnackbar(
-                                    "인터넷이 연결이 되어 있지 않습니다."
-                                )
-                            }
-                        }) {
+        topBar = { BackArrowAppBar(text = "알림") { applicationState.popBackStackHome() } }) { innerPadding ->
+        if (notificationFriendUiState.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                val list = listOf("활동", "친구")
+                val pagerState = rememberPagerState(initialPage) {
+                    list.size
+                }
+                NotificationTabRow(pagerState = pagerState, list = list)
+                HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                    when (page) {
+                        0 -> NotifiActivityScreen()
+                        1 -> NotifiFriendScreen(
+                            notificationFriendUiState,
+                            acceptFriendRequest = {
+                                notificationViewModel.fetchAcceptFriendRequest(it) {
+                                    applicationState.showSnackbar(
+                                        "인터넷이 연결이 되어 있지 않습니다."
+                                    )
+                                }
+                            }) {
+                        }
                     }
                 }
             }

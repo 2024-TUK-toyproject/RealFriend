@@ -38,7 +38,7 @@ class MyFirebaseMessageService : FirebaseMessagingService() {
         Log.d("daeyoung", "remoteMessage: ${remoteMessage.data}")
         Log.d("test", "onMessageReceived: ${remoteMessage}")
 
-        if ((remoteMessage.notification != null)) {
+        if (remoteMessage.data["name"] != null) {
             sendNotification(remoteMessage)
         } else {
             Log.i("daeyoung", "수신에러: 메시지를 수신하지 못했습니다. \n${remoteMessage.notification}")

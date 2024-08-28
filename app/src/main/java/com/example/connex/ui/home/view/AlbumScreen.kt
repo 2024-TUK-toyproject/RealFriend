@@ -100,19 +100,6 @@ data class TempleAlbumData(
     val album: String = "",
 )
 
-//
-////private var isHeaderHide = false
-////
-var AlbumHeaderLayout = "AlbumHeaderLayout"
-var AlbumSearchLayout = "AlbumSearchLayout"
-var AlbumBodyLayout = "AlbumBodyLayout"
-
-val HeaderGradientHeight = 24.dp
-
-@OptIn(
-    ExperimentalLayoutApi::class,
-    ExperimentalFoundationApi::class
-)
 @Composable
 fun AlbumScreen(modifier: Modifier = Modifier) {
 
@@ -121,9 +108,6 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
     var headerHeight by remember { mutableIntStateOf(0) }
     var searchHeight by remember { mutableIntStateOf(0) }
 
-
-    val dummyList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-    var count = 110
     Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
         CollapsingToolbarScaffold(
             modifier = Modifier

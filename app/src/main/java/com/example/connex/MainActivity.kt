@@ -37,14 +37,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    val notificationViewModel by viewModels<NotificationViewModel>()
-    override fun onStart() {
-        super.onStart()
-        Log.d("test", "onStart, intent: $intent")
-        intent?.data?.let { notificationViewModel.handleDeeplink(it) }
-        // consume the deeplink
-//        intent = null
-    }
+//    val notificationViewModel by viewModels<NotificationViewModel>()
+//    override fun onStart() {
+//        super.onStart()
+//        Log.d("test", "onStart, intent: $intent")
+////        intent?.data?.let { notificationViewModel.handleDeeplink(it) }
+//        // consume the deeplink
+////        intent = null
+//    }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        Log.d("test", "onCreate, intent: $intent")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("daeyoung", "Fetching FCM registration token failed", task.exception)
@@ -72,21 +72,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Log.d("test", "onCreate(), setContent")
-            Log.d("test", "onCreate(), intent: $intent")
 
             val appState = rememberApplicationState()
             val navBackStackEntry by appState.navController.currentBackStackEntryAsState()
 
-            val event by notificationViewModel.event.collectAsStateWithLifecycle()
+//            val event by notificationViewModel.event.collectAsStateWithLifecycle()
+//            intent?.data?.let {
+//                Log.d("test", "intent, deepLink: ${it}")
+//                appState.handleDeepLink(it)
+//            }
+//            LaunchedEffect(event) {
+//                Log.d("test", "LaunchedEffect, event: $event")
+//                when (val currentEvent = event) {
+//                    is Event.NavigateWithDeeplink -> appState.navigate(currentEvent.deeplink)
+//                    Event.None -> Unit
+//                }
+//                notificationViewModel.consumeEvent()
+//            }
 
-            LaunchedEffect(event) {
-                Log.d("test", "LaunchedEffect, event: $event")
-                when (val currentEvent = event) {
-                    is Event.NavigateWithDeeplink -> appState.navigate(currentEvent.deeplink)
-                    Event.None -> Unit
-                }
-                notificationViewModel.consumeEvent()
-            }
+//            LaunchedEffect(appState.deepLink) {
+//                Log.d("test", "LaunchedEffect, deepLink: ${appState.deepLink}")
+//                appState.navigate()
+//            }
 
             DisposableEffect(appState.navController) {
                 val consumer = Consumer<Intent> { intent ->
@@ -101,11 +108,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-
-
             ConnexTheme {
                 ManageBottomBarState(navBackStackEntry, appState)
-//                Log.d("daeyoung", "bottomState: ${appState.bottomBarState}")
                 Surface(
                     modifier = Modifier
                         .fillMaxSize(),

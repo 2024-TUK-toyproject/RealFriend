@@ -34,9 +34,9 @@ class NotificationViewModel @Inject constructor(
         _requestedFriend.asStateFlow()
 
     fun handleDeeplink(uri: Uri) {
-        Log.d("test", "previous event: $event")
+        Log.d("test", "previous event: ${event.value}")
         event.update { Event.NavigateWithDeeplink(uri) }
-        Log.d("test", "last event: $event")
+        Log.d("test", "last event: ${event.value}")
 
     }
 

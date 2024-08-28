@@ -22,6 +22,7 @@ import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.homeGraph
 import com.example.connex.ui.initSettingGraph
 import com.example.connex.ui.loginGraph
+import com.example.connex.ui.notification.Event
 import com.example.connex.ui.notificationComposable
 import com.example.connex.ui.splashComposable
 import com.example.connex.utils.Constants
@@ -45,14 +46,16 @@ fun RootNavhost(
                 navController = appState.navController,
 //            startDestination = Constants.LOGIN_GRAPH,
                 startDestination = Constants.SPLASH_ROUTE,
+//                startDestination = Constants.NOTIFICATION_ROUTE,
+//                startDestination = Constants.HOME_GRAPH,
                 modifier = Modifier
                     .fillMaxSize()
                     .customNavigationBarPaading(navBackStackEntry, appState),
             ) {
                 Log.d("test", "RootNavhost")
 
-                loginGraph(appState)
-                initSettingGraph(appState)
+//                loginGraph(appState)
+//                initSettingGraph(appState)
                 homeGraph(appState)
                 notificationComposable(appState)
                 splashComposable(appState)
@@ -72,7 +75,9 @@ private fun Modifier.customNavigationBarPaading(
 //        return Modifier
 //    }
     if (appState.bottomBarState.value) {
-        return Modifier.navigationBarsPadding().padding(bottom = Constants.BottomNavigationHeight)
+        return Modifier
+            .navigationBarsPadding()
+            .padding(bottom = Constants.BottomNavigationHeight)
 
     }
     return Modifier
