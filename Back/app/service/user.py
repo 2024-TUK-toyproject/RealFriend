@@ -452,35 +452,42 @@ class User_service:
 
         return CommoneResponse(status = "success", message = "친구 삭제 성공")
 
-    async def test_register(self, phone : str) -> token_response:
-        existing_user = self.db.query(models.user_info).filter(models.user_info.phone == phone).first()
-
-        if existing_user:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 등록된 사용자입니다.")
+    async def recommend_friend(self, token : str, request : Friend_recommend_request) -> Friend_recommend_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None: 
+            raise CustomException2(status_code=status.HTTP_400_BAD_REQUEST, detail="토큰 만료")
         
-        for _ in range(10):
-            new_id = self.rng.generate_unique_random_number(100000, 999999)
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if existing_user is None:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
+        
+        #입력받은 전화번호중 앱 사용자들을 확인
+        phone_list = []
+        for phone in request.content:
+            is_exist = self.db.query(models.user_info).filter(models.user_info.phone == phone["phone"]).first()
 
-        phone_num = self.format_phone_number(phone)
+            if is_exist:
+                phone_list.append({
+                    "userId" : is_exist.user_id,
+                    "name" : is_exist.name,
+                    "phone" : is_exist.phone,
+                    "profileImage" : is_exist.profile_image,
+                    "isExist" : True
+                })
+            else:
+                phone_list.append({
+                    "userId" : None,
+                    "name" :  phone["name"],
+                    "phone" :  phone["phone"],
+                    "profileImage" : f"https://%s.s3.amazonaws.com/profile/default_profile/default.png" % Config.s3_bucket,
+                    "isExist" : False
+                })
 
-        new_user = models.user_info(
-            user_id = new_id,
-            phone = phone_num,
-            create_date = self.today.strftime('%Y-%m-%d'),
-            last_login_date = self.today.strftime('%Y-%m-%d'),
-            refresh_token = self.jwt.create_refresh_token(phone, new_id)
-        )
-
-        return token_response(
+        return Friend_recommend_response(
             status = "success",
-            message = "사용자 등록 성공",
-            content = {
-                "userId" : str(new_id),
-                "accessToken" : self.jwt.create_access_token(phone, new_id),
-                "refreshToken" : new_user.refresh_token
-            }
+            message = "친구 추천 성공",
+            content = phone_list
         )
-
     
     def format_phone_number(self, phone_number : str) -> str:
         if len(phone_number) > 11:
