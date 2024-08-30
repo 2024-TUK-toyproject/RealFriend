@@ -182,5 +182,13 @@ async def reject_friend(request : Reject_friend_request, token = Depends(APIKeyH
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/users/recommend/friends", responses = {200 : {"model" : Friend_recommend_response, "description" : "친구 추천 성공"}, 400 : {"model" : Error_response, "description" : "친구 추천 실패"}}, tags = ["User/friend"], summary = "친구 추천")
+async def recommend_friend(request : Friend_recommend_request, token = Depends(APIKeyHeader(name = "Authorization")), user_service : User_service = Depends()):
+    try:
+        return await user_service.recommend_friend(token, request)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 #친구 삭제 필요
 #새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
