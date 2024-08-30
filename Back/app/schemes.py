@@ -138,6 +138,21 @@ class Friend_request_list_response(BaseModel):
         }
     )
 
+class Friend_recommend_response(BaseModel):
+    status: str = Field("success", example="success or error")
+    message: str = Field("성공메시지 or 오류메시지")
+    content: List[Dict[str, Optional[Union[str, bool]]]] = Field(
+        [
+            {
+                "userId": "123456",
+                "name": "홍길동",
+                "phone": "010-1234-5678",
+                "profileImage": "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg",
+                "isExist": True  # 불린 타입 예시
+            }
+        ]
+    )
+
 
 
 class token_response(BaseModel):
@@ -210,3 +225,10 @@ class FCM_request(BaseModel):
     title : str = Field(..., example = "CONNEX")
     body : str = Field(..., example = "친구 요청이 왔습니다.")
 
+class Friend_recommend_request(BaseModel):
+    content : List[Dict[str, str]] = Field(
+        [{
+            "name" : "홍길동", 
+          "phone" : "010-1234-5678"
+        }]
+    )
