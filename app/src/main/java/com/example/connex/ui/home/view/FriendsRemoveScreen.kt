@@ -55,6 +55,7 @@ import com.example.connex.ui.component.HalfRoundButton
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcCheck
@@ -71,7 +72,7 @@ import com.example.connex.ui.theme.White
 @Composable
 fun FriendsRemoveScreen(
     friendsViewModel: FriendsViewModel = hiltViewModel(),
-    navController: NavController,
+    applicationState: ApplicationState,
 ) {
     val focusManager = LocalFocusManager.current
     val friendsRemoveUiState by friendsViewModel.friendsRemoveUiState.collectAsStateWithLifecycle()
@@ -88,12 +89,12 @@ fun FriendsRemoveScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { BackArrowAppBar(text = "친구 관리") { navController.popBackStack() } }) { paddingValue ->
+        topBar = { BackArrowAppBar(text = "친구 관리") { applicationState.popBackStack() } }) { paddingValue ->
         if (isShowFriendRemoveBottomSheet) {
             FriendRemoveModalBottomSheet(
                 names = friendsRemoveUiState.userList.filter { it.isSelect }.map { it.friend.name },
                 onClose = { isShowFriendRemoveBottomSheet = false }) {
-                friendsViewModel.fetchDeleteFriend()
+                friendsViewModel.fetchDeleteFriend {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")}
                 isShowFriendRemoveBottomSheet = false
             }
         }

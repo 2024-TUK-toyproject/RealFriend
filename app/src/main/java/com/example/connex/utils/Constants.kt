@@ -43,6 +43,11 @@ object Constants {
     const val FRIEND_SYNC_ROUTE = "nav-friend-sync"
     const val FRIEND_SYNC_COMPLETE_ROUTE = "nav-friend-sync-complete"
 
+    const val ALBUM_CREATING_ROUTE = "nav-album-creating"
+    const val ALBUM_CREATING_SELECT_FRIEND_ROUTE = "nav-album-creating-select-friend"
+    const val ALBUM_CREATING_SELECT_BACKGROUND_ROUTE = "nav-album-creating-select-background"
+    const val ALBUM_CREATING_SETTING_NAME_ROUTE = "nav-album-creating-select-name"
+
 
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"
     const val SIGNIN_PHONE_VERIFY_ROUTE = "nav-signin-phone-verify"

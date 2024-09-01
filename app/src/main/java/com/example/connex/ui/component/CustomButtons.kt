@@ -119,7 +119,7 @@ fun HalfRoundButton(
 }
 
 @Composable
-fun SmallBlueBtn(onClick: () -> Unit, textStyle: TextStyle, text: String) {
+fun SmallBlueBtn(textStyle: TextStyle, text: String, onClick: () -> Unit) {
     Box(modifier = Modifier
         .clip(RoundedCornerShape(30.dp))
         .clickable { onClick() }

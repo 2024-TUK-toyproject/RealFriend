@@ -2,34 +2,31 @@ package com.example.data.repository
 
 import com.example.data.network.ContactApi
 import com.example.domain.model.ApiState
+import com.example.domain.model.home.MostCalledDateTime
 import com.example.domain.model.login.CallLog
 import com.example.domain.model.login.Contact
-import com.example.domain.model.request.CallLogRequest
-import com.example.domain.model.request.ContactDTO
+import com.example.domain.model.request.ContactRequest
 import com.example.domain.model.request.ContactsRequest
 import com.example.domain.model.request.ContentRequest
-import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.request.toDTO
 import com.example.domain.model.response.CallLogResponse
-import com.example.domain.model.response.ContactResponse
-import com.example.domain.model.response.MostCalledDateTimeResponse
+import com.example.domain.model.response.FriendResponse
+import com.example.domain.model.response.asDomain
 import com.example.domain.model.safeFlow
+import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowUnit
 import com.example.domain.repository.ContactRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ContactRepositoryImpl @Inject constructor(
-    private val contactApi: ContactApi
-): ContactRepository {
+    private val contactApi: ContactApi,
+) : ContactRepository {
     override fun syncContacts(
         userId: Long,
-        contacts: List<Contact>
+        contacts: List<Contact>,
     ): Flow<ApiState<Unit>> = safeFlowUnit {
-        val contactList = mutableListOf<ContactDTO>()
+        val contactList = mutableListOf<ContactRequest>()
         contacts.forEach {
             contactList.add(it.toDTO())
         }
@@ -38,20 +35,18 @@ class ContactRepositoryImpl @Inject constructor(
     }
 
 
-    override fun syncCallLogs(userId: Long, callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>> = safeFlow {
-        val callLogRequest = CallLogRequest(
-            userId = userId.toString(),
-            content = callLogs
-        )
-        contactApi.syncCallLogs(callLogRequest)
-    }
+    override fun syncCallLogs(callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>> =
+        safeFlow {
+            contactApi.syncCallLogs(ContentRequest(callLogs))
+        }
 
 
-    override fun readMostCallUsers(userId: Long): Flow<ApiState<MostCalledDateTimeResponse>> = safeFlow {
-        contactApi.readMostCalledUsers(userId.toString())
-    }
+    override fun readMostCallUsers(): Flow<ApiState<MostCalledDateTime>> =
+        safeFlow2(apiFunc = { contactApi.readMostCalledUsers() }) {
+            it.asDomain()
+        }
 
-    override fun readAllFriends(): Flow<ApiState<List<ContactResponse>>> = safeFlow {
+    override fun readAllFriends(): Flow<ApiState<List<FriendResponse>>> = safeFlow {
         contactApi.readAllFriends()
     }
 }

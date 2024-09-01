@@ -6,16 +6,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ContactsRequest (
     val userId: String,
-    val content: List<ContactDTO>
+    val content: List<ContactRequest>
 )
 
 @Serializable
-data class ContactDTO(
+data class ContactRequest(
     val name: String,
     val phone: String
 )
 
-fun Contact.toDTO() = ContactDTO(
+fun Contact.toDTO() = ContactRequest(
     name = name,
     phone = phone
 )

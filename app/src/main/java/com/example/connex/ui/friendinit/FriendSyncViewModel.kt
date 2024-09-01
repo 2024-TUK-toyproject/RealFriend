@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.syncCallLog
 import com.example.connex.utils.syncContact
+import com.example.data.datastore.TokenManager
 import com.example.domain.model.ApiState
 import com.example.domain.model.login.Contact
 import com.example.domain.usecase.SyncContactsUseCase
@@ -39,6 +40,7 @@ class PhoneUiState(
 @HiltViewModel
 class FriendSyncViewModel @Inject constructor(
     val syncContactsUseCase: SyncContactsUseCase,
+    val tokenManager: TokenManager,
     @ApplicationContext private val applicationContext: Context
 ) : ViewModel() {
 
@@ -60,24 +62,23 @@ class FriendSyncViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun syncContracts(resolver: ContentResolver) {
-        val callLogs = syncCallLog(resolver, 100)
-            .map { it.name to it.phone }
-            .groupingBy { it }
-            .eachCount()
-            .toList()
-            .sortedByDescending { it.second }
-            .map { PhoneUiState(Contact(it.first.first!!, it.first.second!!), false) }
-//        Log.d("daeyoung", "callLogs: $callLogs")
+        viewModelScope.launch {
+            val callLogs = syncCallLog(tokenManager, resolver, 100)
+                .map { it.name to it.phone }
+                .groupingBy { it }
+                .eachCount()
+                .toList()
+                .sortedByDescending { it.second }
+                .map { PhoneUiState(Contact(it.first.first!!, it.first.second!!), false) }
 
-
-        _contacts.value = resortedBy(
-            syncContact(resolver).sortedBy { it.name }
-                .map { PhoneUiState(Contact(it.name, it.phone), false) }
-                .toMutableList(),
-            callLogs
-        )
-        _filteredContacts.value = contacts.value
-
+            _contacts.value = resortedBy(
+                syncContact(resolver).sortedBy { it.name }
+                    .map { PhoneUiState(Contact(it.name, it.phone), false) }
+                    .toMutableList(),
+                callLogs
+            )
+            _filteredContacts.value = contacts.value
+        }
     }
 
     fun resortedBy(list1: MutableList<PhoneUiState>, list2: List<PhoneUiState>): List<PhoneUiState>

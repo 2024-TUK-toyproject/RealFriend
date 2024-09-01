@@ -14,10 +14,14 @@ import com.example.connex.utils.syncContact
 import com.example.domain.model.ApiState
 import com.example.domain.model.home.AppUserContact
 import com.example.domain.model.login.Contact
+import com.example.domain.model.response.ContactInfo
+import com.example.domain.model.response.ContactResponse
 import com.example.domain.model.response.Friend
 import com.example.domain.model.response.asDomain
 import com.example.domain.usecase.friend.DeleteFriendUseCase
 import com.example.domain.usecase.ReadAllFriendsUseCase
+import com.example.domain.usecase.friend.AddFriendUseCase
+import com.example.domain.usecase.friend.ReadAllContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +35,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.ConnectException
 import javax.inject.Inject
+import kotlin.contracts.contract
 
 
 class FriendUiState(
@@ -53,8 +58,10 @@ data class FriendsUiState(
 @HiltViewModel
 class FriendsViewModel @Inject constructor(
     val readAllFriendsUseCase: ReadAllFriendsUseCase,
+    val readAllContactsUseCase: ReadAllContactsUseCase,
     val deleteFriendUseCase: DeleteFriendUseCase,
-    @ApplicationContext val applicationContext: Context
+    val addFriendUseCase: AddFriendUseCase,
+    @ApplicationContext val applicationContext: Context,
 ) : ViewModel() {
 
 
@@ -78,8 +85,8 @@ class FriendsViewModel @Inject constructor(
     val filteredFriendsUserList: StateFlow<List<Friend>> =
         _filteredFriendsUserList.asStateFlow()
 
-    private val _friendsAddUserList = MutableStateFlow(emptyList<AppUserContact>())
-    val friendsAddUserList: StateFlow<List<AppUserContact>> = _friendsAddUserList.asStateFlow()
+    private val _friendsAddUserList = MutableStateFlow(emptyList<ContactInfo>())
+    val friendsAddUserList: StateFlow<List<ContactInfo>> = _friendsAddUserList.asStateFlow()
 
     val count by derivedStateOf {
         friendsRemoveUserList.value.count()
@@ -145,25 +152,43 @@ class FriendsViewModel @Inject constructor(
         }
     }
 
-    fun readAddedFriends() {
-        val filteringContact =
-            friendsUserList.value.filterNot { it.isFriend }
+    private fun filterNotFriendsInMyAddressBook(): List<Contact> {
+        // 연락처 중 친구인 연라거
+        val filteringFriends =
+            friendsUserList.value.filter { it.isFriend }
 
         val myAddressBook = syncContact(applicationContext.contentResolver)
-        _friendsAddUserList.update {
-            myAddressBook.map { contact ->
-                val matchedContact = filteringContact.firstOrNull { filtered ->
-                    filtered.name == contact.name && filtered.phone == contact.phone
-                }
-                if (matchedContact != null) {
-                    AppUserContact(matchedContact.userId, matchedContact.name, matchedContact.phone, true)
-                } else {
-                    AppUserContact(contact.name.hashCode().toLong(), contact.name, contact.phone, false) // 필요에 따라 기본 값을 설정
-                }
-            }.sortedWith(compareBy({!it.isAppUsed}, {it.name}))
+        return myAddressBook.filter { contact ->
+            val isFriend = filteringFriends.firstOrNull { filtered ->
+                filtered.name == contact.name && filtered.phone == contact.phone
+            }
+            isFriend == null
         }
     }
 
+    // 기기의 연락처 중에서 친구가 아닌 연락처만 추출
+    fun fetchReadAddedFriends(notResponse: () -> Unit) {
+        val filteringContact = filterNotFriendsInMyAddressBook()
+        Log.d("daeyoung", "fetchReadAddedFriends: ${filteringContact}")
+
+        viewModelScope.launch {
+            when (val result = readAllContactsUseCase(filteringContact).first()) {
+                is ApiState.Error -> TODO()
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> {
+                    Log.d("daeyoung", "message: ${result.message}\nexception: ${result.exception}")
+                    if (result.exception is ConnectException) { notResponse() }
+                }
+
+                is ApiState.Success -> {
+                    _friendsAddUserList.update {
+                        result.data.sortedWith(compareBy({ it.isExist }, { it.name }))
+                    }
+                }
+
+            }
+        }
+    }
 
 
     fun fetchReadAllFriends(notResponse: () -> Unit) {
@@ -177,6 +202,7 @@ class FriendsViewModel @Inject constructor(
                             "daeyoung",
                             "message: ${result.message}\nexception: ${result.exception}"
                         )
+                        notResponse()
                     }
                 }
 
@@ -196,10 +222,11 @@ class FriendsViewModel @Inject constructor(
         }
     }
 
-    fun fetchDeleteFriend() {
+    fun fetchDeleteFriend(notResponse: () -> Unit) {
         viewModelScope.launch {
             val friendId =
-                friendsRemoveUserList.value.filter { it.isSelect }.map { it.friend.userId.toString() }
+                friendsRemoveUserList.value.filter { it.isSelect }
+                    .map { it.friend.userId.toString() }
             when (val result = deleteFriendUseCase(friendId).first()) {
                 is ApiState.Error -> Log.d("daeyoung", "message: ${result.errMsg}")
                 ApiState.Loading -> TODO()
@@ -208,6 +235,10 @@ class FriendsViewModel @Inject constructor(
                         "daeyoung",
                         "message: ${result.message}\nexception: ${result.exception}"
                     )
+                    if (result.exception is ConnectException) {
+                        Log.d("daeyoung", "ConnectException: ${result.message}\n${result.exception}")
+                        notResponse()
+                    }
                 }
 
                 is ApiState.Success -> {
@@ -222,5 +253,23 @@ class FriendsViewModel @Inject constructor(
         }
     }
 
+    fun fetchAddFriend(friendId: Long, onSuccess: () -> Unit, notResponse: () -> Unit) {
+        viewModelScope.launch {
+            Log.d("daeyoung", "friendId: $friendId")
+            when (val result = addFriendUseCase(friendId).first()) {
+                is ApiState.Error -> TODO()
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        Log.d("daeyoung", "ConnectException: ${result.message}\n${result.exception}")
+                        notResponse()
+                    }
+                }
+                is ApiState.Success -> {
+                    onSuccess()
+                }
+            }
+        }
+    }
 
 }

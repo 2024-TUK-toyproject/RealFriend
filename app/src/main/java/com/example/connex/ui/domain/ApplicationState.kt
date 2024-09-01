@@ -33,6 +33,7 @@ class ApplicationState(
 
     fun showSnackbar(message: String) {
         coroutineScope.launch {
+            Log.d("daeYoung", "showSnackbar(), snackbarHostState: ${snackbarHostState}")
             snackbarHostState.showSnackbar(message = message, duration = SnackbarDuration.Short)
         }
     }

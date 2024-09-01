@@ -2,19 +2,14 @@ package com.example.connex.ui.home.view
 
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.captionBarPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,8 +17,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -42,8 +35,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,23 +46,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
+import com.example.connex.R
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
+import com.example.connex.ui.component.SkyBlueBox
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.theme.Black
@@ -80,7 +72,6 @@ import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
-import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
@@ -91,8 +82,6 @@ import me.onebone.toolbar.CollapsingToolbarScope
 import me.onebone.toolbar.ExperimentalToolbarApi
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
-import com.example.connex.R
-import com.example.connex.ui.component.SkyBlueBox
 
 data class TempleAlbumData(
     val id: Long = 0,
@@ -101,7 +90,7 @@ data class TempleAlbumData(
 )
 
 @Composable
-fun AlbumScreen(modifier: Modifier = Modifier) {
+fun AlbumScreen(applicationState: ApplicationState) {
 
     val state = rememberCollapsingToolbarScaffoldState()
     val scrollState = rememberLazyGridState()
@@ -135,7 +124,7 @@ fun AlbumScreen(modifier: Modifier = Modifier) {
                         body = "공유 앨범 생성하기",
                         enabled = true,
                     ) {
-
+                        applicationState.navigate(Constants.ALBUM_CREATING_ROUTE)
                     }
                     ColumnSpacer(height = 24.dp)
                     NewUploadPictureSection(
@@ -263,47 +252,6 @@ fun CollapsingToolbarScope.AlbumAppbar(modifier: Modifier = Modifier, onClick: (
                 .noRippleClickable { onClick() },
             tint = Gray900
         )
-    }
-}
-
-@Composable
-fun AlbumCreateBox(modifier: Modifier = Modifier) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
-        onClick = {},
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF459AFE).copy(alpha = 0.12f))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
-                .wrapContentHeight(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Card(
-                modifier = Modifier.size(32.dp),
-                shape = CircleShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF459AFE),
-                    contentColor = White
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "ic_add",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            RowSpacer(width = 24.dp)
-            Column {
-                Text(text = "우리만 볼 수 있는", style = Body3Medium, color = Gray500)
-                ColumnSpacer(height = 4.dp)
-                Text(text = "공유 앨범 생성하기", style = Body1Semibold, color = Gray900)
-            }
-        }
     }
 }
 

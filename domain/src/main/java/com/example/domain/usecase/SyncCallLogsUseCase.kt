@@ -5,6 +5,6 @@ import com.example.domain.repository.ContactRepository
 import javax.inject.Inject
 
 class SyncCallLogsUseCase @Inject constructor(private val contactRepository: ContactRepository) {
-    operator fun invoke(userId: Long, callLogs: List<CallLog>) =
-        contactRepository.syncCallLogs(userId, callLogs)
+    operator fun invoke(callLogs: List<CallLog>) =
+        contactRepository.syncCallLogs(callLogs)
 }

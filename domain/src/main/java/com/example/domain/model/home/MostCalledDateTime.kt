@@ -6,12 +6,12 @@ import kotlinx.serialization.Serializable
 data class MostCalledUser(
     val name: String,
     val phone: String,
-    val duration: String,
+    val duration: Int,
 )
 
 data class MostCalledDateTime(
     val date: String,
-    val time: String,
-    val difference: String,
+    val updateTime: Int,
+    val difference: Int,
     val user: List<MostCalledUser>,
 )

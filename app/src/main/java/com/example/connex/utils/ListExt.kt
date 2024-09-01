@@ -4,11 +4,17 @@ import android.content.ContentResolver
 import android.os.Build
 import com.example.domain.model.login.CallLog
 import android.provider.ContactsContract
+import android.util.Log
 import androidx.annotation.RequiresApi
+import com.example.data.datastore.TokenManager
 import com.example.domain.model.login.Contact
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.coroutineContext
 
 fun syncContact(resolver: ContentResolver): MutableList<Contact> {
     val contactList = mutableListOf<Contact>()
@@ -33,10 +39,22 @@ fun syncContact(resolver: ContentResolver): MutableList<Contact> {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun syncCallLog(resolver: ContentResolver, size: Int): MutableList<CallLog> {
+suspend fun syncCallLog(
+    tokenManager: TokenManager,
+    resolver: ContentResolver,
+    size: Int,
+): MutableList<CallLog> {
     val callLogs = mutableListOf<CallLog>()
-    val selection =
+    val callLogLastDate = tokenManager.getCallLogLastDayToken().first()
+
+    val selection = if (callLogLastDate != null) {
+        "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL AND ${android.provider.CallLog.Calls.CACHED_FORMATTED_NUMBER} IS NOT NULL AND ${android.provider.CallLog.Calls.DATE} > $callLogLastDate"
+    } else {
         "${android.provider.CallLog.Calls.CACHED_NAME} IS NOT NULL AND ${android.provider.CallLog.Calls.CACHED_FORMATTED_NUMBER} IS NOT NULL"
+    }
+
+    Log.d("daeyoung", "callLogLastDate: $callLogLastDate")
+    Log.d("daeyoung", "selection: $selection")
 
     resolver.query(
         android.provider.CallLog.Calls.CONTENT_URI,
@@ -61,6 +79,14 @@ fun syncCallLog(resolver: ContentResolver, size: Int): MutableList<CallLog> {
             val startDate = cursor.getString(3)
             val type = cursor.getString(4)
 
+            if (count == 1) {
+                CoroutineScope(coroutineContext).launch {
+                    Log.d("daeyoung", "startDate: $startDate")
+                    tokenManager.saveCallLogLastDayToken(startDate)
+                }
+            }
+
+
             val currentDateTime =
                 Instant.ofEpochMilli(startDate.toLong()).atZone(ZoneId.systemDefault())
                     .toLocalDateTime()
@@ -79,7 +105,8 @@ fun syncCallLog(resolver: ContentResolver, size: Int): MutableList<CallLog> {
                 )
             )
         }
-//        Log.d("daeyoung", "callLogs: $callLogs")
+
+        Log.d("daeyoung", "callLogs: $callLogs")
     }
     return callLogs
 }

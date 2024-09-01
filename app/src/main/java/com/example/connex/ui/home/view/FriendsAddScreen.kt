@@ -13,7 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Text
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
@@ -57,7 +58,10 @@ import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.utils.Constants
 
 @Composable
-fun FriendsAddScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), applicationState: ApplicationState) {
+fun FriendsAddScreen(
+    friendsViewModel: FriendsViewModel = hiltViewModel(),
+    applicationState: ApplicationState,
+) {
 
     val friendsAddUiState = friendsViewModel.friendsAddUserList.collectAsStateWithLifecycle().value
 
@@ -66,16 +70,15 @@ fun FriendsAddScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), appli
     }
 
     LaunchedEffect(Unit) {
-        friendsViewModel.readAddedFriends()
+        friendsViewModel.fetchReadAddedFriends {applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")}
     }
 
 
 
-    Scaffold(topBar = {
-        BackArrowAppBar(text = "친구 추가") {
-            applicationState.popBackStack()
-        }
-    }) { innerPadding ->
+    Scaffold(
+        topBar = { BackArrowAppBar(text = "친구 추가") { applicationState.popBackStack() } },
+        snackbarHost = { SnackbarHost(applicationState.snackbarHostState) }
+    ) { innerPadding ->
 //    Column(modifier = Modifier.fillMaxSize()) {
 //        BackArrowAppBar(text = "친구 추가") {
 //            applicationState.popBackStack()
@@ -115,15 +118,26 @@ fun FriendsAddScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), appli
             item { FriendAddScreenMiddleTitle { isShowFriendAddBottomSheet = true } }
             item { ColumnSpacer(height = 12.dp) }
 
-            items(items = friendsAddUiState, key = { it.userId }) { contact ->
-                if (contact.isAppUsed) {
+            items(items = friendsAddUiState, key = { it.phone }) { contact ->
+                if (contact.isExist) {
                     ConnexUsedContactCard(
                         modifier = Modifier.padding(horizontal = 28.dp, vertical = 12.dp),
                         image = Constants.DEFAULT_PROFILE,
                         name = contact.name,
                         phone = contact.phone
                     ) {
-                        SmallBlueBtn(onClick = { }, textStyle = Body3Medium, text = "추가")
+                        SmallBlueBtn(
+                            textStyle = Body3Medium,
+                            text = "추가"
+                        ) {
+                            friendsViewModel.fetchAddFriend(contact.userId, onSuccess = {
+                                applicationState.showSnackbar(
+                                    "${contact.name}에게 친구 요청이 전송되었습니다."
+                                )
+                            }) {
+                                applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
+                            }
+                        }
                     }
                 } else {
                     ContactCard(
@@ -132,7 +146,7 @@ fun FriendsAddScreen(friendsViewModel: FriendsViewModel = hiltViewModel(), appli
                         name = contact.name,
                         phone = contact.phone
                     ) {
-                        SmallBlueBtn(onClick = { }, textStyle = Body3Medium, text = "추가")
+                        SmallBlueBtn(textStyle = Body3Medium, text = "추가") { TODO("링크 복사") }
                     }
                 }
             }
@@ -153,7 +167,13 @@ fun FriendAddScreenMiddleTitle(onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "추천 친구", style = Body2Medium, color = Gray500)
-        Icon(imageVector = Icons.Outlined.Info, contentDescription = "ic_info", tint = Gray300, modifier = Modifier.size(24.dp).noRippleClickable { onClick() })
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = "ic_info",
+            tint = Gray300,
+            modifier = Modifier
+                .size(24.dp)
+                .noRippleClickable { onClick() })
     }
 }
 
@@ -191,7 +211,11 @@ fun ConnexUsedContactCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = name, style = Text16ptSemibold)
                 RowSpacer(width = 5.dp)
-                Image(imageVector = IconPack.IcConnexUsedUser, contentDescription = "ic_connex_useduser", modifier = Modifier.size(16.dp))
+                Image(
+                    imageVector = IconPack.IcConnexUsedUser,
+                    contentDescription = "ic_connex_useduser",
+                    modifier = Modifier.size(16.dp)
+                )
             }
             ColumnSpacer(height = 4.dp)
             Text(text = phone, style = Body3Regular)

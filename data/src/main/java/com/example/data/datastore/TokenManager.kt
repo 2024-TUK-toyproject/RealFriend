@@ -15,6 +15,7 @@ class TokenManager @Inject constructor(
         private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
         private val REFRESH_TOKEN_KEY = stringPreferencesKey("refresh_token")
         private val FCM_TOKEN_KEY = stringPreferencesKey("fcm_token")
+        private val CALL_LOG_LAST_DAY_TOKEN_KEY = stringPreferencesKey("call_log_token")
     }
 
     fun getAccessToken(): Flow<String?> {
@@ -35,6 +36,12 @@ class TokenManager @Inject constructor(
         }
     }
 
+    fun getCallLogLastDayToken(): Flow<Long?> {
+        return dataStore.data.map { prefs ->
+            prefs[CALL_LOG_LAST_DAY_TOKEN_KEY]?.toLong()
+        }
+    }
+
     suspend fun saveAccessToken(token: String){
         dataStore.edit { prefs ->
             prefs[ACCESS_TOKEN_KEY] = token
@@ -52,6 +59,11 @@ class TokenManager @Inject constructor(
             prefs[FCM_TOKEN_KEY] = token
         }
     }
+    suspend fun saveCallLogLastDayToken(token: String) {
+        dataStore.edit { prefs ->
+            prefs[CALL_LOG_LAST_DAY_TOKEN_KEY] = token
+        }
+    }
 
     suspend fun deleteAccessToken(){
         dataStore.edit { prefs ->
@@ -66,6 +78,12 @@ class TokenManager @Inject constructor(
     suspend fun deleteFCMToken(){
         dataStore.edit { prefs ->
             prefs.remove(FCM_TOKEN_KEY)
+        }
+    }
+
+    suspend fun deleteCallLogLastDayToken(){
+        dataStore.edit { prefs ->
+            prefs.remove(CALL_LOG_LAST_DAY_TOKEN_KEY)
         }
     }
 }

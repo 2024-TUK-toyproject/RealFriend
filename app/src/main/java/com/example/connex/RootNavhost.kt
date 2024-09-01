@@ -21,6 +21,7 @@ import androidx.core.util.Consumer
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import com.example.connex.ui.component.BottomBar
+import com.example.connex.ui.creatingAlbumComposable
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.homeGraph
 import com.example.connex.ui.initSettingGraph
@@ -62,6 +63,7 @@ fun RootNavhost(
                 homeGraph(appState)
                 notificationComposable(appState)
                 splashComposable(appState)
+                creatingAlbumComposable(appState)
             }
             BottomBar(appState)
         }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.connex.ui.component.General2Button
 import com.example.connex.ui.component.General3Button
@@ -58,21 +61,22 @@ import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
+import com.example.connex.ui.theme.Subtitle1
 import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
+import com.example.domain.model.ApiState
+import com.example.domain.model.home.MostCalledDateTime
+import com.example.domain.model.home.MostCalledUser
+import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    Log.d("test", "HomeScreen")
-
-    navController.currentBackStack.value.forEach {
-        Log.d("test", "navBackStackEntry: ${it.destination.route}")
-    }
+    val homeScreenUiState = homeViewModel.mostCalledDateTime.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
-        homeViewModel.fetchReadMostCallUsers()
+        homeViewModel.fetchSyncCallLogs()
     }
 
     Column(
@@ -83,8 +87,14 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
         HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp)) {
             navController.navigate(NOTIFICATION_ROUTE)
         }
-        HomeBody()
-
+        when(val result = homeScreenUiState) {
+            is ApiState.Error -> TODO()
+            ApiState.Loading -> {CircularProgressIndicator()}
+            is ApiState.NotResponse -> {Log.d("daeyoung", "exception: ${result.exception}, message: ${result.message}")}
+            is ApiState.Success -> {
+                HomeBody(result.data)
+            }
+        }
     }
 }
 
@@ -138,13 +148,12 @@ fun HomeTitle(name: String) {
 
 
 @Composable
-fun ColumnScope.HomeBody() {
+fun ColumnScope.HomeBody(mostCalledDateTime: MostCalledDateTime) {
     val backgroundColor = Color(0xFFF2F4F8)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-//            .weight(1f)
             .background(backgroundColor)
             .padding(top = 40.dp, start = 24.dp, end = 24.dp, bottom = 30.dp)
     ) {
@@ -154,29 +163,52 @@ fun ColumnScope.HomeBody() {
         Spacer(modifier = Modifier.height(32.dp))
         Text(text = "오늘 통화 기록", style = Subtitle2)
         Spacer(modifier = Modifier.height(16.dp))
-        HomeCallLogBox(Modifier.fillMaxWidth())
+        HomeCallLogBox(Modifier.fillMaxWidth(), mostCalledDateTime)
     }
 }
 
 @Composable
-fun HomeCallLogBox(modifier: Modifier = Modifier) {
+fun HomeCallLogBox(modifier: Modifier = Modifier, mostCalledDateTime: MostCalledDateTime) {
     ShadowBox(
         modifier = modifier,
         padding = 20.dp to 21.dp,
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            HomeCallLogHeader(date = "07일 22일 20시", duration = "45", difference = "10")
-            HomeCallLogBody(modifier = Modifier.fillMaxWidth())
-            General3Button(modifier = Modifier.height(47.dp), text = "상세 분석 보기") {
+            if (mostCalledDateTime.user.isEmpty()) {
+                Text(text = "오늘 통화기록이 없어요. 통화하러가기", style = Head2Semibold)
+            } else {
+                HomeCallLogHeader(date = mostCalledDateTime.date, duration = mostCalledDateTime.user.sumOf { it.duration }, difference = mostCalledDateTime.difference)
+                HomeCallLogBody(modifier = Modifier.fillMaxWidth(), user = mostCalledDateTime.user)
+                General3Button(modifier = Modifier.height(47.dp), text = "상세 분석 보기") {
 
+                }
             }
         }
     }
 }
 
 @Composable
-fun ColumnScope.HomeCallLogHeader(date: String, duration: String, difference: String) {
+fun ColumnScope.HomeCallLogHeader(date: String, duration: Int, difference: Int) {
+    val (suffix, differenceTime) = if (difference < 0) {
+        "덜" to difference.absoluteValue
+    } else {
+        "더" to difference.absoluteValue
+    }
+    val differenceText = if (differenceTime/60 > 1) {
+        "${differenceTime/60}분 "
+    } else {
+        "${differenceTime/60}초 "
+    }
+
+    val durationText = if (differenceTime/60 > 1) {
+        "${differenceTime/60}분 "
+    } else {
+        "${differenceTime/60}초 "
+    }
+
+
+
     val dateStyle = TextStyle(
         fontSize = 10.sp,
         color = Gray300,
@@ -201,7 +233,7 @@ fun ColumnScope.HomeCallLogHeader(date: String, duration: String, difference: St
     Spacer(modifier = Modifier.height(8.dp))
     Text(text = buildAnnotatedString {
         withStyle(SpanStyle()) {
-            append("${duration}분 ")
+            append(durationText)
         }
         append("통화했어요!")
     })
@@ -209,67 +241,62 @@ fun ColumnScope.HomeCallLogHeader(date: String, duration: String, difference: St
     Text(text = buildAnnotatedString {
         append("어제보다 ")
         withStyle(SpanStyle()) {
-            append("${difference}분 ")
+            append(differenceText)
         }
-        append("더 통화했어요.")
+        append("$suffix 통화했어요.")
     })
     Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable
-fun ColumnScope.HomeCallLogBody(modifier: Modifier) {
-    // 20분 39초
-    var time1 = 20 * 60 + 39
-    // 8분 21초
-    var time2 = 8 * 60 + 21
-    // 4분
-    var time3 = 4 * 60
+fun ColumnScope.HomeCallLogBody(modifier: Modifier, user: List<MostCalledUser>) {
 
-    var allTime = time1 + time2 + time3
-    var time1Rate = time1 / allTime.toFloat()
-    var time2Rate = time2 / allTime.toFloat()
+    val durations = user.map { it.duration.toInt() }
+//    val durations = listOf(
+//        20*60 + 39,
+//        8*60 + 21,
+//        4*60
+//    )
 
-    val callLogUsers = listOf(
+//    // 20분 39초
+//    var time1 = user[0].duration.toInt()
+//    // 8분 21초
+//    var time2 = user[1].duration.toInt()
+//    // 4분
+//    var time3 = user[2].duration.toInt()
+
+    var allTime = durations.sum()
+    val durationsRate = durations.map { it/allTime.toFloat() }
+
+    val colors = listOf(Color(0xFF5074F2),Color(0xFFA1B0FF),Color(0xFFACCDFF))
+    val callLogUsers = user.mapIndexed { index, user ->
         CallLogTop3User(
-            color = Color(0xFF5074F2),
-            name = "지땡",
-            time = "20분 39초"
-        ),
-        CallLogTop3User(
-            color = Color(0xFFA1B0FF),
-            name = "서빵",
-            time = "8분 21초"
-        ),
-        CallLogTop3User(
-            color = Color(0xFFACCDFF),
-            name = "주히",
-            time = "4분"
+            color = colors[index],
+            name = user.name,
+            time = "${user.duration}"
         )
-    )
-
+    }
 
     Canvas(modifier = modifier.padding(horizontal = 6.dp)) {
-        drawLine(
-            color = Color(0xFFACCDFF),
-            start = Offset.Zero,
-            end = Offset(this.size.width, 0f),
-            strokeWidth = 40f,
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = Color(0xFFA1B0FF),
-            start = Offset(this.size.width * time1Rate, 0f),
-            end = Offset(this.size.width * time1Rate + this.size.width * time2Rate, 0f),
-            strokeWidth = 40f,
-            cap = StrokeCap.Round
-        )
-        drawLine(
-            color = Color(0xFF5074F2),
-            start = Offset.Zero,
-            end = Offset(this.size.width * time1Rate, 0f),
-            strokeWidth = 40f,
-            cap = StrokeCap.Round
-        )
+        durationsRate.forEachIndexed { index, fl ->
+            if (index == 0) {
+                drawLine(
+                    color = callLogUsers[index].color,
+                    start = Offset.Zero,
+                    end = Offset(this.size.width * fl, 0f),
+                    strokeWidth = 40f,
+                    cap = StrokeCap.Round
+                )
+            } else {
+                drawLine(
+                    color = callLogUsers[index].color,
+                    start = Offset(0f+this.size.width * durationsRate.slice(0 until  index).sum(), 0f),
+                    end = Offset(this.size.width * durationsRate.slice(0 .. index).sum(), 0f),
+                    strokeWidth = 40f,
+                    cap = StrokeCap.Round
+                )
+            }
+        }
     }
     Spacer(modifier = Modifier.height(20.dp))
     callLogUsers.forEachIndexed { index, callLogTop3User ->

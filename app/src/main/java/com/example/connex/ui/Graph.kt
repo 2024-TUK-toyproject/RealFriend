@@ -105,7 +105,10 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            FriendsScreen(friendsViewModel = hiltViewModel(backStackEntry), applicationState = applicationState)
+            FriendsScreen(
+                friendsViewModel = hiltViewModel(backStackEntry),
+                applicationState = applicationState
+            )
         }
         composable(Screen.Album.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
@@ -113,7 +116,7 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            AlbumScreen()
+            AlbumScreen(applicationState = applicationState)
         }
         composable(Screen.Mypage.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
@@ -130,7 +133,10 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            FriendsRemoveScreen(friendsViewModel = hiltViewModel(backStackEntry), navController = applicationState.navController)
+            FriendsRemoveScreen(
+                friendsViewModel = hiltViewModel(backStackEntry),
+                applicationState = applicationState
+            )
         }
         composable(FRIEND_ADD_ROUTE) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
@@ -138,10 +144,15 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            FriendsAddScreen(friendsViewModel = hiltViewModel(backStackEntry), applicationState = applicationState)
+            FriendsAddScreen(
+                friendsViewModel = hiltViewModel(backStackEntry),
+                applicationState = applicationState
+            )
         }
     }
 }
+
+
 
 
 @Composable

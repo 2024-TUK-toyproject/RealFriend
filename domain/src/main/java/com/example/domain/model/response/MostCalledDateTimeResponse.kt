@@ -9,13 +9,13 @@ data class MostCalledUserResponse(
     val name: String?,
     val phone: String?,
     val duration: String?,
-    val type: String?,
+//    val type: String?,
 )
 
 @Serializable
 data class MostCalledDateTimeResponse(
     val date: String?,
-    val time: Int?,
+    val updateTime: Int?,
     val difference: Int?,
     val users: List<MostCalledUserResponse>,
 )
@@ -24,12 +24,12 @@ data class MostCalledDateTimeResponse(
 fun MostCalledUserResponse.asDomain() = MostCalledUser(
     name = name ?: "",
     phone = phone ?: "",
-    duration = duration ?: "",
+    duration = duration?.toInt() ?: 0,
 )
 
 fun MostCalledDateTimeResponse.asDomain() = MostCalledDateTime(
     date = date ?: "",
-    time = time.toString(),
-    difference = difference.toString(),
+    updateTime = updateTime ?: 0,
+    difference = difference ?: 0,
     user = users.map { it.asDomain() },
 )

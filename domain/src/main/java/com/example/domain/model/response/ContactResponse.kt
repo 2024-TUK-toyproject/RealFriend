@@ -3,42 +3,27 @@ package com.example.domain.model.response
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ContactResponse (
+data class ContactResponse(
     val userId: String?,
     val name: String?,
     val phone: String?,
     val profileImage: String?,
-    val isFriend: Boolean?,
+    val isExist: Boolean?,
 )
 
-//data class Friend(
-//    val userId: Long,
-//    val name: String,
-//    val phone: String,
-//    val profileImage: String,
-//    val isFriend: Boolean,
-//)
-//
-//fun ContactResponse.asDomain() = Friend(
-//    userId = userId?.toLong() ?: 0L,
-//    name = name ?: "",
-//    phone = phone ?: "",
-//    profileImage = profileImage ?: "",
-//    isFriend = isFriend ?: false,
-//)
 
-data class Friend(
+data class ContactInfo(
     val userId: Long,
     val name: String,
     val phone: String,
     val profileImage: String,
-    val isFriend: Boolean,
+    val isExist: Boolean,
 )
 
-fun ContactResponse.asDomain() = Friend(
+fun ContactResponse.asDomain() = ContactInfo(
     userId = userId?.toLong() ?: 0L,
     name = name ?: "",
     phone = phone ?: "",
-    profileImage = profileImage ?: "",
-    isFriend = isFriend ?: false,
+    profileImage = profileImage ?: "https://shpbucket.s3.amazonaws.com/profile/default_profile/default.png",
+    isExist = isExist ?: false,
 )
