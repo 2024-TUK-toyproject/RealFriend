@@ -12,7 +12,7 @@ class Error_response(BaseModel):
 
 class Last_call_content(BaseModel):
     date : str = Field(..., example = "2024-07-25")
-    time : int = Field(..., example = "14", description="현재 시간")
+    updateTime : int = Field(..., example = "14", description="업데이트 당시 시간")
     difference : int = Field(..., example = "100", description="어제와의 통화시간 차이, 양수면 증가, 음수면 감소")
     users : List[Dict[str,Optional[str]]] = Field([{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}], example = [{"name" : "홍길동", "phone" : "010-1234-5678", "duration" : "90", "type" : "1"}])
 
@@ -72,7 +72,7 @@ class Album_list_response(BaseModel):
 class Album_create_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str, str]] = Field({"albumId" : "123456"}, example = {"albumId" : "123456", "albumName" : "가족사진"})
+    content : Dict[str, str]= Field({"albumId" : "123456", "albumName" : "가족사진"}, example = {"albumId" : "123456", "albumName" : "가족사진"})
 
 #친구 관련
 class Friend_list_response(BaseModel):
@@ -88,9 +88,6 @@ class Friend_list_response(BaseModel):
             "isFriend": True  # 불린 타입 예시
         }
     ])
-
-from typing import List, Dict, Optional, Union
-from pydantic import BaseModel, Field
 
 class Friend_request_list_response(BaseModel):
     status: str = Field("success", example="success or error")
@@ -153,8 +150,6 @@ class Friend_recommend_response(BaseModel):
         ]
     )
 
-
-
 class token_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
@@ -167,6 +162,15 @@ class Login_response(BaseModel):
         None,
         example={"accessToken": "asdasdasd", "refreshToken": "asdasdasd"}
     )
+
+
+
+
+
+
+
+
+
 
 # Request Model
 class Phone_list(BaseModel):
@@ -202,9 +206,9 @@ class Set_profile_request(BaseModel):
     name : str = Field(..., example = "홍길동")
 
 class Album_create_request(BaseModel):
-    userId : str = Field(..., example = "123456")
-    withWhom : str = Field(..., example = "654321")
-    albumName : str = Field(..., example = "가족사진")
+    content : List[Dict[str, str]] = Field(
+        [{"friendId" : "654321"}, {"friendId" : "123456"}]
+    )
 
 class Add_friend_request(BaseModel):
     friendId : str = Field(..., example = "654321")
@@ -229,6 +233,21 @@ class Friend_recommend_request(BaseModel):
     content : List[Dict[str, str]] = Field(
         [{
             "name" : "홍길동", 
-          "phone" : "010-1234-5678"
+            "phone" : "010-1234-5678"
+        }]
+    )
+
+class Album_authority_request(BaseModel):
+    albumId : str = Field(..., example = "123456")
+    content : List[Dict[str, str]] = Field(
+        [{
+            "friendId" : "123456",
+            "post" : "1",
+            "delete" : "1"
+        },
+        {
+            "friendId" : "654321",
+            "post" : "1",
+            "delete" : "1"
         }]
     )
