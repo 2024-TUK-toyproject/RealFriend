@@ -24,14 +24,6 @@ async def get_album_list(user_id : str, album_service : Album_service = Depends(
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.post("/users/album/create", responses = {200 : {"model" : Album_create_response, "description" : "앨범 생성 성공"}, 400 : {"model" : Error_response, "description" : "앨범 생성 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 생성(구현중)")
-async def create_album(request : Album_create_request, album_service : Album_service = Depends()):
-    try:
-        return await album_service.create_album(request)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 @router.post("/test/jwt/makeAccessToken", tags = ["Test/JWT"], summary="테스트용 토큰 생성")
 async def test_make_access_token(phone : str, userId : str):
     try:
@@ -81,7 +73,7 @@ async def certification_user(request : Certificate_request, user_service : User_
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/register/setprofile", responses = {200 : {"model" : CommoneResponse, "description" : "프로필 등록 성공"}, 400 : {"model" : Error_response, "description" : "프로필 등록 실패"}}, tags = ["Register"], summary = "프로필 사진과 사용자 이름을 서버로 전송(쿼리스트링으로 전송 바람) / 이 과정까지만 userId를 사용 이후엔 토큰을 사용")
-async def set_profile(userId : str, name : str, fcmToken : str,file : Optional[UploadFile] = None, user_service : User_service = Depends()):
+async def set_profile(userId : str, name : str, fcmToken : str, file : Optional[UploadFile] = None, user_service : User_service = Depends()):
     try:
         return await user_service.set_profile(userId, name, fcmToken, file)
     
@@ -190,5 +182,30 @@ async def recommend_friend(request : Friend_recommend_request, token = Depends(A
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-#친구 삭제 필요
+
+# User/Album
+@router.post("/users/album/create", responses = {200 : {"model" : Album_create_response, "description" : "앨범 생성 성공"}, 400 : {"model" : Error_response, "description" : "앨범 생성 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 생성(구현중)")
+async def create_album(request : Album_create_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.create_album(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/users/album/setthumbnail", responses = {200 : {"model" : CommoneResponse, "description" : "앨범 썸네일 설정 성공"}, 400 : {"model" : Error_response, "description" : "앨범 썸네일 설정 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 썸네일 설정(구현중)")
+async def set_album_thumbnail(albumId : str, albumName : str, file : Optional[UploadFile] = None, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.set_album_thumbnail(albumId, albumName, file, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/users/album/create/authority", responses = {200 : {"model" : CommoneResponse, "description" : "앨범 권한 설정 성공"}, 400 : {"model" : Error_response, "description" : "앨범 권한 설정 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 권한 설정(구현중)")
+async def create_album_authority(request : Album_authority_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.create_album_authority(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
 #새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
