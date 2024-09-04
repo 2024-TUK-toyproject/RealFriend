@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
-
+from sqlalchemy import and_
 
 from ..database import Database
 from .. import models
@@ -28,7 +28,13 @@ class download_service:
         self.check_user_id(user["key"])
 
         #오늘 날짜 전체 통화 기록을 가져온다
-        last_call = self.db.query(models.call_record_info).filter(models.call_record_info.user_id == user["key"]).filter(models.call_record_info.date == self.today.strftime('%Y-%m-%d')).order_by(models.call_record_info.time.desc()).all()
+        last_call = self.db.query(models.call_record_info).filter(
+            and_(
+                models.call_record_info.user_id == user["key"],
+                models.call_record_info.date == self.today.strftime('%Y-%m-%d')
+            )
+        ).all()
+
         if last_call is None:
             raise CustomException(status_code=400, detail="통화 기록이 없습니다.")
         
@@ -42,9 +48,11 @@ class download_service:
                 phone_dict[record.phone]["duration"] += int(record.duration)
                 phone_dict[record.phone]["count"] += 1
                 phone_dict[record.phone]["name"] = record.name
+                print(phone_dict[record.phone])
             else:
                 phone_dict[record.phone] = {"duration" : int(record.duration), "count" : 1, "name" : record.name}
-
+                
+        print(total_duration)
         #통화시간이 긴 3명을 가져온다
         try:
             phone_list = sorted(phone_dict.items(), key=lambda x: x[1]["duration"], reverse=True)[:3]
@@ -68,7 +76,7 @@ class download_service:
         differ = total_duration - yester_day_call
 
         
-        content = {"date" : self.today.strftime('%Y-%m-%d'), "time" : time_hour, "difference" : differ, "users" : []}
+        content = {"date" : self.today.strftime('%Y-%m-%d'), "updateTime" : time_hour, "difference" : differ, "users" : []}
         for phone in phone_list:
             content["users"].append({
                 "name" : phone[1]["name"],
