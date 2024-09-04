@@ -58,14 +58,25 @@ class call_record_info(Base):
 class album_info(Base):
     __tablename__ = 'album_info'
 
-    album_id = Column(String(255), primary_key=True)
+    num = Column(Integer, index = True, primary_key=True)
+    album_id = Column(String(255))
     album_name = Column(String(255))
     create_user_id = Column(String(255))
     with_whom = Column(String(255))
     directory = Column(String(255))
+    album_thumbnail = Column(String(255))
 
 class fcm_token_info(Base):
     __tablename__ = 'fcm_token_info'
 
     user_id = Column(String(255), primary_key=True)
     fcm_token = Column(String(255))
+
+class album_authorization_info(Base):
+    __tablename__ = 'album_authorization_info'
+
+    num = Column(Integer, index = True, primary_key=True)
+    album_id = Column(String(255))
+    user_id = Column(String(255))
+    post = Column(Boolean)
+    delete = Column(Boolean)
