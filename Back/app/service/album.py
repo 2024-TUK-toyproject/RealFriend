@@ -83,6 +83,7 @@ class Album_service:
             new_album = models.album_info(
                 album_id = new_key,
                 create_user_id = user["key"],
+                album_name = "기본 엘범",
                 with_whom = friend["friendId"],
                 directory = directroy,
                 album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket) #나중에 바꿔라
