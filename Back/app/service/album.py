@@ -77,7 +77,10 @@ class Album_service:
             )
         new_album_member = models.album_member_info(
             album_id = new_key,
-            user_id = user["key"]
+            user_id = user["key"],
+            is_stared = False,
+            post = True,
+            delete = True
         )
         self.db.add(new_album_member)
         for friend in request.content:
@@ -101,7 +104,10 @@ class Album_service:
 
             new_album_member = models.album_member_info(
                 album_id = new_key,
-                user_id = friend["friendId"]
+                user_id = friend["friendId"],
+                is_stared = False,
+                post = False,
+                delete = False
             )
             self.db.add(new_album_member)
 
@@ -180,6 +186,35 @@ class Album_service:
 
         return CommoneResponse(status = "success", message = message)
 
+    async def post_album(self, file : List[UploadFile], album_id : str, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        authority = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not authority:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        if authority.post is False:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
+        
+        for f in file:
+            s3.upload_fileobj(
+                f.file,
+                Config.s3_bucket,
+                f"albums/%s/%s" % (album_id, f.filename)
+            )
+        
+        return CommoneResponse(status = "success", message = "앨범 업로드 성공")
 
     async def create_album_authority(self, request : Album_authority_request, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
@@ -200,13 +235,17 @@ class Album_service:
             if existing_friend is None:
                 raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 친구입니다.")
             
-            new_authority = models.album_authorization_info(
-                album_id = request.albumId,
-                user_id = friend["friendId"],
-                post = friend["read"],
-                delete = friend["delete"]
-            )
-            self.db.add(new_authority)
+            existing_album_member = self.db.query(models.album_member_info).filter(
+                and_(
+                    models.album_member_info.album_id == request.albumId,
+                    models.album_member_info.user_id == friend["friendId"]
+                )
+            ).first()
+            if existing_album_member is None:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+            
+            existing_album_member.post = friend["post"]
+            existing_album_member.delete = friend["delete"]
 
         self.db.commit()
 
