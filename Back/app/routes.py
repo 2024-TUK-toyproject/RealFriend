@@ -207,5 +207,12 @@ async def get_album_list(token = Depends(APIKeyHeader(name = "Authorization")), 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/users/album/star", responses = {200 : {"model" : CommoneResponse, "description" : "즐겨찾기 성공"}, 400 : {"model" : Error_response, "description" : "즐겨찾기 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 즐겨찾기 | 즐겨찾기 중이면 즐겨찾기 해제, 즐겨찾기 중이 아니면 즐겨찾기")
+async def star_album(albumId : str, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.star_album(albumId, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 #새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
