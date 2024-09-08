@@ -215,4 +215,14 @@ async def star_album(albumId : str, token = Depends(APIKeyHeader(name = "Authori
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-#새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
+@router.post("/users/album/post", responses = {200 : {"model" : CommoneResponse, "description" : "사진 업로드 성공"}, 400 : {"model" : Error_response, "description" : "사진 업로드 실패"}}, tags = ["User/sharedAlbum"], summary = "사진 업로드(구현중)")
+async def post_album(file : List[UploadFile], albumId : str, token = Depends(APIKeyHeader (name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.post_album(file, albumId, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+
+#새로운 활동 내역 불러오기(사진 업로드, 친구 요청, 친구 요청 수락 및 거절 메시지 등등)
