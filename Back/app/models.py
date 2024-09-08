@@ -71,6 +71,7 @@ class album_member_info(Base):
     num = Column(Integer, index = True, primary_key=True)
     album_id = Column(String(255))
     user_id = Column(String(255))
+    is_stared = Column(Boolean)
 
 class fcm_token_info(Base):
     __tablename__ = 'fcm_token_info'
