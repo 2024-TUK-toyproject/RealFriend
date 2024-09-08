@@ -62,9 +62,15 @@ class album_info(Base):
     album_id = Column(String(255))
     album_name = Column(String(255))
     create_user_id = Column(String(255))
-    with_whom = Column(String(255))
     directory = Column(String(255))
     album_thumbnail = Column(String(255))
+
+class album_member_info(Base):
+    __tablename__ = 'album_member_info'
+
+    num = Column(Integer, index = True, primary_key=True)
+    album_id = Column(String(255))
+    user_id = Column(String(255))
 
 class fcm_token_info(Base):
     __tablename__ = 'fcm_token_info'
