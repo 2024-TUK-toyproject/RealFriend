@@ -27,28 +27,7 @@ class JWTService:
         self.refresh_token_expire_minutes = refresh_token_expire_minutes
         self.encoder = encoder
         self.decoder = decoder
-
-    def get_user(self, userName, key, session = Depends(Database().get_session)):
-        try:
-            userInfo = session.query(models.nok_info).filter_by(nok_name = userName, nok_key = key).first()
-
-            if userInfo:
-                return userInfo, "nok"
-            else:
-                userInfo = session.query(models.dementia_info).filter_by(dementia_name = userName, dementia_key = key).first()
-            
-                if userInfo:
-                    return userInfo, "dementia"
-                else:
-                    return None
-            
-        except Exception as e:
-            print(f"[ERROR] User information not found")
-            raise CustomException(status_code=404, detail="User information not found")
-    
-        finally:
-            session.close()
-
+        
     def create_access_token(self, phone : str, key : str) -> str:
         return self._create_token(phone, key, self.access_token_expire_minutes)
     
