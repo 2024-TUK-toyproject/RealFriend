@@ -15,15 +15,6 @@ jwt = JWTService()
 
 
 # 테스트 라우트
-#User/sharedAlbum
-@router.get("/users/get/{user_id}/albumId", responses = {200 : {"model" : Album_list_response, "description" : "앨범 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 리스트 조회 실패"}}, tags = ["Test/User/sharedAlbum"], summary = "앨범 리스트 조회(구현중)")
-async def get_album_list(user_id : str, album_service : Album_service = Depends()):
-    try:
-        return await album_service.get_album_list(user_id)
-    
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
 @router.post("/test/jwt/makeAccessToken", tags = ["Test/JWT"], summary="테스트용 토큰 생성")
 async def test_make_access_token(phone : str, userId : str):
     try:
@@ -208,4 +199,13 @@ async def create_album_authority(request : Album_authority_request, token = Depe
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.get("/users/get/albums/lists", responses = {200 : {"model" : Album_list_response, "description" : "앨범 리스트 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 리스트 조회 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 리스트 조회(구현중)")
+async def get_album_list(token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.get_album_list(token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 #새로운 사진, 공유 엘범 리스트, 즐겨찾기, 즐겨찾기 해제
