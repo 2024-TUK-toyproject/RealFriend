@@ -37,17 +37,23 @@ class Album_service:
         
         album_list_response = []
 
-        #즐겨찾기 로직 추가 필요
+        #즐겨찾기 중이면 리스트의 앞에 넣어주기
         for album in album_list:
-            album_info = self.db.query(models.album_info).filter(models.album_info.album_id == album.album_id).first()
-            album_list_response.append(
-                {
-                    "albumId" : album_info.album_id,
-                    "albumName" : album_info.album_name,
-                    "albumThumbnail" : album_info.album_thumbnail
-                }
-            )
-        
+            existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album.album_id).first()
+    
+            album_data = {
+                "albumId": existing_album.album_id,
+                "albumName": existing_album.album_name,
+                "albumThumbnail": existing_album.album_thumbnail
+            }
+    
+            if album.is_stared:
+                # 즐겨찾기인 경우 리스트의 앞에 추가
+                album_list_response.insert(0, album_data)
+            else:
+                # 즐겨찾기가 아닌 경우 리스트의 뒤에 추가
+                album_list_response.append(album_data)
+            
         return Album_list_response(status = "success", message = "앨범 리스트 조회 성공", content = album_list_response)
 
     async def create_album(self, request : Album_create_request, token : str) -> Album_create_response:
@@ -117,7 +123,7 @@ class Album_service:
         user = self.jwt.check_token_expired(token)
 
         if user is None:
-            raise CustomException(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
         
         existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
         if existing_user is None:
@@ -144,6 +150,35 @@ class Album_service:
         self.db.commit()
 
         return CommoneResponse(status = "success", message = "앨범 썸네일 설정 성공")
+
+    async def star_album(self, albumId : str, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == albumId,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        if existing_album.is_stared:
+            existing_album.is_stared = False
+            message = "앨범 즐겨찾기 해제 성공"
+        else:
+            existing_album.is_stared = True
+            message = "앨범 즐겨찾기 설정 성공"
+        
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = message)
 
 
     async def create_album_authority(self, request : Album_authority_request, token : str) -> CommoneResponse:
