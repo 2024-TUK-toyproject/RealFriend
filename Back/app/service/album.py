@@ -28,20 +28,26 @@ class Album_service:
         self.rng = RandomNumberGenerator()
         self.jwt = JWTService()
 
-    async def get_album_list(self, userId : str) -> Album_list_response:
-        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == userId).first()
-        if existing_user is None:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+    async def get_album_list(self, token : str) -> Album_list_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
         
-        album_list1 = self.db.query(models.album_info).filter(models.album_info.create_user_id == userId).all()
-        album_list2 = self.db.query(models.album_info).filter(models.album_info.with_whom == userId).all()
-
-        album_list = album_list1 + album_list2
-
+        album_list = self.db.query(models.album_member_info).filter(models.album_member_info.user_id == user["key"]).all()
+        
         album_list_response = []
-        for album in album_list:
-            album_list_response.append({"albumId" : album.album_id, "albumName" : album.album_name})
 
+        #즐겨찾기 로직 추가 필요
+        for album in album_list:
+            album_info = self.db.query(models.album_info).filter(models.album_info.album_id == album.album_id).first()
+            album_list_response.append(
+                {
+                    "albumId" : album_info.album_id,
+                    "albumName" : album_info.album_name,
+                    "albumThumbnail" : album_info.album_thumbnail
+                }
+            )
+        
         return Album_list_response(status = "success", message = "앨범 리스트 조회 성공", content = album_list_response)
 
     async def create_album(self, request : Album_create_request, token : str) -> Album_create_response:
@@ -63,8 +69,11 @@ class Album_service:
             Config.s3_bucket,
             new_key
             )
-
-        #친구인지 확인
+        new_album_member = models.album_member_info(
+            album_id = new_key,
+            user_id = user["key"]
+        )
+        self.db.add(new_album_member)
         for friend in request.content:
             existing_friend = self.db.query(models.is_friend).filter(
                 or_(
@@ -78,19 +87,27 @@ class Album_service:
                     )
                 )
             ).first()
+
             if existing_friend.is_friend is False:
                 raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"%s와 친구가 아닙니다." % (friend["friendId"]))
-            new_album = models.album_info(
-                album_id = new_key,
-                create_user_id = user["key"],
-                album_name = "기본 엘범",
-                with_whom = friend["friendId"],
-                directory = directroy,
-                album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket) #나중에 바꿔라
-            )
-            self.db.add(new_album)
-            existing_friend.shared_album_id = new_key
             
+            existing_friend.shared_album_id = new_key
+
+            new_album_member = models.album_member_info(
+                album_id = new_key,
+                user_id = friend["friendId"]
+            )
+            self.db.add(new_album_member)
+
+        new_album = models.album_info(
+            album_id = new_key,
+            create_user_id = user["key"],
+            album_name = "기본 엘범",
+            directory = directroy,
+            album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket) #나중에 바꿔라
+        )
+
+        self.db.add(new_album)
         self.db.commit()
 
         # 권한 관련 로직 추가 예정
