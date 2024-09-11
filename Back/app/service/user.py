@@ -11,6 +11,7 @@ from ..config import Config
 from ..util import JWTService
 from ..httpException import CustomException, CustomException2
 from ..fcm_service import send_push_notification
+from .log import LogService
 
 from datetime import datetime, timedelta
 
@@ -32,6 +33,7 @@ class User_service:
         self.today = datetime.now()
         self.rng = RandomNumberGenerator()
         self.jwt = JWTService()
+        self.log = LogService(self.db)
 
     async def register_user(self, user_info : User_info_request) -> CommoneResponse:
         
@@ -236,6 +238,8 @@ class User_service:
             }
             await send_push_notification(friend_fcm_token.fcm_token, data)
 
+        await self.log.write_log(request.friendId, f"{existing_user.name}님(으)로부터 친구 요청을 왔습니다.", self.today.strftime('%Y-%m-%d'), self.today.strftime('%H:%M:%S'))
+
         return CommoneResponse(status = "success", message = "친구 요청 성공")
 
     async def reject_friend(self, request : Reject_friend_request, token : str) -> CommoneResponse:
@@ -397,14 +401,14 @@ class User_service:
         if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 없습니다.")
         
-        friend = self.db.query(models.is_friend).filter(models.is_friend.friend_id == request.friendRequestId).first()
-        if friend is None:
+        friend_request = self.db.query(models.is_friend).filter(models.is_friend.friend_id == request.friendRequestId).first()
+        if friend_request is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구 요청 정보가 없습니다.")
         
-        friend.is_friend = True
+        friend_request.is_friend = True
 
         #기존 사용자였는지 확인
-        is_friend_before = self.db.query(models.user_info).filter(models.user_info.user_id == friend.from_user_id).first()
+        is_friend_before = self.db.query(models.user_info).filter(models.user_info.user_id == friend_request.from_user_id).first()
         if is_friend_before:
             phone = self.db.query(models.phone_info).filter(
                 and_(
@@ -417,6 +421,16 @@ class User_service:
         else:
             pass
         self.db.commit()
+
+        #fcm 알림
+        friend_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == friend_request.from_user_id).first()
+
+        if friend_fcm_token:
+            data = {
+                "title" : "CONNEX",
+                "body" : "%s님이 친구 요청을 수락했어요."%{existing_user.name},
+            }
+            await send_push_notification(friend_fcm_token.fcm_token, data)
 
         return CommoneResponse(status = "success", message = "친구 요청 수락 성공")
 
@@ -488,7 +502,7 @@ class User_service:
             message = "친구 추천 성공",
             content = phone_list
         )
-    
+
     def format_phone_number(self, phone_number : str) -> str:
         if len(phone_number) > 11:
             return phone_number
