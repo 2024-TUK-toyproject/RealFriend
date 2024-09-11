@@ -9,6 +9,7 @@ from ..schemes import *
 from ..random_generator import RandomNumberGenerator
 from ..util import JWTService
 from ..config import Config
+from ..fcm_service import send_push_notification
 
 from ..httpException import CustomException
 from ..httpException import CustomException2
@@ -258,6 +259,17 @@ class Album_service:
                 f"albums/%s/%s" % (album_id, f.filename)
             )
         
+        #엛범 맴버들에게 푸시알림 보내기
+        friend_id = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id).all()
+        for friend in friend_id:
+            friend_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == friend.user_id).all()
+            if friend_fcm_token:
+                data = {
+                "title" : "CONNEX",
+                "body" : "%s님이 새로운 사진을 업로드 했어요."%{existing_user.name},
+                }
+                await send_push_notification(friend_fcm_token.fcm_token, data)
+
         return CommoneResponse(status = "success", message = "앨범 업로드 성공")
 
     async def create_album_authority(self, request : Album_authority_request, token : str) -> CommoneResponse:
