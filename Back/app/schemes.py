@@ -67,8 +67,8 @@ class Certificate_response(BaseModel):
 class Album_list_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str, str]] = Field([{"albumId" : "123456", "albumName" : "가족사진", "albumThumnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}
-                                            ,{"albumId" : "654321", "albumName" : "여행사진", "albumThumnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
+    content : List[Dict[str, Optional[Union[str, int]]]] = Field([{"albumId" : "123456", "albumName" : "가족사진", "albumThumnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "albumMemberCount" : 2, "albumPictureCount" : 10}
+                                            ,{"albumId" : "654321", "albumName" : "여행사진", "albumThumnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "albumMemberCount" : 3, "albumPictureCount" : 10}])
 
 class Album_create_response(BaseModel):
     status : str = Field("success", example = "success or error")
