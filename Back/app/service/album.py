@@ -39,12 +39,22 @@ class Album_service:
 
         #즐겨찾기 중이면 리스트의 앞에 넣어주기
         for album in album_list:
-            existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album.album_id).first()
-    
+            existing_album = self.db.query(models.album_info).filter(
+                and_(
+                    models.album_info.album_id == album.album_id,
+                    models.album_info.create_user_id == user["key"]
+                )).first()
+            #엘범 사용자 수
+            album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album.album_id).count()
+
+            #엘범 내 사진 수
+            count = self.count_album_picture(existing_album.directory)
             album_data = {
                 "albumId": existing_album.album_id,
                 "albumName": existing_album.album_name,
-                "albumThumbnail": existing_album.album_thumbnail
+                "albumThumbnail": existing_album.album_thumbnail,
+                "albumMemberCount": album_member_count,
+                "albumPictureCount": count
             }
     
             if album.is_stared:
@@ -55,6 +65,41 @@ class Album_service:
                 album_list_response.append(album_data)
             
         return Album_list_response(status = "success", message = "앨범 리스트 조회 성공", content = album_list_response)
+
+    async def get_stared_album_list(self, token :str) -> Album_list_response:
+        user = self.jwt.check_token_expired(token)
+        if user is None:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        album_list = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.user_id == user["key"],
+                models.album_member_info.is_stared == True
+            )
+        ).all()
+        
+        album_list_response = []
+
+        for album in album_list:
+            existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album.album_id).first()
+
+            #엘범 사용자 수
+            album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album.album_id).count()
+
+            #엘범 내 사진 수
+            count = self.count_album_picture(existing_album.directory)
+
+            album_data = {
+                "albumId": existing_album.album_id,
+                "albumName": existing_album.album_name,
+                "albumThumbnail": existing_album.album_thumbnail,
+                "albumMemberCount": album_member_count,
+                "albumPictureCount": count
+            }
+    
+            album_list_response.append(album_data)
+            
+        return Album_list_response(status = "success", message = "즐겨찾기 앨범 리스트 조회 성공", content = album_list_response)
 
     async def create_album(self, request : Album_create_request, token : str) -> Album_create_response:
         user = self.jwt.check_token_expired(token)
@@ -71,8 +116,7 @@ class Album_service:
                 raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 친구입니다.")
         
         new_key = self.rng.generate_unique_random_number(100000, 999999)
-        directroy = f"https://%s.s3.amazonaws.com/albums/%s" % (
-            Config.s3_bucket,
+        directroy = f"albums/%s" % (
             new_key
             )
         new_album_member = models.album_member_info(
@@ -250,3 +294,28 @@ class Album_service:
         self.db.commit()
 
         return CommoneResponse(status = "success", message = "앨범 권한 설정 성공")
+    
+
+    #페이징 사용 -> 1000장 이상가져올 수 있음
+    def count_album_picture(self, album_directory : str):
+        count = 0
+        continuation_token = None
+        while True:
+            if continuation_token:
+                response = s3.list_objects_v2(
+                    Bucket=Config.s3_bucket,
+                    Prefix=album_directory,
+                    ContinuationToken=continuation_token
+                )
+            else:
+                response = s3.list_objects_v2(
+                    Bucket=Config.s3_bucket,
+                    Prefix=album_directory
+                )
+            count += len(response.get("Contents", []))
+            if response.get("NextContinuationToken"):
+                continuation_token = response["NextContinuationToken"]
+            else:
+                break
+        
+        return count
