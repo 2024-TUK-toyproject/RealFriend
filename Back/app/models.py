@@ -80,3 +80,12 @@ class fcm_token_info(Base):
 
     user_id = Column(String(255), primary_key=True)
     fcm_token = Column(String(255))
+
+class log_info(Base):
+    __tablename__ = 'log_info'
+
+    num = Column(Integer, index = True, primary_key=True)
+    user_id = Column(String(255))
+    message = Column(String(255))
+    date = Column(String(255))
+    time = Column(String(255))
