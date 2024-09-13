@@ -11,11 +11,13 @@ import com.example.connex.ui.svg.iconpack.IcBlackWarning
 import com.example.connex.ui.svg.iconpack.IcCall
 import com.example.connex.ui.svg.iconpack.IcCheck
 import com.example.connex.ui.svg.iconpack.IcConnexUsedUser
+import com.example.connex.ui.svg.iconpack.IcFavoriteOn
 import com.example.connex.ui.svg.iconpack.IcMenudot
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.svg.iconpack.IcSettingList
 import com.example.connex.ui.svg.iconpack.IcRedWarning
 import com.example.connex.ui.svg.iconpack.ImageMail
+import com.example.connex.ui.svg.iconpack.IcFavoriteOff
 import kotlin.collections.List as ____KtList
 
 public object IconPack
@@ -42,7 +44,9 @@ public val IconPack.AllIcons: ____KtList<ImageVector>
             IcRedWarning,
             ImageMail,
             IcConnexUsedUser,
-            IcBlackWarning
+            IcBlackWarning,
+            IcFavoriteOn,
+            IcFavoriteOff
         )
         return __AllIcons!!
     }

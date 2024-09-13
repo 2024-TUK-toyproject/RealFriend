@@ -1,20 +1,13 @@
 package com.example.connex.ui
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import androidx.navigation.navigation
-import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
-import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
-import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.notification.view.NotificationScreen
 import com.example.connex.ui.splash.view.SplashScreen
 import com.example.connex.utils.Constants
-import com.example.connex.utils.Constants.ALBUM_CREATING_ROUTE
 
 fun NavGraphBuilder.notificationComposable(applicationState: ApplicationState) {
 
@@ -38,9 +31,3 @@ fun NavGraphBuilder.splashComposable(applicationState: ApplicationState) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.creatingAlbumComposable(applicationState: ApplicationState) {
-    composable(ALBUM_CREATING_ROUTE) { entry ->
-        CreatingAlbumScreen(applicationState = applicationState)
-    }
-}

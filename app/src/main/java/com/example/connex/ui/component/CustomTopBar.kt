@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +35,7 @@ fun BackArrowAppBar(modifier: Modifier = Modifier, text: String, onBack: () -> U
             .padding(vertical = 17.dp, horizontal = 20.dp)
     ) {
         Icon(
-            imageVector = Icons.Default.ArrowBack,
+            imageVector = Icons.Rounded.ArrowBackIosNew,
             contentDescription = "back",
             modifier = Modifier
                 .size(24.dp)

@@ -1,6 +1,5 @@
 package com.example.connex.ui.home
 
-import android.content.ContentResolver
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.derivedStateOf
@@ -9,18 +8,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.connex.utils.Constants
 import com.example.connex.utils.syncContact
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.AppUserContact
 import com.example.domain.model.login.Contact
 import com.example.domain.model.response.ContactInfo
-import com.example.domain.model.response.ContactResponse
 import com.example.domain.model.response.Friend
 import com.example.domain.model.response.asDomain
-import com.example.domain.usecase.friend.DeleteFriendUseCase
 import com.example.domain.usecase.ReadAllFriendsUseCase
 import com.example.domain.usecase.friend.AddFriendUseCase
+import com.example.domain.usecase.friend.DeleteFriendUseCase
 import com.example.domain.usecase.friend.ReadAllContactsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,7 +31,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.ConnectException
 import javax.inject.Inject
-import kotlin.contracts.contract
 
 
 class FriendUiState(
@@ -205,7 +200,6 @@ class FriendsViewModel @Inject constructor(
                         notResponse()
                     }
                 }
-
 
                 is ApiState.Success -> {
                     result.data.also { list ->

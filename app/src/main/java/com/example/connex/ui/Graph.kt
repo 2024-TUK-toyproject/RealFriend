@@ -10,6 +10,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
+import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
@@ -22,6 +24,7 @@ import com.example.connex.ui.home.view.MypageScreen
 import com.example.connex.ui.login.view.LoginCompleteScreen
 import com.example.connex.ui.login.view.LoginScreen
 import com.example.connex.ui.login.view.ProfileInitScreen
+import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.FRIEND_ADD_ROUTE
 import com.example.connex.utils.Constants.FRIEND_REMOVE_ROUTE
 import com.example.connex.utils.Constants.FRIEND_SYNC_COMPLETE_ROUTE
@@ -152,11 +155,21 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
+    composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
+        CreatingAlbumScreen(applicationState = applicationState)
+    }
+    composable(Constants.ALBUM_CREATING_COMPLETE_ROUTE) { entry ->
+        CreatingAlbumCompleteScreen(applicationState = applicationState)
+    }
+}
+
 
 
 
 @Composable
-private fun rememberNavControllerBackEntry(
+fun rememberNavControllerBackEntry(
     entry: NavBackStackEntry,
     navController: NavController,
     graph: String,

@@ -1,5 +1,6 @@
 package com.example.data.di
 
+import com.example.data.network.AlbumApi
 import com.example.data.network.AuthApi
 import com.example.data.network.ContactApi
 import com.example.data.network.FriendApi
@@ -32,4 +33,11 @@ object ApiModule {
     fun provideFriendApi(@NetworkModule.ConnexAuthRetrofit retrofit: Retrofit): FriendApi {
         return retrofit.create(FriendApi::class.java)
     }
+
+    @Provides
+    fun provideAlbumApi(@NetworkModule.ConnexAuthRetrofit retrofit: Retrofit): AlbumApi {
+        return retrofit.create(AlbumApi::class.java)
+    }
+
+
 }

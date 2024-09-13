@@ -1,40 +1,73 @@
 package com.example.connex.ui.album_create.view
 
-import androidx.compose.foundation.clickable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.component.ColumnSpacer
-import com.example.connex.ui.component.SearchTextField
-import com.example.connex.ui.home.view.ContactCard
-import com.example.connex.ui.home.view.ContactCardCheckBox
 import com.example.connex.ui.theme.Body2Medium
+import com.example.connex.ui.theme.Gray100
+import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
+import com.example.connex.ui.theme.PrimaryBlue1
+import com.example.connex.ui.theme.PrimaryBlue2
+import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+
+class BackgroundItem(
+    val id: Long,
+    val image: String,
+    initialChecked: Boolean,
+) {
+    var isSelected by mutableStateOf(initialChecked)
+}
 
 @Composable
 fun BackgroundSelectScreen(modifier: Modifier = Modifier) {
+
+
+    var dummy by remember {
+        mutableStateOf(
+            listOf(
+                BackgroundItem(1, Constants.DEFAULT_PROFILE, false),
+                BackgroundItem(2, Constants.DEFAULT_PROFILE, false),
+                BackgroundItem(3, Constants.DEFAULT_PROFILE, false),
+                BackgroundItem(4, Constants.DEFAULT_PROFILE, false),
+            )
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,23 +95,49 @@ fun BackgroundSelectScreen(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(4) {
-                BackgroundCard()
+            items(items = dummy, key = { it.id }) { item ->
+                BackgroundCard(modifier = Modifier.fillMaxWidth(), shape = 15.dp, background = item) {id -> dummy.map { it.isSelected = it.id == id } }
             }
         }
     }
 }
 
 @Composable
-fun BackgroundCard(modifier: Modifier = Modifier) {
-    val ratio = 140f / 160f
-    Card(
-        modifier
-            .fillMaxWidth()
-            .aspectRatio(ratio),
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEAECED))
-    ) {
+fun BackgroundCard(modifier: Modifier = Modifier, shape: Dp, background: BackgroundItem, onClick: (Long) -> Unit) {
+//    val ratio = 140f / 160f
 
+    Box(modifier = modifier) {
+        Card(
+            onClick = {onClick(background.id)},
+            modifier
+                .fillMaxWidth()
+                .aspectRatio(1f),
+            shape = RoundedCornerShape(shape),
+            colors = CardDefaults.cardColors(containerColor = Gray100),
+        ) {}
+        CheckButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(x = 12.dp, y = 12.dp), isChecked = background.isSelected
+        )
+    }
+}
+
+@Composable
+fun CheckButton(modifier: Modifier = Modifier, isChecked: Boolean) {
+    if (isChecked) {
+        Card(
+            shape = CircleShape,
+            modifier = modifier.size(24.dp),
+            colors = CardDefaults.cardColors(containerColor = PrimaryBlue2, contentColor = White)
+        ) {
+            Icon(imageVector = Icons.Rounded.Check, contentDescription = "ic_check", modifier = Modifier.padding(3.dp).fillMaxSize())
+        }
+    } else {
+        Canvas(modifier = modifier.size(24.dp)) {
+            drawCircle(color = Gray400)
+            drawCircle(color = White, radius = size.width / 2.0f - 4.0f)
+            drawCircle(color = Gray400, radius = size.width / 2.0f - 8.0f)
+        }
     }
 }

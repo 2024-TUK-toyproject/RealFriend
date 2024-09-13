@@ -1,8 +1,10 @@
 package com.example.data.di
 
+import com.example.data.repository.AlbumRepositoryImpl
 import com.example.data.repository.ContactRepositoryImpl
 import com.example.data.repository.FriendRepositoryImpl
 import com.example.data.repository.LoginRepositoryImpl
+import com.example.domain.repository.AlbumRepository
 import com.example.domain.repository.ContactRepository
 import com.example.domain.repository.FriendRepository
 import com.example.domain.repository.LoginRepository
@@ -35,4 +37,10 @@ abstract class RepositoryModule {
     abstract fun bindFriendRepository(
         friendRepositoryImpl: FriendRepositoryImpl,
     ): FriendRepository
+
+    @Binds
+    @ViewModelScoped
+    abstract fun bindAlbumRepository(
+        albumRepositoryImpl: AlbumRepositoryImpl,
+    ): AlbumRepository
 }

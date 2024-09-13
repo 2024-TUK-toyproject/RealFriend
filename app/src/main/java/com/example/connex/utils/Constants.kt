@@ -47,6 +47,7 @@ object Constants {
     const val ALBUM_CREATING_SELECT_FRIEND_ROUTE = "nav-album-creating-select-friend"
     const val ALBUM_CREATING_SELECT_BACKGROUND_ROUTE = "nav-album-creating-select-background"
     const val ALBUM_CREATING_SETTING_NAME_ROUTE = "nav-album-creating-select-name"
+    const val ALBUM_CREATING_COMPLETE_ROUTE = "nav-album-creating-complete"
 
 
     const val SIGNIN_AGREEMENT_ROUTE = "nav-signin-agreement"
@@ -77,6 +78,7 @@ object Constants {
     const val HOME_GRAPH = "home-graph"
     const val LOGIN_GRAPH = "login-graph"
     const val INIT_SETTING_GRAPH = "init-setting-graph"
+    const val ALBUM_CREATING_GRAPH = "album-creating-graph"
     const val SETTING_GRAPH = "setting-graph"
     const val SIGNIN_GRAPH = "signin-graph"
     const val DETAIL_GRAPH = "detail-graph"

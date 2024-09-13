@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -54,14 +52,12 @@ import com.example.connex.ui.home.HomeViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.Connexlogo2
 import com.example.connex.ui.svg.iconpack.IcNotification
-import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
-import com.example.connex.ui.theme.Subtitle1
 import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
@@ -82,6 +78,7 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = Constants.BottomNavigationHeight)
             .verticalScroll(rememberScrollState())
     ) {
         HomeHeader(Modifier.padding(top = 32.dp, bottom = 36.dp)) {

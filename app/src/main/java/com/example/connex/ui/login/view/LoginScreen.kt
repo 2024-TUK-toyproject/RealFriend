@@ -1,10 +1,10 @@
 package com.example.connex.ui.login.view
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.example.connex.ui.component.ArrowBackIcon
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.MobileCarrierModalBottomSheet
@@ -81,130 +81,139 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
         }
     }
 
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 40.dp)
-            .imePadding()
-    ) {
-        if (isShowMobileCarrierBottomSheet) {
-            MobileCarrierModalBottomSheet(
-                currentCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier,
-                onClose = { isShowMobileCarrierBottomSheet = false }) {
-                loginViewModel.updateMobileCarrier(it)
-                isShowMobileCarrierBottomSheet = false
-            }
-        }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            LoginAppBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 40.dp)
+            ) { applicationState.popBackStack() }
+        }) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .addFocusCleaner(focusManager)
-                .verticalScroll(
-                    rememberScrollState()
-                )
+                .fillMaxSize()
+                .padding(innerPadding)
+//                .padding(horizontal = 24.dp, vertical = 40.dp)
+                .padding(horizontal = 24.dp)
+                .imePadding()
         ) {
-//            Spacer(modifier = Modifier.height(84.dp - statusBarPadding))
-            ArrowBackIcon {
-                applicationState.popBackStack()
+            if (isShowMobileCarrierBottomSheet) {
+                MobileCarrierModalBottomSheet(
+                    currentCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier,
+                    onClose = { isShowMobileCarrierBottomSheet = false }) {
+                    loginViewModel.updateMobileCarrier(it)
+                    isShowMobileCarrierBottomSheet = false
+                }
             }
-            Spacer(modifier = Modifier.height(64.dp))
-            Text(
-                text = loginScreenState.title,
-                style = Heading1,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-
-
-            if (loginScreenState is LoginScreenState.CertificateCode) {
-                val verificationCodeStyle = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    lineHeight = 12.sp,
-                    color = PrimaryBlue2
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .addFocusCleaner(focusManager)
+                    .verticalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                Spacer(modifier = Modifier.height(64.dp))
+                Text(
+                    text = loginScreenState.title,
+                    style = Heading1,
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
-                LoginOutLineTextField(label = "인증번호") {
+                Spacer(modifier = Modifier.height(32.dp))
+
+
+                if (loginScreenState is LoginScreenState.CertificateCode) {
+                    val verificationCodeStyle = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 12.sp,
+                        color = PrimaryBlue2
+                    )
+                    LoginOutLineTextField(label = "인증번호") {
+                        PhoneOutLineTextField(
+                            text = loginPhoneAuthUiState.verificationCode,
+                            updatePhone = {
+                                if (it.length <= 6) {
+                                    loginViewModel.updateVerificationCode(it)
+                                }
+                            },
+                            enabled = true,
+                            onDone = { focusManager.clearFocus() },
+                            trailingIcon = { Text(text = "02:58", style = verificationCodeStyle) }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                if (loginScreenState !is LoginScreenState.Phone) {
+                    LoginOutLineTextField(
+                        label = "통신사",
+                        isCompleted = loginScreenState !is LoginScreenState.MobileCarrier
+                    ) {
+                        MobileCarrierBox(
+                            isCompleted = loginScreenState !is LoginScreenState.MobileCarrier,
+                            mobileCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier.getName()
+                        ) {
+                            isShowMobileCarrierBottomSheet = true
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                LoginOutLineTextField(
+                    label = "휴대전화 번호",
+                    isCompleted = loginScreenState !is LoginScreenState.Phone
+                ) {
                     PhoneOutLineTextField(
-                        text = loginPhoneAuthUiState.verificationCode,
+                        //                    text = loginPhoneAuthUiState.phoneNumber.number,
+                        //                    updatePhone = {
+                        //                        if (it.length <= 11) {
+                        //                            loginViewModel.updatePhone(it)
+                        //                        }
+                        //                    },
+                        text = loginPhoneAuthUiState.phoneNumber.number,
                         updatePhone = {
-                            if (it.length <= 6) {
-                                loginViewModel.updateVerificationCode(it)
+                            if (it.length <= 11) {
+                                loginViewModel.updatePhone(it)
                             }
                         },
-                        enabled = true,
-                        onDone = { focusManager.clearFocus() },
-                        trailingIcon = { Text(text = "02:58", style = verificationCodeStyle) }
+                        enabled = loginScreenState is LoginScreenState.Phone,
+                        onDone = { focusManager.clearFocus() }
                     )
                 }
-                Spacer(modifier = Modifier.height(20.dp))
             }
-
-            if (loginScreenState !is LoginScreenState.Phone) {
-                LoginOutLineTextField(
-                    label = "통신사",
-                    isCompleted = loginScreenState !is LoginScreenState.MobileCarrier
-                ) {
-                    MobileCarrierBox(
-                        isCompleted = loginScreenState !is LoginScreenState.MobileCarrier,
-                        mobileCarrier = loginPhoneAuthUiState.phoneNumber.mobileCarrier.getName()
-                    ) {
-                        isShowMobileCarrierBottomSheet = true
-                    }
-                }
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-            LoginOutLineTextField(
-                label = "휴대전화 번호",
-                isCompleted = loginScreenState !is LoginScreenState.Phone
+            GeneralButton(
+                modifier = Modifier
+                    .height(55.dp),
+                text = "다음",
+                enabled = buttonEnabled
             ) {
-                PhoneOutLineTextField(
-//                    text = loginPhoneAuthUiState.phoneNumber.number,
-//                    updatePhone = {
-//                        if (it.length <= 11) {
-//                            loginViewModel.updatePhone(it)
-//                        }
-//                    },
-                    text = loginPhoneAuthUiState.phoneNumber.number,
-                    updatePhone = {
-                        if (it.length <= 11) {
-                            loginViewModel.updatePhone(it)
+                when (loginScreenState) {
+                    is LoginScreenState.CertificateCode -> {
+                        loginViewModel.fetchCheckCertificateCode(onSuccess = { isExistedUser ->
+                            if (isExistedUser) {
+                                applicationState.navigatePopBackStack(Constants.HOME_ROUTE)
+                            } else {
+                                applicationState.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                            }
+                        }) {
+                            applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
                         }
-                    },
-                    enabled = loginScreenState is LoginScreenState.Phone,
-                    onDone = { focusManager.clearFocus() }
-                )
-            }
-        }
-        GeneralButton(
-            modifier = Modifier
-                .height(55.dp),
-            text = "다음",
-            enabled = buttonEnabled
-        ) {
-            when (loginScreenState) {
-                is LoginScreenState.CertificateCode -> {
-                    loginViewModel.fetchCheckCertificateCode(onSuccess = { isExistedUser ->
-                        if (isExistedUser) {
-                            applicationState.navigatePopBackStack(Constants.HOME_ROUTE)
-                        } else {
-                            applicationState.navigate(Constants.SIGNUP_PROFILE_INIT_ROUTE)
+                    }
+
+                    is LoginScreenState.MobileCarrier -> {
+                        loginViewModel.fetchRequestCertificateCode(onSuccess = {
+                            loginScreenState = LoginScreenState.CertificateCode()
+                        }) {
+                            applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
                         }
-                    }) {
-                        applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
                     }
-                }
 
-                is LoginScreenState.MobileCarrier -> {
-                    loginViewModel.fetchRequestCertificateCode(onSuccess = {loginScreenState = LoginScreenState.CertificateCode()}) {
-                        applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
+                    is LoginScreenState.Phone -> {
+                        loginScreenState = LoginScreenState.MobileCarrier()
                     }
-                }
-
-                is LoginScreenState.Phone -> {
-                    loginScreenState = LoginScreenState.MobileCarrier()
                 }
             }
         }
@@ -271,6 +280,13 @@ fun MobileCarrierBox(
             )
         }
 
+    }
+}
+
+@Composable
+fun LoginAppBar(modifier: Modifier = Modifier, onBack: () -> Unit) {
+    Row(modifier = modifier) {
+        ArrowBackIcon { onBack() }
     }
 }
 

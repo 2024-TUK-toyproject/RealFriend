@@ -13,19 +13,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -37,8 +38,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,6 +57,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.R
 import com.example.connex.ui.component.ColumnSpacer
@@ -64,11 +67,14 @@ import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.SkyBlueBox
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.domain.ApplicationState
+import com.example.connex.ui.home.Album
+import com.example.connex.ui.home.AlbumViewModel
 import com.example.connex.ui.svg.IconPack
+import com.example.connex.ui.svg.iconpack.IcFavoriteOff
+import com.example.connex.ui.svg.iconpack.IcFavoriteOn
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.theme.Black
 import com.example.connex.ui.theme.Body1Semibold
-import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
@@ -77,6 +83,7 @@ import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.domain.model.ApiState
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
 import me.onebone.toolbar.ExperimentalToolbarApi
@@ -90,81 +97,115 @@ data class TempleAlbumData(
 )
 
 @Composable
-fun AlbumScreen(applicationState: ApplicationState) {
+fun AlbumScreen(
+    albumViewModel: AlbumViewModel = hiltViewModel(),
+    applicationState: ApplicationState,
+) {
 
     val state = rememberCollapsingToolbarScaffoldState()
-    val scrollState = rememberLazyGridState()
-    var headerHeight by remember { mutableIntStateOf(0) }
-    var searchHeight by remember { mutableIntStateOf(0) }
 
-    Surface(modifier = Modifier.fillMaxSize().navigationBarsPadding()) {
-        CollapsingToolbarScaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            state = state,
-            scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
-            toolbar = {
-                Column(
-                    modifier = Modifier
-                        .padding(top = 85.dp)
-                        .parallax(1f)
-                ) {
-//                ColumnSpacer(height = 28.dp)
-                    SkyBlueBox(
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                        leadingImage = {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = "image_mail",
-                                modifier = Modifier.size(27.dp).align(Alignment.Center)
-                            )
-                        },
-                        leadingImageSize = 32.dp,
-                        title = "우리만 볼 수 있는",
-                        body = "공유 앨범 생성하기",
-                        enabled = true,
+    val albumUiState by albumViewModel.albumUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        albumViewModel.fetchReadAlbums(notResponse = { applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.") })
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = Constants.BottomNavigationHeight)
+            .statusBarsPadding()
+    ) {
+        if (albumUiState.albums is ApiState.Loading) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            CollapsingToolbarScaffold(
+                modifier = Modifier
+                    .fillMaxSize(),
+                state = state,
+                scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+                toolbar = {
+                    Column(
+                        modifier = Modifier
+                            .padding(top = 85.dp)
+                            .parallax(1f)
                     ) {
-                        applicationState.navigate(Constants.ALBUM_CREATING_ROUTE)
-                    }
-                    ColumnSpacer(height = 24.dp)
-                    NewUploadPictureSection(
-                        listOf(
-                            TempleAlbumData(id = 1),
-                            TempleAlbumData(id = 2),
-                            TempleAlbumData(id = 3),
-                            TempleAlbumData(id = 4),
-                            TempleAlbumData(id = 5),
-                            TempleAlbumData(id = 6),
+//                ColumnSpacer(height = 28.dp)
+                        SkyBlueBox(
+                            modifier = Modifier.padding(horizontal = 24.dp),
+                            leadingImage = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Add,
+                                    contentDescription = "image_mail",
+                                    modifier = Modifier
+                                        .size(27.dp)
+                                        .align(Alignment.Center)
+                                )
+                            },
+                            leadingImageSize = 32.dp,
+                            title = "우리만 볼 수 있는",
+                            body = "공유 앨범 생성하기",
+                            enabled = true,
+                        ) {
+                            applicationState.navigate(Constants.ALBUM_CREATING_ROUTE)
+                        }
+                        ColumnSpacer(height = 24.dp)
+                        NewUploadPictureSection(
+                            listOf(
+                                TempleAlbumData(id = 1),
+                                TempleAlbumData(id = 2),
+                                TempleAlbumData(id = 3),
+                                TempleAlbumData(id = 4),
+                                TempleAlbumData(id = 5),
+                                TempleAlbumData(id = 6),
+                            )
                         )
-                    )
-                    ColumnSpacer(height = 24.dp)
-                }
-                AlbumAppbar {}
+                        ColumnSpacer(height = 24.dp)
+                    }
+                    AlbumAppbar {}
 
-            }
-        ) {
-            Column {
-                AlbumSearchSection(category = "즐겨찾기 순", search = "") {}
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(start = 24.dp, end = 24.dp),
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                ) {
-                    items(11) {
-                        AlbumCard(
-                            modifier = Modifier
-//                        .weight(1f)
-                                .height(160.dp),
-                            navigate = { /*TODO*/ }
-                        ) {}
+                }
+            ) {
+                Column {
+                    AlbumSearchSection(
+                        category = "즐겨찾기 순",
+                        search = albumUiState.search
+                    ) { albumViewModel.updateSearch(it) }
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                    ) {
+                        val albums = (albumUiState.albums as ApiState.Success<List<Album>>).data
+                        items(items = albums, key = { it.albumId }) {
+                            AlbumCard(
+                                modifier = Modifier
+                                    .height(160.dp),
+                                name = it.albumName,
+                                image = it.albumThumbnail,
+                                userCount = it.userCount,
+                                imageCount = it.photoCount,
+                                isFavorite = it.isFavorite,
+                                navigate = { /*TODO*/ }
+                            ) {
+                                albumViewModel.fetchUpdateAlbumFavorite(it.albumId,) {
+                                    applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")
+                                }
+                            }
+                        }
                     }
                 }
             }
-
         }
     }
 }
@@ -180,11 +221,11 @@ fun AlbumCard(
     navigate: () -> Unit,
     onFavorite: () -> Unit,
 ) {
+    var star = if (isFavorite) IconPack.IcFavoriteOn else IconPack.IcFavoriteOff
 
     Box(
         modifier = modifier
     ) {
-
         Card(
             modifier = Modifier
                 .fillMaxSize(),
@@ -211,7 +252,7 @@ fun AlbumCard(
             Row {
                 Text(text = "🗣️ $userCount", style = Body3Regular, color = White)
                 RowSpacer(width = 2.dp)
-                Text(text = "📷 $userCount", style = Body3Regular, color = White)
+                Text(text = "📷 $imageCount", style = Body3Regular, color = White)
             }
         }
         Box(
@@ -220,6 +261,14 @@ fun AlbumCard(
                 .clip(RoundedCornerShape(15.dp))
                 .background(Black.copy(alpha = 0.2f))
         ) {}
+        Image(
+            imageVector = star,
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset((-12).dp, 14.dp)
+                .noRippleClickable { onFavorite() }
+        )
     }
 }
 
