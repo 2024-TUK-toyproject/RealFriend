@@ -65,11 +65,11 @@ fun CreatingAlbumScreen(albumCreatingViewModel: AlbumCreatingViewModel = hiltVie
                     }
                 }, style = Body1Semibold, modifier = Modifier.padding(horizontal = 24.dp))
                 ColumnSpacer(height = 12.dp)
-                CreatingAlbumNavHost(navController = navController, applicationState = applicationState)
+                CreatingAlbumNavHost(albumCreatingViewModel = albumCreatingViewModel, navController = navController, applicationState = applicationState)
             }
             GeneralButton(modifier = Modifier
+                .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
                 .height(51.dp)
-                .padding(horizontal = 24.dp)
                 .align(Alignment.BottomCenter), text = "다음", enabled = true) {
                 creatingAlbumNavigate(albumCreatingViewModel, navController, applicationState) { current = it }
             }
@@ -91,7 +91,11 @@ fun creatingAlbumNavigate(albumCreatingViewModel: AlbumCreatingViewModel, navCon
             navController.navigate(Constants.ALBUM_CREATING_SETTING_NAME_ROUTE)
         }
         Constants.ALBUM_CREATING_SETTING_NAME_ROUTE -> {
-            applicationState.navigate(Constants.ALBUM_CREATING_COMPLETE_ROUTE)
+            albumCreatingViewModel.fetchUpdateAlbumThumbnail(
+                onSuccess = {
+                    applicationState.navigate(Constants.ALBUM_CREATING_COMPLETE_ROUTE)
+                }
+            ) { applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.") }
         }
     }
 }

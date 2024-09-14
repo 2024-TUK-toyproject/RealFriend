@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.ui.home.FriendUiState
+import com.example.connex.utils.Constants
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.asDomain
@@ -36,7 +37,7 @@ class AlbumCreatingViewModel @Inject constructor(
     val setAlbumThumbnailUseCase: SetAlbumThumbnailUseCase
 ) : ViewModel() {
 
-    var albumId = ""
+    var albumId = 0L
 
     private val _search = MutableStateFlow("")
     val search: StateFlow<String> = _search.asStateFlow()
@@ -65,6 +66,7 @@ class AlbumCreatingViewModel @Inject constructor(
 
     fun updateAlbumName(search: String) {
         _albumName.update { search }
+        Log.d("daeyoung", "albumName: ${albumName.value}")
     }
 
 
@@ -131,7 +133,7 @@ class AlbumCreatingViewModel @Inject constructor(
                 }
 
                 is ApiState.Success -> {
-                    albumId = result.data.toString()
+                    albumId = result.data.albumId
                     onSuccess()
                 }
             }
@@ -139,24 +141,18 @@ class AlbumCreatingViewModel @Inject constructor(
     }
     fun fetchUpdateAlbumThumbnail(onSuccess: () -> Unit, notResponse: (String) -> Unit) {
         viewModelScope.launch {
-//            when (val result = setAlbumThumbnailUseCase(albumId, albumName, ).first()) {
-//                is ApiState.Error -> TODO()
-//                ApiState.Loading -> TODO()
-//                is ApiState.NotResponse -> {
-//                    if (result.exception is ConnectException) {
-//                        Log.d(
-//                            "daeyoung",
-//                            "message: ${result.message}\nexception: ${result.exception}"
-//                        )
-//                        notResponse("인터넷이 연결이 되어 있지 않습니다.")
-//                    }
-//                }
-//
-//                is ApiState.Success -> {
-//                    albumId = result.data.toString()
-//                    onSuccess()
-//                }
-//            }
+            when (val result = setAlbumThumbnailUseCase(albumId, albumName.value, Constants.DEFAULT_PROFILE).first()) {
+                is ApiState.Error -> Log.d("daeyoung", "message: ${result.errMsg}")
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> {
+                    if (result.exception is ConnectException) {
+                        notResponse("인터넷이 연결이 되어 있지 않습니다.")
+                    }
+                    Log.d("daeyoung", "message: ${result.message}\nexception: ${result.exception}")
+                }
+
+                is ApiState.Success -> { onSuccess() }
+            }
         }
     }
 

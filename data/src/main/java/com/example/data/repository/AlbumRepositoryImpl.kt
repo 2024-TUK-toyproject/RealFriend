@@ -2,7 +2,8 @@ package com.example.data.repository
 
 import com.example.data.network.AlbumApi
 import com.example.domain.model.ApiState
-import com.example.domain.model.request.AlbumIdResponse
+import com.example.domain.model.request.AlbumRequest
+import com.example.domain.model.response.AlbumIdResponse
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.AlbumResponse
@@ -21,9 +22,9 @@ class AlbumRepositoryImpl @Inject constructor(
             albumApi.createAlbum(ContentRequest(friendIds))
         }
 
-    override fun setAlbumThumbnail(albumId: String, thumbnailId: String, file: MultipartBody.Part) =
+    override fun setAlbumThumbnail(albumId: String, albumName: String, albumImage: String) =
         safeFlowUnit {
-            albumApi.setAlbumThumbnail(albumId, thumbnailId, file)
+            albumApi.setAlbumThumbnail(AlbumRequest(albumId, albumName, albumImage))
         }
 
     override fun readAllAlbums(): Flow<ApiState<List<AlbumResponse>>> =

@@ -67,6 +67,8 @@ fun CreatingAlbumCompleteScreen(applicationState: ApplicationState) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "홈으로 가기", style = Body2Medium, modifier = Modifier.clickable { applicationState.navigatePopBackStack(Constants.HOME_ROUTE) })
+            Spacer(modifier = Modifier.height(24.dp))
+
         }
     }
 }
