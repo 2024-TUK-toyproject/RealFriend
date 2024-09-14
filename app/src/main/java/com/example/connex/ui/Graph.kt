@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.connex.ui.album.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
@@ -157,12 +158,24 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
-    composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
-        CreatingAlbumScreen(applicationState = applicationState)
+    navigation(route = Constants.ALBUM_CREATE_START_GRAPH, startDestination = Constants.ALBUM_CREATING_ROUTE) {
+        composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
+            CreatingAlbumScreen(applicationState = applicationState)
+        }
+        composable(Constants.ALBUM_CREATING_COMPLETE_ROUTE) { entry ->
+            CreatingAlbumCompleteScreen(applicationState = applicationState)
+        }
     }
-    composable(Constants.ALBUM_CREATING_COMPLETE_ROUTE) { entry ->
-        CreatingAlbumCompleteScreen(applicationState = applicationState)
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
+    navigation(route = Constants.ALBUM_INFO_GRAPH, startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) {
+        composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
+            PicturesListScreen()
+        }
     }
+
 }
 
 

@@ -93,28 +93,35 @@ fun FriendSelectScreen(
                 }
                 item { ColumnSpacer(height = 24.dp) }
             }
-
-            item {
-                SearchTextField(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .padding(horizontal = 24.dp),
-                    padding = Pair(20.dp, 12.dp),
-                    backgroundColor = Color(0xFFF2F4F8),
-                    text = friendSelectUiState.search,
-                    placeholder = "친구의 이름이나 연락처로 검색해 보세요.",
-                    updateText = {
-                        albumCreatingViewModel.updateSearch(it)
-                        albumCreatingViewModel.realTimeSearching(it)
-                    }) {
-                    albumCreatingViewModel.realTimeSearching(friendSelectUiState.search)
-                    focusManager.clearFocus()
-                }
-            }
-            item { ColumnSpacer(height = 12.dp) }
             if (friendSelectUiState.friends is ApiState.Loading) {
-                item { CircularProgressIndicator() }
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             } else if (friendSelectUiState.friends is ApiState.Success<List<FriendUiState>>) {
+                item {
+                    SearchTextField(
+                        modifier = Modifier
+                            .height(40.dp)
+                            .padding(horizontal = 24.dp),
+                        padding = Pair(20.dp, 12.dp),
+                        backgroundColor = Color(0xFFF2F4F8),
+                        text = friendSelectUiState.search,
+                        placeholder = "친구의 이름이나 연락처로 검색해 보세요.",
+                        updateText = {
+                            albumCreatingViewModel.updateSearch(it)
+                            albumCreatingViewModel.realTimeSearching(it)
+                        }) {
+                        albumCreatingViewModel.realTimeSearching(friendSelectUiState.search)
+                        focusManager.clearFocus()
+                    }
+                }
+                item { ColumnSpacer(height = 12.dp) }
                 items(
                     items = (friendSelectUiState.friends as ApiState.Success<List<FriendUiState>>).data,
                     key = { it.friend.userId }) {
@@ -143,7 +150,11 @@ fun FriendSelectScreen(
 }
 
 @Composable
-fun LazyRowFriends(modifier: Modifier = Modifier, friends: List<FriendUiState>, onDelete: (Long) -> Unit) {
+fun LazyRowFriends(
+    modifier: Modifier = Modifier,
+    friends: List<FriendUiState>,
+    onDelete: (Long) -> Unit,
+) {
 
     AnimatedVisibility(
         visible = friends.isNotEmpty(),
@@ -188,7 +199,7 @@ fun SelectedFriendCard(friend: FriendUiState, onDelete: () -> Unit) {
                 containerColor = Gray500.copy(alpha = 0.5f),
                 contentColor = White
             ),
-            onClick = {onDelete()}
+            onClick = { onDelete() }
         ) {
             Icon(
                 imageVector = Icons.Rounded.Close,

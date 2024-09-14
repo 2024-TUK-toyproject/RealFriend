@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
+import com.example.connex.ui.albumGraph
 import com.example.connex.ui.component.BottomBar
 import com.example.connex.ui.creatingAlbumGraph
 import com.example.connex.ui.domain.ApplicationState
@@ -56,6 +57,7 @@ fun RootNavhost(
             notificationComposable(appState)
             splashComposable(appState)
             creatingAlbumGraph(appState)
+            albumGraph(appState)
         }
         BottomBar(appState)
     }

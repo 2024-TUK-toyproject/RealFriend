@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.theme.Gray100
@@ -47,3 +48,15 @@ fun BackArrowAppBar(modifier: Modifier = Modifier, text: String, onBack: () -> U
     }
 }
 
+
+@Composable
+fun AppBarIcon(image: ImageVector, onClick: () -> Unit) {
+    Icon(
+        imageVector = image,
+        contentDescription = "ic_..",
+        tint = Gray900,
+        modifier = Modifier
+            .size(24.dp)
+            .noRippleClickable { onClick() }
+    )
+}
