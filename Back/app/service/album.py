@@ -55,7 +55,8 @@ class Album_service:
                 "albumName": existing_album.album_name,
                 "albumThumbnail": existing_album.album_thumbnail,
                 "albumMemberCount": album_member_count,
-                "albumPictureCount": count
+                "albumPictureCount": count,
+                "isStared": album.is_stared
             }
     
             if album.is_stared:
@@ -95,7 +96,8 @@ class Album_service:
                 "albumName": existing_album.album_name,
                 "albumThumbnail": existing_album.album_thumbnail,
                 "albumMemberCount": album_member_count,
-                "albumPictureCount": count
+                "albumPictureCount": count,
+                "isStared": album.is_stared
             }
     
             album_list_response.append(album_data)
@@ -170,7 +172,7 @@ class Album_service:
         # 권한 관련 로직 추가 예정
         return Album_create_response(status = "success", message = "앨범 생성 성공", content = {"albumId" : str(new_key)})
     
-    async def set_album_thumbnail(self, albumId : str, albumName : str, file : UploadFile, token : str) -> CommoneResponse:
+    async def set_album_thumbnail(self, request : Album_thumbnail_request, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
 
         if user is None:
@@ -180,23 +182,13 @@ class Album_service:
         if existing_user is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
         
-        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == albumId).first()
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == request.albumId).first()
 
         if existing_album is None:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
         
-        if file:
-            thumbnail_url = f"https://%s.s3.amazonaws.com/albums/%s/%s" % (Config.s3_bucket, albumId, file.filename)
-            s3.upload_fileobj(
-                file.file,
-                Config.s3_bucket,
-                f"albums/%s/%s" % (albumId, file.filename)
-            )
-        else:
-            thumbnail_url = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket)
-
-        existing_album.album_thumbnail = thumbnail_url
-        existing_album.album_name = albumName
+        existing_album.album_name = request.albumName
+        existing_album.album_thumbnail = request.albumThumbnail
 
         self.db.commit()
 
