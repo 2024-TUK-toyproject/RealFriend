@@ -184,9 +184,9 @@ async def create_album(request : Album_create_request, token = Depends(APIKeyHea
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/users/album/setthumbnail", responses = {200 : {"model" : CommoneResponse, "description" : "앨범 썸네일 설정 성공"}, 400 : {"model" : Error_response, "description" : "앨범 썸네일 설정 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 썸네일 설정(구현중)")
-async def set_album_thumbnail(albumId : str, albumName : str, file : Optional[UploadFile] = None, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+async def set_album_thumbnail(request : Album_thumbnail_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
     try:
-        return await album_service.set_album_thumbnail(albumId, albumName, file, token)
+        return await album_service.set_album_thumbnail(request, token)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
