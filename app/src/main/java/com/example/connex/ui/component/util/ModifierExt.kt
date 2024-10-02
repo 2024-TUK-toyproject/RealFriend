@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -65,4 +66,9 @@ fun Modifier.addFocusCleaner(focusManager: FocusManager, doOnClear: () -> Unit =
             focusManager.clearFocus()
         })
     }
+}
+
+fun Modifier.bottomBarsPadding(isAboveBottomBar: Boolean = false): Modifier = composed {
+    if (isAboveBottomBar) this.navigationBarsPadding()
+    else this
 }

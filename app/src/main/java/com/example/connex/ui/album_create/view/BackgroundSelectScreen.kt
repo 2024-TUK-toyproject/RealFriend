@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.connex.ui.component.CheckButton
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Gray100
@@ -123,21 +124,3 @@ fun BackgroundCard(modifier: Modifier = Modifier, shape: Dp, background: Backgro
     }
 }
 
-@Composable
-fun CheckButton(modifier: Modifier = Modifier, isChecked: Boolean) {
-    if (isChecked) {
-        Card(
-            shape = CircleShape,
-            modifier = modifier.size(24.dp),
-            colors = CardDefaults.cardColors(containerColor = PrimaryBlue2, contentColor = White)
-        ) {
-            Icon(imageVector = Icons.Rounded.Check, contentDescription = "ic_check", modifier = Modifier.padding(3.dp).fillMaxSize())
-        }
-    } else {
-        Canvas(modifier = modifier.size(24.dp)) {
-            drawCircle(color = Gray400)
-            drawCircle(color = White, radius = size.width / 2.0f - 4.0f)
-            drawCircle(color = Gray400, radius = size.width / 2.0f - 8.0f)
-        }
-    }
-}

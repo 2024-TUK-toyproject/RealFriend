@@ -117,7 +117,7 @@ fun AlbumScreen(
                 modifier = Modifier
                     .fillMaxSize(),
                 state = state,
-                scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+                scrollStrategy = ScrollStrategy.EnterAlwaysCollapsed,
                 toolbar = {
                     Column(
                         modifier = Modifier
@@ -154,13 +154,14 @@ fun AlbumScreen(
                                 TempleAlbumData(id = 6),
                             )
                         )
-                        ColumnSpacer(height = 24.dp)
+                        ColumnSpacer(height = 12.dp)
                     }
                     AlbumAppbar {}
 
                 }
             ) {
                 Column {
+                    ColumnSpacer(height = 12.dp)
                     AlbumSearchSection(
                         category = "즐겨찾기 순",
                         search = albumUiState.search

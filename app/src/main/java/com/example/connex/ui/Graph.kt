@@ -10,7 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.connex.ui.album.PicturesListScreen
+import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
@@ -172,7 +172,7 @@ fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
 fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
     navigation(route = Constants.ALBUM_INFO_GRAPH, startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) {
         composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
-            PicturesListScreen()
+            PicturesListScreen(applicationState = applicationState)
         }
     }
 

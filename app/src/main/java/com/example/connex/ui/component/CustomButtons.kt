@@ -1,15 +1,25 @@
 package com.example.connex.ui.component
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,7 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.theme.Body3Regular
+import com.example.connex.ui.theme.Gray300
+import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.PrimaryBlue1
@@ -126,5 +139,50 @@ fun SmallBlueBtn(textStyle: TextStyle, text: String, onClick: () -> Unit) {
         .background(PrimaryBlue2)
         .padding(horizontal = 13.5.dp, vertical = 5.5.dp)) {
         Text(text = text, style = textStyle, color = White)
+    }
+}
+
+@Composable
+fun CheckButton(modifier: Modifier = Modifier, isChecked: Boolean, color: Color = PrimaryBlue2) {
+    if (isChecked) {
+        Card(
+            shape = CircleShape,
+            modifier = modifier.size(24.dp),
+            colors = CardDefaults.cardColors(containerColor = color, contentColor = White)
+        ) {
+            Icon(imageVector = Icons.Rounded.Check, contentDescription = "ic_check", modifier = Modifier.padding(3.dp).fillMaxSize())
+        }
+    } else {
+        Canvas(modifier = modifier.size(24.dp)) {
+            drawCircle(color = Gray400)
+            drawCircle(color = White, radius = size.width / 2.0f - 4.0f)
+            drawCircle(color = Gray400, radius = size.width / 2.0f - 8.0f)
+        }
+    }
+}
+
+
+@Composable
+fun SimpleCheckButton(modifier: Modifier = Modifier, isChecked: Boolean, color: Color, onClickChecked: () -> Unit, onClickUnChecked: () -> Unit) {
+    if (isChecked) {
+        Card(
+            shape = CircleShape,
+            modifier = modifier.size(18.dp),
+            colors = CardDefaults.cardColors(containerColor = color, contentColor = White),
+            onClick = { onClickChecked() }
+        ) {
+            Icon(imageVector = Icons.Rounded.Check, contentDescription = "ic_check", modifier = Modifier.padding(3.dp).fillMaxSize())
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .size(18.dp)
+                .clip(CircleShape)
+                .border(width = 1.2.dp, color = Gray300, shape = CircleShape)
+                .background(color = White)
+                .noRippleClickable {
+                    onClickUnChecked()
+                }
+        )
     }
 }

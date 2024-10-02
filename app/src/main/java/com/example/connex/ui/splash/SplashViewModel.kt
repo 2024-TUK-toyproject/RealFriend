@@ -26,8 +26,10 @@ class SplashViewModel @Inject constructor(val autoLoginUseCase: AutoLoginUseCase
                     Log.d("daeyoung", "fetchAutoLogin NotResponse: ${result.message}\n${result.exception}")
 
                     if (result.exception is ConnectException) {
-                        Log.d("daeyoung", "ConnectException: ${result.message}\n${result.exception}")
+                        Log.d("daeyoung", "ConnectException: ${result.message}")
                         notResponse()
+                    } else if (result.exception is java.net.SocketTimeoutException) {
+                        Log.d("daeyoung", "SocketTimeoutException: ${result.message}")
                     }
                 }
                 is ApiState.Success -> onSuccess()
