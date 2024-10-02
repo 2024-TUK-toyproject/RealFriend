@@ -164,7 +164,10 @@ class Login_response(BaseModel):
         example={"accessToken": "asdasdasd", "refreshToken": "asdasdasd"}
     )
 
-
+class Album_info_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : Dict[str, Optional[Union[str, int, float]]] = Field({"albumName" : "가족사진", "albumMemberCount" : 2, "albumPictureCount" : 10, "currentUsage" : 100})
 
 
 
