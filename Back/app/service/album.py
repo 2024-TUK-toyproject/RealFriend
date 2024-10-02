@@ -49,7 +49,7 @@ class Album_service:
             album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album.album_id).count()
 
             #엘범 내 사진 수
-            count = self.count_album_picture(existing_album.directory)
+            count, total_size = self.count_album_picture(existing_album.directory)
             album_data = {
                 "albumId": existing_album.album_id,
                 "albumName": existing_album.album_name,
@@ -89,7 +89,7 @@ class Album_service:
             album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album.album_id).count()
 
             #엘범 내 사진 수
-            count = self.count_album_picture(existing_album.directory)
+            count, size = self.count_album_picture(existing_album.directory)
 
             album_data = {
                 "albumId": existing_album.album_id,
@@ -299,10 +299,35 @@ class Album_service:
 
         return CommoneResponse(status = "success", message = "앨범 권한 설정 성공")
     
+    async def get_album_info(self, album_id : str, token : str) -> Album_info_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album_id).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id).count()
+        album_picture_count, total_size = self.count_album_picture(existing_album.directory)
+        album_info = {
+            "albumName": existing_album.album_name,
+            "albumMemberCount": album_member_count,
+            "albumPictureCount": album_picture_count,
+            "currentUsage" : round(total_size / (1024 * 1024),2) # MB로 변환
+        }
+
+        return Album_info_response(status = "success", message = "앨범 정보 조회 성공", content = album_info)
 
     #페이징 사용 -> 1000장 이상가져올 수 있음
     def count_album_picture(self, album_directory : str):
         count = 0
+        total_size = 0
+
         continuation_token = None
         while True:
             if continuation_token:
@@ -317,9 +342,12 @@ class Album_service:
                     Prefix=album_directory
                 )
             count += len(response.get("Contents", []))
+
+            total_size += sum([content["Size"] for content in response.get("Contents", [])])
+
             if response.get("NextContinuationToken"):
                 continuation_token = response["NextContinuationToken"]
             else:
                 break
         
-        return count
+        return count, total_size
