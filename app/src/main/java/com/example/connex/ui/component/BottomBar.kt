@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.connex.ui.Screen
+import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.Btn11ptMedium
 import com.example.connex.ui.theme.Gray100
@@ -163,27 +165,8 @@ fun BoxScope.AlbumSelectModeBottomBar(
             BottomNavItem(icon = Icons.Outlined.PlayCircleOutline, text = "슬라이드쇼") {}
             BottomNavItem(icon = Icons.Outlined.Delete, text = "삭제하기") { onDelete() }
         }
-//        BottomNavigation(
-//            modifier = Modifier
-//                .drawBehind {
-//                    drawLine(
-////                        color = Gray100,
-//                        color = Color.Red,
-//                        start = Offset.Zero,
-//                        end = Offset(x = size.width, y = 0f),
-//                        strokeWidth = 1f
-//                    )
-//                }
-//                .padding(horizontal = 38.dp, vertical = 9.dp),
-//            backgroundColor = Color.White,
-//        ) {
-//            BottomNavItem(icon = Icons.Outlined.Download, text = "다운로드") { onDownload() }
-//            BottomNavItem(icon = Icons.Outlined.Share, text = "공유하기") {}
-//            BottomNavItem(icon = Icons.Outlined.PlayCircleOutline, text = "슬라이드쇼") {}
-//            BottomNavItem(icon = Icons.Outlined.Delete, text = "삭제하기") { onDelete() }
         }
     }
-//}
 
 @Composable
 fun BottomNavItem(
@@ -199,7 +182,8 @@ fun BottomNavItem(
 
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.noRippleClickable { onClick() }
     ) {
         Icon(
             imageVector = icon,

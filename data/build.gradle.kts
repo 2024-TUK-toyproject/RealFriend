@@ -12,7 +12,7 @@ android {
         minSdk = 24
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL", "\"http://34.203.190.231:5000\"")
+        buildConfigField("String", "BASE_URL", "\"http://52.203.14.6:5000\"")
         consumerProguardFiles("consumer-rules.pro")
     }
 

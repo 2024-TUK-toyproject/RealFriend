@@ -13,6 +13,7 @@ import androidx.navigation.navigation
 import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
+import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
@@ -173,6 +174,9 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
     navigation(route = Constants.ALBUM_INFO_GRAPH, startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) {
         composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
             PicturesListScreen(applicationState = applicationState)
+        }
+        composable(Constants.ALBUM_INFO_PHOTO_ROUTE) { entry ->
+            PhotoOfAlbumScreen()
         }
     }
 

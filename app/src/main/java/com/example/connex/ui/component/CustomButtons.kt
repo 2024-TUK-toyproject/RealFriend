@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
@@ -99,6 +100,24 @@ fun General3Button(modifier: Modifier, text: String, onClick: () -> Unit) {
         )
     ) {
         Text(text = text, style = textStyle)
+    }
+}
+
+@Composable
+fun General4Button(modifier: Modifier, text: String, onClick: () -> Unit) {
+    val backgroundColor = Color(0xFFF2F2F4)
+    val contentColor = PrimaryBlue2
+
+    Button(
+        onClick = { onClick() },
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = contentColor,
+            containerColor = backgroundColor,
+        )
+    ) {
+        Text(text = text, style = Body2Medium, color = Gray500)
     }
 }
 

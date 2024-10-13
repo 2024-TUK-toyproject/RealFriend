@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.connex.utils.Constants
 
 fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = composed {
     clickable(indication = null,
@@ -68,7 +70,12 @@ fun Modifier.addFocusCleaner(focusManager: FocusManager, doOnClear: () -> Unit =
     }
 }
 
-fun Modifier.bottomBarsPadding(isAboveBottomBar: Boolean = false): Modifier = composed {
+fun Modifier.bottomNavigationPadding(isAboveBottomBar: Boolean = false): Modifier = composed {
     if (isAboveBottomBar) this.navigationBarsPadding()
+    else this
+}
+
+fun Modifier.bottomBarsPadding(isAboveBottomBar: Boolean = false): Modifier = composed {
+    if (isAboveBottomBar) this.padding(bottom = Constants.BottomNavigationHeight)
     else this
 }

@@ -1,11 +1,18 @@
 package com.example.connex.ui.album.view
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +20,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,24 +27,31 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -54,22 +67,28 @@ import com.example.connex.ui.component.AlbumSelectModeBottomBar
 import com.example.connex.ui.component.AppBarIcon
 import com.example.connex.ui.component.CheckButton
 import com.example.connex.ui.component.ColumnSpacer
+import com.example.connex.ui.component.General4Button
+import com.example.connex.ui.component.RoundedDropDownMenu
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SimpleCheckButton
 import com.example.connex.ui.component.util.bottomBarsPadding
-import com.example.connex.ui.component.util.noRippleClickable
+import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.view.CreatingAlbumPlusCard
 import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body2Semibold
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
+import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.PrimaryBlue3
+import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
 import me.onebone.toolbar.ScrollStrategy
@@ -82,32 +101,45 @@ fun PicturesListScreen(
     pictureOfAlbumViewModel: PictureOfAlbumViewModel = hiltViewModel(),
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
+    val lazyGridState = rememberLazyGridState()
+    val coroutineScope = rememberCoroutineScope()
     var isSelectMode by remember { mutableStateOf(false) }
+    var isDropDownMenuExpanded by remember { mutableStateOf(false) }
+    var isSortMenuExpanded by remember { mutableStateOf(false) }
+    val isMoveFirstItemExpanded by remember {
+        derivedStateOf {
+            lazyGridState.firstVisibleItemIndex > 1 && !lazyGridState.isScrollInProgress && lazyGridState.lastScrolledBackward
+        } }
 
     val pictureUiState by pictureOfAlbumViewModel.pictures.collectAsStateWithLifecycle()
 
     BackHandler {
         if (isSelectMode) isSelectMode = false
+        else if (isSortMenuExpanded) isDropDownMenuExpanded = false
         else applicationState.popBackStack()
     }
+
+
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
 //            .padding(bottom = Constants.BottomNavigationHeight)
-            .bottomBarsPadding(isSelectMode)
+            .bottomNavigationPadding(isSelectMode)
             .statusBarsPadding()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             CollapsingToolbarScaffold(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .bottomBarsPadding(isSelectMode),
                 state = state,
                 scrollStrategy = ScrollStrategy.EnterAlways,
                 toolbar = {
                     if (isSelectMode) {
                         SelectModeAppBar(
                             albumName = "앨범이름",
-                            selectedImageCount = pictureUiState.count{it.isSelected},
+                            selectedImageCount = pictureUiState.count { it.isSelected },
                             onClickAllSelect = { pictureOfAlbumViewModel.selectAllOfPicture() }) {
                             pictureOfAlbumViewModel.unselectAllOfPicture()
                         }
@@ -121,13 +153,21 @@ fun PicturesListScreen(
                                 )
                             },
                             trailingIcon = Icons.Rounded.MoreVert,
-                            onBack = { applicationState.popBackStack() }) {
-
-                        }
+                            dropDownMenu = {
+                                RoundedDropDownMenu(
+                                    expanded = isDropDownMenuExpanded,
+                                    onClose = { isDropDownMenuExpanded = false },
+                                    onClick1 = { isSelectMode = true }) {
+                                    isSortMenuExpanded = true
+                                }
+                            },
+                            onBack = { applicationState.popBackStack() }
+                        ) { isDropDownMenuExpanded = true }
                     }
                 }
             ) {
                 LazyVerticalGrid(
+                    state = lazyGridState,
                     columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(9.dp),
@@ -153,7 +193,7 @@ fun PicturesListScreen(
                                         )
                                     },
                                     longPress = { if (!isSelectMode) isSelectMode = it }
-                                ) {}
+                                ) { applicationState.navigate(Constants.ALBUM_INFO_PHOTO_ROUTE) }
                             }
 
                             1 -> {
@@ -193,7 +233,14 @@ fun PicturesListScreen(
                 }
 
             }
+            MoveFirstItem(isVisible = isMoveFirstItemExpanded) {
+                coroutineScope.launch { lazyGridState.animateScrollToItem(0) }
+            }
+
             AlbumSelectModeBottomBar(isVisible = isSelectMode, onDownload = { /*TODO*/ }) {}
+            if (isSortMenuExpanded) {
+                SortedSection { isSortMenuExpanded = false }
+            }
         }
 
     }
@@ -266,6 +313,7 @@ fun FirstPictureCard(
                 onLongPress = { longPress(true) },
                 onTap = {
                     if (isSelectMode) onCheck()
+                    else navigate()
                 }
             )
         },
@@ -325,6 +373,7 @@ fun FirstPictureCard(
 fun CollapsingToolbarScope.BackArrowAppBar2(
     textComposable: @Composable () -> Unit,
     trailingIcon: ImageVector,
+    dropDownMenu: @Composable () -> Unit,
     onBack: () -> Unit,
     onMenu: () -> Unit,
 ) {
@@ -348,9 +397,13 @@ fun CollapsingToolbarScope.BackArrowAppBar2(
             onBack()
         }
         textComposable()
-        AppBarIcon(image = trailingIcon) {
-            onMenu()
+        Box() {
+            AppBarIcon(image = trailingIcon) {
+                onMenu()
+            }
+            dropDownMenu()
         }
+
     }
 }
 
@@ -415,6 +468,74 @@ fun PicturesListAppBarText(text: String, userCount: Int, pictureCount: Int) {
             Text(text = "🗣️ $userCount", style = Body3Regular, color = Gray500)
             RowSpacer(width = 2.dp)
             Text(text = "📷 $pictureCount", style = Body3Regular, color = Gray500)
+        }
+    }
+}
+
+
+@Composable
+fun BoxScope.SortedSection(onHideSortMenu: () -> Unit) {
+
+    Column(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(start = 24.dp, end = 24.dp, bottom = 16.dp)
+            .fillMaxWidth()
+    ) {
+        Column(
+            Modifier
+                .shadow(
+                    elevation = 4.dp,
+                    spotColor = Color(0x14000000),
+                    ambientColor = Color(0x14000000)
+                )
+                .clip(RoundedCornerShape(size = 12.dp))
+                .background(Color.White),
+        ) {
+            SortedButton(text = "sort 1", addBottomBorder = true) {}
+            SortedButton(text = "sort 2", addBottomBorder = true) {}
+            SortedButton(text = "sort 3", addBottomBorder = true) {}
+            SortedButton(text = "sort 4", addBottomBorder = false) {}
+        }
+
+        ColumnSpacer(height = 16.dp)
+        General4Button(modifier = Modifier.height(52.dp), text = "뒤로가기") { onHideSortMenu() }
+    }
+}
+
+@Composable
+fun ColumnScope.SortedButton(text: String, addBottomBorder: Boolean, onClick: () -> Unit) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onClick() }
+        .padding(16.dp)) {
+        Text(text = text, style = Body2Medium, color = Gray800)
+    }
+    if (addBottomBorder) {
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp), color = Gray100, thickness = 0.5.dp
+        )
+    }
+}
+
+@Composable
+fun BoxScope.MoveFirstItem(isVisible: Boolean, onCheck: () -> Unit) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInVertically { it },
+        exit = slideOutVertically { it },
+        modifier = Modifier
+            .padding(bottom = 24.dp)
+            .align(Alignment.BottomCenter),
+    ) {
+        Card(
+            onClick = { onCheck() },
+            shape = CircleShape,
+            colors = CardDefaults.cardColors(containerColor = White, contentColor = Gray400)
+        ) {
+            Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "ic_up", modifier = Modifier.size(30.dp))
         }
     }
 }
