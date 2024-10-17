@@ -89,3 +89,16 @@ class log_info(Base):
     message = Column(String(255))
     date = Column(String(255))
     time = Column(String(255))
+
+class picture_info(Base):
+    __tablename__ = 'picture_info'
+
+    picture_id = Column(String(255), index = True, primary_key=True)
+    name = Column(String(255))
+    album_id = Column(String(255))
+    user_id = Column(String(255))
+    date = Column(String(255))
+    time = Column(String(255))
+    usage = Column(Double)
+    latitude = Column(Float)
+    longitude = Column(Float)
