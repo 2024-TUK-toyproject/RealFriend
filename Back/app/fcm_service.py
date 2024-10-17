@@ -10,15 +10,19 @@ firebase_admin.initialize_app(cred)
 
 async def send_push_notification(token, data):
 
-    message = messaging.Message(
-        data = {
-            'title': data["title"],
-            'body': data["body"]
-        },
-        token=token
-    )
+    try:
+        message = messaging.Message(
+            data = {
+                'title': data["title"],
+                'body': data["body"]
+            },
+            token=token
+        )
 
-    response = messaging.send(message)
+        response = messaging.send(message)
 
-    print('Successfully sent message:', response)
+        print('Successfully sent message:', response)
+    
+    except Exception as e:
+        print(token, e)
 
