@@ -14,8 +14,11 @@ from ..fcm_service import send_push_notification
 from ..httpException import CustomException
 from ..httpException import CustomException2
 
+from datetime import datetime, timedelta
+
 import boto3
 import uuid
+import os
 
 s3 = boto3.client(
     "s3",
@@ -238,6 +241,7 @@ class Album_service:
                 models.album_member_info.user_id == user["key"]
             )
         ).first()
+
         if not authority:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
         
@@ -245,22 +249,41 @@ class Album_service:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
         
         for f in file:
+            f.file.seek(0, os.SEEK_END)
+            file_size = f.file.tell()
+            f.file.seek(0)                  #f.file.tell()은 파일이 열려있을 때 파일의 용량을 가져옴, 비동기 처리시에는 메모리상에 파일 정보가 남아있을때 해당 명령어를 실행하여 정보를 가져올 수 있음, 따라서 파일을 읽은 후에는 파일을 다시 처음으로 돌려놔야함
+
             s3.upload_fileobj(
                 f.file,
                 Config.s3_bucket,
                 f"albums/%s/%s" % (album_id, f.filename)
             )
+            new_key = self.rng.generate_unique_random_number(10000000, 99999999)
+            new_album_picture = models.picture_info(
+                album_id = album_id,
+                user_id = user["key"],
+                picture_id = new_key,
+                name = f.filename,
+                date = datetime.now().strftime("%Y-%m-%d"),
+                time = datetime.now().strftime("%H:%M:%S"),
+                usage = file_size
+            )
+            self.db.add(new_album_picture)
+        
+        self.db.commit()
         
         #엛범 맴버들에게 푸시알림 보내기
         friend_id = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id).all()
         for friend in friend_id:
-            friend_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == friend.user_id).all()
+            friend_fcm_token = self.db.query(models.fcm_token_info).filter(models.fcm_token_info.user_id == friend.user_id).first()
             if friend_fcm_token:
                 data = {
                 "title" : "CONNEX",
                 "body" : "%s님이 새로운 사진을 업로드 했어요."%{existing_user.name},
                 }
                 await send_push_notification(friend_fcm_token.fcm_token, data)
+            else:
+                pass
 
         return CommoneResponse(status = "success", message = "앨범 업로드 성공")
 
@@ -322,6 +345,93 @@ class Album_service:
         }
 
         return Album_info_response(status = "success", message = "앨범 정보 조회 성공", content = album_info)
+
+    async def get_photo_from_album(self, album_id : str, token : str) -> Album_picture_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album_id).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not album_member:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+        
+        if album_member.post is False:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
+        
+        response = s3.list_objects_v2(
+            Bucket=Config.s3_bucket,
+            Prefix=existing_album.directory
+        )
+
+        photo_list = []
+        for content in response.get("Contents", []):
+            print(content)
+            pic_info = self.db.query(models.picture_info).filter(models.picture_info.name == content["Key"].split("/")[-1]).first() # albums/685764/스크린샷 2024-10-16 오후 3.54.18.png
+            photo_list.append({
+                "photoId": pic_info.picture_id,
+                "photoUrl": f"https://%s.s3.amazonaws.com/%s" % (Config.s3_bucket, content["Key"])
+            })
+        
+        return Album_picture_response(status = "success", message = "앨범 사진 조회 성공", content = photo_list)
+
+    async def get_photo_info(self, photo_id : str, token : str) -> Album_picture_info_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_photo = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photo_id).first()
+        if not existing_photo:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == existing_photo.album_id).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == existing_photo.album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not album_member:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+        
+        if album_member.post is False:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
+        
+        photo_info = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photo_id).first()
+        if not photo_info:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        upload_user = self.db.query(models.user_info).filter(models.user_info.user_id == photo_info.user_id).first()
+        photo_data = {
+            "name": photo_info.name,
+            "date": photo_info.date,
+            "time": photo_info.time,
+            "usage": round(photo_info.usage/(1024 * 1024),2),
+            "uploadUser": upload_user.name,
+            "uploadUserProfile" : upload_user.profile_image
+        }
+
+        return Album_picture_info_response(status = "success", message = "사진 정보 조회 성공", content = photo_data)
+
+
 
     #페이징 사용 -> 1000장 이상가져올 수 있음
     def count_album_picture(self, album_directory : str):
