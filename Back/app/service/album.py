@@ -248,25 +248,36 @@ class Album_service:
         if authority.post is False:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
         
+
         for f in file:
             f.file.seek(0, os.SEEK_END)
             file_size = f.file.tell()
             f.file.seek(0)                  #f.file.tell()은 파일이 열려있을 때 파일의 용량을 가져옴, 비동기 처리시에는 메모리상에 파일 정보가 남아있을때 해당 명령어를 실행하여 정보를 가져올 수 있음, 따라서 파일을 읽은 후에는 파일을 다시 처음으로 돌려놔야함
 
+            name = f.filename.split(":")[0] + '.' + f.filename.split(":")[1].split(".")[1]
+
             s3.upload_fileobj(
                 f.file,
                 Config.s3_bucket,
-                f"albums/%s/%s" % (album_id, f.filename)
+                f"albums/%s/%s" % (album_id, name)
             )
             new_key = self.rng.generate_unique_random_number(10000000, 99999999)
+            # f.filename = asdasd/yymmddhhmmss.jpg
+            #print(f.filename)
+            date = f.filename.split(":")[1].split(".")[0]
+            name = f.filename.split(":")[0] + '.' + f.filename.split(":")[1].split(".")[1]
+            _date = datetime.strptime(date, "%y%m%d%H%M%S").strftime("%Y-%m-%d")
+            _time = datetime.strptime(date, "%y%m%d%H%M%S").strftime("%H:%M:%S")
             new_album_picture = models.picture_info(
                 album_id = album_id,
                 user_id = user["key"],
                 picture_id = new_key,
-                name = f.filename,
-                date = datetime.now().strftime("%Y-%m-%d"),
-                time = datetime.now().strftime("%H:%M:%S"),
-                usage = file_size
+                name = name,
+                upload_date = datetime.now().strftime("%Y-%m-%d"),
+                upload_time = datetime.now().strftime("%H:%M:%S"),
+                usage = file_size,
+                time = _time,
+                date = _date
             )
             self.db.add(new_album_picture)
         
@@ -341,7 +352,7 @@ class Album_service:
             "albumName": existing_album.album_name,
             "albumMemberCount": album_member_count,
             "albumPictureCount": album_picture_count,
-            "currentUsage" : round(total_size / (1024 * 1024),2) # MB로 변환
+            "currentUsage" : round(total_size / 1024,2) # MB로 변환
         }
 
         return Album_info_response(status = "success", message = "앨범 정보 조회 성공", content = album_info)
@@ -424,9 +435,11 @@ class Album_service:
             "name": photo_info.name,
             "date": photo_info.date,
             "time": photo_info.time,
-            "usage": round(photo_info.usage/(1024 * 1024),2),
+            "usage": round(photo_info.usage/1024,2),
             "uploadUser": upload_user.name,
-            "uploadUserProfile" : upload_user.profile_image
+            "uploadUserProfile" : upload_user.profile_image,
+            "uploadDate": photo_info.upload_date,
+            "uploadTime": photo_info.upload_time
         }
 
         return Album_picture_info_response(status = "success", message = "사진 정보 조회 성공", content = photo_data)
