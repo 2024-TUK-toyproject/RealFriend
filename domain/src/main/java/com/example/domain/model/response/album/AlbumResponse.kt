@@ -1,4 +1,4 @@
-package com.example.domain.model.response
+package com.example.domain.model.response.album
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable

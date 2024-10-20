@@ -6,7 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,9 +23,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Delete
@@ -33,9 +33,13 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +57,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavBackStackEntry
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.BottomNavItem
@@ -61,7 +64,6 @@ import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.General4Button
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.domain.ApplicationState
-import com.example.connex.ui.domain.model.KeyboardStatus
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcCalendar
 import com.example.connex.ui.svg.iconpack.IcFile
@@ -82,7 +84,7 @@ sealed class PhotoOfAlbumScreenState(open val title: String) {
 }
 
 @Composable
-fun PhotoOfAlbumScreen() {
+fun PhotoOfAlbumScreen(applicationState: ApplicationState) {
 
     var photoOfAlbumScreenState by remember {
         mutableStateOf<PhotoOfAlbumScreenState>(PhotoOfAlbumScreenState.Default())
@@ -133,13 +135,17 @@ fun PhotoOfAlbumScreen() {
                 ColumnSpacer(height = 32.dp)
                 if (photoOfAlbumScreenState is PhotoOfAlbumScreenState.DetailInfo) {
                     Box() {
-                        DetailInfoBox(modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()) {
+                        DetailInfoBox(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                        ) {
                             photoOfAlbumScreenState = PhotoOfAlbumScreenState.Default()
                         }
                     }
-
+                }
+                if (photoOfAlbumScreenState is PhotoOfAlbumScreenState.Comment) {
+                    CommentBottomSheet()
                 }
             }
         }
@@ -147,7 +153,12 @@ fun PhotoOfAlbumScreen() {
         PhotoOfAlbumBottomBar(
             isVisible = isBottomBarVisible,
             onFavorite = { /*TODO*/ },
-            onChat = { photoOfAlbumScreenState = PhotoOfAlbumScreenState.Comment() },
+            onChat = {
+//                photoOfAlbumScreenState = PhotoOfAlbumScreenState.Comment()
+//                applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{${Constants.DEFAULT_PROFILE}}")
+                val t = Constants.DEFAULT_PROFILE
+                applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}")
+            },
             onDetailInfo = {
                 photoOfAlbumScreenState = PhotoOfAlbumScreenState.DetailInfo()
             },
@@ -326,5 +337,48 @@ fun IconTextRow(icon: ImageVector, text: String) {
         )
         RowSpacer(width = 10.dp)
         Text(text = text, style = textStyle)
+    }
+}
+
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
+@Composable
+fun CommentBottomSheet(modifier: Modifier = Modifier) {
+
+    val sheetState = io.morfly.compose.bottomsheet.material3.rememberBottomSheetState(
+        initialValue = SheetValue.PartiallyExpanded,
+        defineValues = {
+            // Bottom sheet height is 100 dp.
+//            SheetValueSheetValue.Collapsed at height(100.dp)
+            // Bottom sheet offset is 60%, meaning it takes 40% of the screen.
+            SheetValue.PartiallyExpanded at offset(percent = 60)
+            // Bottom sheet height is equal to its content height.
+            SheetValue.Expanded at contentHeight
+        }
+    )
+
+    val state = rememberModalBottomSheetState(
+        confirmValueChange = { sheetValue ->
+            when (sheetValue) {
+                SheetValue.Hidden -> false
+                SheetValue.Expanded -> true
+                SheetValue.PartiallyExpanded -> true
+            }
+        }
+    )
+    ModalBottomSheet(
+        modifier = Modifier.fillMaxHeight(1f),
+        onDismissRequest = {},
+        sheetState = state,
+        scrimColor = Color.Transparent,
+//        tonalElevation = 20.dp,
+        shape = RoundedCornerShape(topStart = 13.dp, topEnd = 13.dp),
+        containerColor = Color.White,
+        contentColor = Gray600,
+//        modifier = Modifier.shadow(elevation = 20.dp, spotColor = Color(0x1F000000), ambientColor = Color(0x1F000000)),
+    ) {
+        Text(text = "아직 댓글이 없습니다.")
     }
 }

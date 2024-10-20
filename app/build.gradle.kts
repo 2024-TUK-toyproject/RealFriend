@@ -61,6 +61,7 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.exifinterface)
     testImplementation(libs.junit4)
     androidTestImplementation(libs.bundles.androidx.test)
 
@@ -70,9 +71,16 @@ dependencies {
     // compose-collapsingtoolbar
     implementation(libs.compose.collapsingtoolbar)
 
+    // compose-bottomsheet
+    implementation(libs.compose.bottomsheet)
+
     // firebase fcm
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.cloud.messaging)
+
+    // compose-permission
+    implementation(libs.compose.permissions)
+
 
 }

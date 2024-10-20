@@ -26,6 +26,8 @@ activityCompose = "1.9.0"
 dagger-hilt-navigation-compose = "1.0.0"
 compose-keyboard-controller = "1.7.0-beta06"
 compose-callapsingToolbar = "2.3.5"
+compose-bottomsheet = "0.1.0"
+compose-permission = "0.36.0"
 
 
 androidxAppCompat = "1.6.1"
@@ -70,6 +72,7 @@ appcompatVersion = "1.6.1"
 materialVersion = "1.10.0"
 monitor = "1.7.1"
 junitKtx = "1.2.1"
+exifinterface = "1.3.7"
 
 [plugins]
 
@@ -108,6 +111,8 @@ lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-co
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 compose-keyboard-controller = { group = "tech.thdev", name = "extensions-compose-keyboard-state", version.ref = "compose-keyboard-controller" }
 compose-collapsingtoolbar = { group = "me.onebone", name = "toolbar-compose", version.ref = "compose-callapsingToolbar" }
+compose-bottomsheet = { group = "io.morfly.compose", name = "advanced-bottomsheet-material3", version.ref = "compose-bottomsheet" }
+compose-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "compose-permission" }
 
 
 # junit
@@ -173,6 +178,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 androidx-monitor = { group = "androidx.test", name = "monitor", version.ref = "monitor" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 
 [bundles]
 firebase = ["firebase-analytics", "firebase-cloud-messaging"]

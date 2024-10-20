@@ -1,9 +1,11 @@
 package com.example.domain.repository
 
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.AlbumIdResponse
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.model.response.AlbumResponse
+import com.example.domain.model.response.PictureIdResponse
+import com.example.domain.model.response.album.AlbumIdResponse
+import com.example.domain.model.response.album.AlbumInfo
+import com.example.domain.model.response.album.AlbumResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -15,4 +17,11 @@ interface AlbumRepository {
     fun readAllAlbums(): Flow<ApiState<List<AlbumResponse>>>
 
     fun updateAlbumFavorite(albumId: String): Flow<ApiState<Unit>>
+
+    fun readAlbumInfo(albumId: String): Flow<ApiState<AlbumInfo>>
+
+    fun readAllPhotos(albumId: String): Flow<ApiState<List<PictureIdResponse>>>
+
+    fun uploadPhotos(albumId: String, file: List<MultipartBody.Part>): Flow<ApiState<Unit>>
+
 }

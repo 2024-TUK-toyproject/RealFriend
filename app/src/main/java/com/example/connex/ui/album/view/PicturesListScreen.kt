@@ -1,5 +1,6 @@
 package com.example.connex.ui.album.view
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -30,6 +31,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
@@ -41,6 +43,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,22 +65,25 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.connex.ui.album.PictureInfo
 import com.example.connex.ui.album.PictureOfAlbumViewModel
 import com.example.connex.ui.component.AlbumSelectModeBottomBar
 import com.example.connex.ui.component.AppBarIcon
 import com.example.connex.ui.component.CheckButton
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.General4Button
+import com.example.connex.ui.component.PlusCardButton
 import com.example.connex.ui.component.RoundedDropDownMenu
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SimpleCheckButton
 import com.example.connex.ui.component.util.bottomBarsPadding
 import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.domain.ApplicationState
-import com.example.connex.ui.home.view.CreatingAlbumPlusCard
+import com.example.connex.ui.theme.Black
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body2Semibold
+import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray400
@@ -88,6 +94,8 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.domain.model.ApiState
+import com.example.domain.model.response.album.AlbumInfo
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
@@ -109,17 +117,21 @@ fun PicturesListScreen(
     val isMoveFirstItemExpanded by remember {
         derivedStateOf {
             lazyGridState.firstVisibleItemIndex > 1 && !lazyGridState.isScrollInProgress && lazyGridState.lastScrolledBackward
-        } }
+        }
+    }
 
-    val pictureUiState by pictureOfAlbumViewModel.pictures.collectAsStateWithLifecycle()
-
+    val pictureOfAlbumUiState by pictureOfAlbumViewModel.pictureOfAlbumUiState.collectAsStateWithLifecycle()
+    Log.d("daeyoung", "pictureOfAlbumUiState: $pictureOfAlbumUiState")
     BackHandler {
         if (isSelectMode) isSelectMode = false
         else if (isSortMenuExpanded) isDropDownMenuExpanded = false
         else applicationState.popBackStack()
     }
 
-
+    LaunchedEffect(Unit) {
+        pictureOfAlbumViewModel.fetchReadAllPictures("685764")
+        pictureOfAlbumViewModel.fetchReadAlbumInfo("685764")
+    }
 
     Surface(
         modifier = Modifier
@@ -128,79 +140,68 @@ fun PicturesListScreen(
             .bottomNavigationPadding(isSelectMode)
             .statusBarsPadding()
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CollapsingToolbarScaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .bottomBarsPadding(isSelectMode),
-                state = state,
-                scrollStrategy = ScrollStrategy.EnterAlways,
-                toolbar = {
-                    if (isSelectMode) {
-                        SelectModeAppBar(
-                            albumName = "앨범이름",
-                            selectedImageCount = pictureUiState.count { it.isSelected },
-                            onClickAllSelect = { pictureOfAlbumViewModel.selectAllOfPicture() }) {
-                            pictureOfAlbumViewModel.unselectAllOfPicture()
-                        }
-                    } else {
-                        BackArrowAppBar2(
-                            textComposable = {
-                                PicturesListAppBarText(
-                                    text = "앨범이름",
-                                    userCount = 4,
-                                    pictureCount = 8
-                                )
-                            },
-                            trailingIcon = Icons.Rounded.MoreVert,
-                            dropDownMenu = {
-                                RoundedDropDownMenu(
-                                    expanded = isDropDownMenuExpanded,
-                                    onClose = { isDropDownMenuExpanded = false },
-                                    onClick1 = { isSelectMode = true }) {
-                                    isSortMenuExpanded = true
-                                }
-                            },
-                            onBack = { applicationState.popBackStack() }
-                        ) { isDropDownMenuExpanded = true }
-                    }
-                }
-            ) {
-                LazyVerticalGrid(
-                    state = lazyGridState,
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-                    horizontalArrangement = Arrangement.spacedBy(9.dp),
-                    verticalArrangement = Arrangement.spacedBy(9.dp),
-                ) {
-                    items(
-                        count = pictureUiState.size,
-                        key = { pictureUiState[it].id },
-                        span = { GridItemSpan(if (it == 0) 2 else 1) }) { index ->
-                        when (index) {
-                            0 -> {
-                                FirstPictureCard(
-                                    modifier = Modifier.aspectRatio(1f),
-                                    name = "올린 사람",
-                                    time = "8h",
-                                    profile = Constants.DEFAULT_PROFILE,
-                                    image = "",
-                                    isSelectMode = isSelectMode,
-                                    isSelected = pictureUiState[index].isSelected,
-                                    onCheck = {
-                                        pictureOfAlbumViewModel.changeSelectedStateOfPicture(
-                                            pictureUiState[index].id
-                                        )
-                                    },
-                                    longPress = { if (!isSelectMode) isSelectMode = it }
-                                ) { applicationState.navigate(Constants.ALBUM_INFO_PHOTO_ROUTE) }
+        if (pictureOfAlbumUiState.pictures is ApiState.Success && pictureOfAlbumUiState.albumInfo is ApiState.Success) {
+            val pictureUiState =
+                (pictureOfAlbumUiState.pictures as ApiState.Success<List<PictureInfo>>).data
+            val albumInfoUiState =
+                (pictureOfAlbumUiState.albumInfo as ApiState.Success<AlbumInfo>).data
+            Box(modifier = Modifier.fillMaxSize()) {
+                CollapsingToolbarScaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .bottomBarsPadding(isSelectMode),
+                    state = state,
+                    scrollStrategy = ScrollStrategy.EnterAlways,
+                    toolbar = {
+                        if (isSelectMode) {
+                            SelectModeAppBar(
+                                albumName = albumInfoUiState.albumName,
+                                selectedImageCount = pictureUiState.count { it.isSelected },
+                                onClickAllSelect = { pictureOfAlbumViewModel.selectAllOfPicture() }) {
+                                pictureOfAlbumViewModel.unselectAllOfPicture()
                             }
-
-                            1 -> {
-                                Column {
-                                    TestCard(
+                        } else {
+                            BackArrowAppBar2(
+                                textComposable = {
+                                    PicturesListAppBarText(
+                                        text = albumInfoUiState.albumName,
+                                        userCount = albumInfoUiState.albumMemberCount,
+                                        pictureCount = albumInfoUiState.albumPictureCount
+                                    )
+                                },
+                                trailingIcon = Icons.Rounded.MoreVert,
+                                dropDownMenu = {
+                                    RoundedDropDownMenu(
+                                        expanded = isDropDownMenuExpanded,
+                                        onClose = { isDropDownMenuExpanded = false },
+                                        onClick1 = { isSelectMode = true }) {
+                                        isSortMenuExpanded = true
+                                    }
+                                },
+                                onBack = { applicationState.popBackStack() }
+                            ) { isDropDownMenuExpanded = true }
+                        }
+                    }
+                ) {
+                    LazyVerticalGrid(
+                        state = lazyGridState,
+                        columns = GridCells.Fixed(3),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
+                        horizontalArrangement = Arrangement.spacedBy(9.dp),
+                        verticalArrangement = Arrangement.spacedBy(9.dp),
+                    ) {
+                        items(
+                            count = pictureUiState.size,
+                            key = { pictureUiState[it].id },
+                            span = { GridItemSpan(if (it == 0) 2 else 1) }) { index ->
+                            when (index) {
+                                0 -> {
+                                    FirstPictureCard(
                                         modifier = Modifier.aspectRatio(1f),
-                                        image = "",
+                                        name = "올린 사람",
+                                        time = "8h",
+                                        profile = Constants.DEFAULT_PROFILE,
+                                        image = pictureUiState[index].image,
                                         isSelectMode = isSelectMode,
                                         isSelected = pictureUiState[index].isSelected,
                                         onCheck = {
@@ -208,40 +209,65 @@ fun PicturesListScreen(
                                                 pictureUiState[index].id
                                             )
                                         },
-                                        longPress = { if (!isSelectMode) isSelectMode = it }) {}
-                                    Spacer(modifier = Modifier.height(9.dp))
-                                    CreatingAlbumPlusCard(modifier = Modifier.aspectRatio(1f)) {}
+                                        longPress = { if (!isSelectMode) isSelectMode = it }
+                                    ) { applicationState.navigate(Constants.ALBUM_INFO_PHOTO_ROUTE) }
                                 }
-                            }
 
-                            else -> {
-                                TestCard(
-                                    modifier = Modifier.aspectRatio(1f),
-                                    image = "",
-                                    isSelectMode = isSelectMode,
-                                    isSelected = pictureUiState[index].isSelected,
-                                    onCheck = {
-                                        pictureOfAlbumViewModel.changeSelectedStateOfPicture(
-                                            pictureUiState[index].id
-                                        )
-                                    },
-                                    longPress = { if (!isSelectMode) isSelectMode = it }
-                                ) {}
+                                1 -> {
+                                    Column {
+                                        TestCard(
+                                            modifier = Modifier.aspectRatio(1f),
+                                            image = pictureUiState[index].image,
+                                            isSelectMode = isSelectMode,
+                                            isSelected = pictureUiState[index].isSelected,
+                                            onCheck = {
+                                                pictureOfAlbumViewModel.changeSelectedStateOfPicture(
+                                                    pictureUiState[index].id
+                                                )
+                                            },
+                                            longPress = { if (!isSelectMode) isSelectMode = it }) {}
+                                        Spacer(modifier = Modifier.height(9.dp))
+                                        PlusCardButton(
+                                            size = 0.dp,
+                                            shape = RoundedCornerShape(15.dp)
+                                        ) {
+                                            applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/685764")
+                                        }
+                                    }
+                                }
+
+                                else -> {
+                                    TestCard(
+                                        modifier = Modifier.aspectRatio(1f),
+                                        image = pictureUiState[index].image,
+                                        isSelectMode = isSelectMode,
+                                        isSelected = pictureUiState[index].isSelected,
+                                        onCheck = {
+                                            pictureOfAlbumViewModel.changeSelectedStateOfPicture(
+                                                pictureUiState[index].id
+                                            )
+                                        },
+                                        longPress = { if (!isSelectMode) isSelectMode = it }
+                                    ) {}
+                                }
                             }
                         }
                     }
+
+                }
+                MoveFirstItem(isVisible = isMoveFirstItemExpanded) {
+                    coroutineScope.launch { lazyGridState.animateScrollToItem(0) }
                 }
 
+                AlbumSelectModeBottomBar(isVisible = isSelectMode, onDownload = { /*TODO*/ }) {}
+                if (isSortMenuExpanded) {
+                    SortedSection { isSortMenuExpanded = false }
+                }
             }
-            MoveFirstItem(isVisible = isMoveFirstItemExpanded) {
-                coroutineScope.launch { lazyGridState.animateScrollToItem(0) }
-            }
-
-            AlbumSelectModeBottomBar(isVisible = isSelectMode, onDownload = { /*TODO*/ }) {}
-            if (isSortMenuExpanded) {
-                SortedSection { isSortMenuExpanded = false }
-            }
+        } else {
+            LoadingScreen()
         }
+
 
     }
 }
@@ -274,13 +300,13 @@ fun TestCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            /* TODO: API 연동할 시 바꿀 것
             Image(
                 painter = rememberAsyncImagePainter(model = image),
                 contentDescription = "image_picture",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
             )
-            */
+
             if (isSelectMode) {
                 CheckButton(
                     modifier = Modifier
@@ -319,21 +345,28 @@ fun FirstPictureCard(
         },
 //        onClick = { navigate() },
         shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF2F3F7),
-            contentColor = PrimaryBlue3
-        )
+//        colors = CardDefaults.cardColors(
+//            containerColor = Color(0xFFF2F3F7),
+//            contentColor = PrimaryBlue3
+//        )
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            /* TODO: API 연동할 시 바꿀 것
+
             Image(
                 painter = rememberAsyncImagePainter(model = image),
                 contentDescription = "image_picture",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+
             )
-            */
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(White.copy(alpha = 0.4f))
+            ) {}
+
             if (isSelectMode) {
                 CheckButton(
                     modifier = Modifier
@@ -360,7 +393,7 @@ fun FirstPictureCard(
                 RowSpacer(width = 8.dp)
                 Column {
                     Text(text = name, style = Body2Semibold, color = Gray900)
-                    Text(text = time, style = Body3Regular, color = Gray900)
+                    Text(text = time, style = Body3Medium, color = Gray900)
                 }
             }
 
@@ -535,7 +568,18 @@ fun BoxScope.MoveFirstItem(isVisible: Boolean, onCheck: () -> Unit) {
             shape = CircleShape,
             colors = CardDefaults.cardColors(containerColor = White, contentColor = Gray400)
         ) {
-            Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "ic_up", modifier = Modifier.size(30.dp))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowUp,
+                contentDescription = "ic_up",
+                modifier = Modifier.size(30.dp)
+            )
         }
+    }
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Black)
     }
 }

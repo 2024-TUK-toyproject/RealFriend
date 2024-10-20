@@ -179,7 +179,7 @@ class LoginViewModel @Inject constructor(
                     userId = userId,
                     name = name.value,
                     fcmToken = FCMToken,
-                    file = imageUrl.value.asMultipart("file", context.contentResolver)!!
+                    file = imageUrl.value.asMultipart("file", "", context.contentResolver)!!
                 ).first()) {
                     is ApiState.Error -> Log.d("daeyoung", "api 통신 에러: ${result.errMsg}")
                     ApiState.Loading -> TODO()

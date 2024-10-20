@@ -2,15 +2,20 @@ package com.example.data.network
 
 import com.example.domain.DefaultResponse
 import com.example.domain.model.request.AlbumRequest
-import com.example.domain.model.response.AlbumIdResponse
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.model.response.AlbumResponse
+import com.example.domain.model.response.album.AlbumIdResponse
+import com.example.domain.model.response.album.AlbumResponse
+import com.example.domain.model.response.PictureIdResponse
+import com.example.domain.model.response.PictureInfoResponse
+import com.example.domain.model.response.album.AlbumInfoResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AlbumApi {
@@ -30,4 +35,21 @@ interface AlbumApi {
     // 앨범 즐겨찾기 on, off
     @POST("/users/album/star")
     suspend fun updateAlbumFavorite(@Query("albumId") albumId: String): DefaultResponse<Unit>
+
+    // 앨범의 정보 조히
+    @GET("/users/get/album/{albumId}/info")
+    suspend fun readAlbumInfo(@Path("albumId") albumId: String): DefaultResponse<AlbumInfoResponse>
+
+    // 앨범의 전체 사진 조회
+    @GET("/users/album/get/photos")
+    suspend fun readAllPhotos(@Query("albumId") albumId: String): DefaultResponse<List<PictureIdResponse>>
+
+    // 앨범의 사진 상세정보 불러오기
+    @GET("/users/album/get/photos/{photoId}/info")
+    suspend fun readPhotoDetail(@Path("photoId") photoId: String): DefaultResponse<PictureInfoResponse>
+
+    // 앨범의 사진 업로드
+    @Multipart
+    @POST("/users/album/post")
+    suspend fun uploadPhotos(@Query("albumId") albumId: String, @Part file: List<MultipartBody.Part>): DefaultResponse<Unit>
 }

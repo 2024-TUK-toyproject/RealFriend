@@ -50,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
+import com.example.connex.ui.component.PlusCardButton
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.SkyBlueBox
@@ -192,39 +193,13 @@ fun AlbumScreen(
                             }
                         }
                         item {
-                            CreatingAlbumPlusCard( modifier = Modifier.height(160.dp)) {
+                            PlusCardButton(size = 160.dp, shape = RoundedCornerShape(15.dp)) {
                                 applicationState.navigate(Constants.ALBUM_CREATING_ROUTE)
                             }
                         }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun CreatingAlbumPlusCard(modifier: Modifier = Modifier, navigate: () -> Unit) {
-
-    Card(
-        modifier = modifier,
-        onClick = { navigate() },
-        shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF2F3F7),
-            contentColor = PrimaryBlue3
-        )
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Add,
-                contentDescription = "ic_add",
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.Center)
-            )
         }
     }
 }

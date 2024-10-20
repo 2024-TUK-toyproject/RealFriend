@@ -10,9 +10,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.example.connex.ui.album.view.AddPictureScreen
 import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
+import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
@@ -176,8 +178,21 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
             PicturesListScreen(applicationState = applicationState)
         }
         composable(Constants.ALBUM_INFO_PHOTO_ROUTE) { entry ->
-            PhotoOfAlbumScreen()
+            PhotoOfAlbumScreen(applicationState = applicationState)
         }
+//        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{image}") { entry ->
+//            PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
+//        }
+        composable(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE) { entry ->
+            PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
+        }
+        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}") { entry ->
+            AddPictureScreen(applicationState = applicationState, albumId =  entry.arguments?.getString("albumId") ?: "",)
+        }
+
+//        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}") { entry ->
+//            AddPictureScreen(applicationState = applicationState, albumId =  "685764",)
+//        }
     }
 
 }

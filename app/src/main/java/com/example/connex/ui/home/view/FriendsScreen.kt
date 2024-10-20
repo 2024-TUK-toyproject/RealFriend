@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,10 +50,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
@@ -66,7 +63,6 @@ import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.FriendsViewModel
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.ConnexLogoGreen
-import com.example.connex.ui.svg.iconpack.ConnexLogoWhite
 import com.example.connex.ui.svg.iconpack.IcAddUser
 import com.example.connex.ui.svg.iconpack.IcAlbumOff
 import com.example.connex.ui.svg.iconpack.IcAlbumOn
@@ -83,7 +79,6 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.utils.Constants
-import com.example.connex.utils.Constants.BottomNavigationHeight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

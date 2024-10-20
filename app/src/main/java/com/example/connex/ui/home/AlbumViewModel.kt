@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.AlbumResponse
+import com.example.domain.model.response.album.AlbumResponse
 import com.example.domain.usecase.album.ReadAllAlbumsUseCase
 import com.example.domain.usecase.album.UpdateAlbumFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch

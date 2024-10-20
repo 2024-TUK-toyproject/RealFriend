@@ -51,6 +51,8 @@ object Constants {
 
     const val ALBUM_INFO_PICTURE_LIST_ROUTE = "nav-album-info-picture-list"
     const val ALBUM_INFO_PHOTO_ROUTE = "nav-album-info-photo"
+    const val ALBUM_INFO_PHOTO_COMMENT_ROUTE = "nav-album-info-photo-comment"
+    const val ALBUM_INFO_PHOTO_ADD_ROUTE = "nav-album-info-photo-add"
 
 
 
