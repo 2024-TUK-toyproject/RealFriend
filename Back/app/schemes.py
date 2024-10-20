@@ -177,7 +177,7 @@ class Album_picture_response(BaseModel):
 class Album_picture_info_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, Optional[Union[int, float, str]]] = Field([{"name" : "asdasd", "usage" : 10, "date" : "2024-07-25", "time" : "14:20:01", "uploadName" : "홍길동", "profileUrl" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
+    content : Dict[str, Optional[Union[int, float, str]]] = Field({"name" : "asdasd", "usage" : 10, "date" : "2024-07-25", "time" : "14:20:01", "uploadName" : "홍길동", "profileUrl" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "uploadDate" : "2024-07-25", "uploadTime" : "14:20:01"})
 
 
 # Request Model
