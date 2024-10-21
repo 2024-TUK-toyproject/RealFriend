@@ -14,10 +14,9 @@ from ..fcm_service import send_push_notification
 from ..httpException import CustomException
 from ..httpException import CustomException2
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import boto3
-import uuid
 import os
 
 s3 = boto3.client(
@@ -166,7 +165,8 @@ class Album_service:
             create_user_id = user["key"],
             album_name = "기본 엘범",
             directory = directroy,
-            album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket) #나중에 바꿔라
+            album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket), #나중에 바꿔라
+            total_usage = 15360000.0
         )
 
         self.db.add(new_album)
@@ -352,7 +352,8 @@ class Album_service:
             "albumName": existing_album.album_name,
             "albumMemberCount": album_member_count,
             "albumPictureCount": album_picture_count,
-            "currentUsage" : round(total_size / 1024,2) # MB로 변환
+            "currentUsage" : round(total_size / 1024,2),
+            "totalUsage" : existing_album.total_usage
         }
 
         return Album_info_response(status = "success", message = "앨범 정보 조회 성공", content = album_info)
@@ -389,7 +390,6 @@ class Album_service:
 
         photo_list = []
         for content in response.get("Contents", []):
-            print(content)
             pic_info = self.db.query(models.picture_info).filter(models.picture_info.name == content["Key"].split("/")[-1]).first() # albums/685764/스크린샷 2024-10-16 오후 3.54.18.png
             photo_list.append({
                 "photoId": pic_info.picture_id,
@@ -443,6 +443,125 @@ class Album_service:
         }
 
         return Album_picture_info_response(status = "success", message = "사진 정보 조회 성공", content = photo_data)
+
+    async def delete_photo_from_album(self, request : photo_delete_request, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        delete = False
+        for photo in request.content:
+            photoId = photo["photoId"]
+            existing_photo = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photoId).first()
+            if not existing_photo:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+            
+            existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == existing_photo.album_id).first()
+            if not existing_album:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+            
+            if delete is False:
+                album_member = self.db.query(models.album_member_info).filter(
+                    and_(
+                        models.album_member_info.album_id == existing_photo.album_id,
+                        models.album_member_info.user_id == user["key"]
+                    )
+                ).first()
+                if not album_member:
+                    raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+            
+                if album_member.delete is False:
+                    raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 삭제 권한이 없습니다.")
+                else:
+                    delete = True
+            s3.delete_object(
+                Bucket=Config.s3_bucket,
+                Key=f"albums/{existing_photo.album_id}/{existing_photo.name}"
+            )
+            self.db.delete(existing_photo)
+
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = "사진 삭제 성공")
+
+    async def post_album_reply(self, request : Album_reply_request, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_photo = self.db.query(models.picture_info).filter(models.picture_info.picture_id == request.photoId).first()
+        if not existing_photo:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == existing_photo.album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not album_member:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+
+        #댓글 권한 논의 필요
+        new_key = self.rng.generate_unique_random_number(100000000, 999999999)
+        new_album_reply = models.album_reply_info(
+            reply_key = new_key,
+            picture_id = request.photoId,
+            user_id = user["key"],
+            date = datetime.now().strftime("%Y-%m-%d"),
+            time = datetime.now().strftime("%H:%M:%S"),
+            content = request.content
+        )
+        self.db.add(new_album_reply)
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = "앨범 댓글 작성 성공")
+
+    async def get_album_reply(self, photoId : str, token : str) -> Album_reply_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_photo = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photoId).first()
+        if not existing_photo:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == existing_photo.album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not album_member:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+        
+        album_reply = self.db.query(models.album_reply_info).filter(models.album_reply_info.picture_id == photoId).all()
+        reply_list = []
+        for reply in album_reply:
+            reply_user = self.db.query(models.user_info).filter(models.user_info.user_id == reply.user_id).first()
+            reply_list.append({
+                "replyKey": reply.reply_key,
+                "userName": reply_user.name,
+                "userProfile": reply_user.profile_image,
+                "date": reply.date,
+                "time": reply.time,
+                "message": reply.content
+            })
+
+        return Album_reply_response(status = "success", message = "앨범 댓글 조회 성공", content = reply_list)
 
 
 

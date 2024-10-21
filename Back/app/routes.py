@@ -207,7 +207,7 @@ async def get_album_list(token = Depends(APIKeyHeader(name = "Authorization")), 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.get("/users/get/album/{albumId}/info", responses = {200 : {"model" : Album_info_response, "description" : "앨범 정보 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 정보 조회 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 정보 조회 | currentusage는 현재 용량이며 단위는 MB")
+@router.get("/users/get/album/{albumId}/info", responses = {200 : {"model" : Album_info_response, "description" : "앨범 정보 조회 성공"}, 400 : {"model" : Error_response, "description" : "앨범 정보 조회 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 정보 조회 | currentusage는 현재 용량이며 단위는 KB | totalUsage는 전체 용량이며 단위는 KB")
 async def get_album_info(albumId : str, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
     try:
         return await album_service.get_album_info(albumId, token)
@@ -254,6 +254,30 @@ async def get_album_photo_info(photoId : str, token = Depends(APIKeyHeader(name 
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/users/album/delete/photos", responses = {200 : {"model" : CommoneResponse, "description" : "앨범 사진 삭제 성공"}, 400 : {"model" : Error_response, "description" : "앨범 사진 삭제 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 사진 삭제")
+async def delete_album_photo(request : photo_delete_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.delete_photo_from_album(request, token)
     
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+#User/Album/reply
+@router.post("/users/album/reply", responses = {200 : {"model" : CommoneResponse, "description" : "댓글 작성 성공"}, 400 : {"model" : Error_response, "description" : "댓글 작성 실패"}}, tags = ["User/sharedAlbum/reply"], summary = "댓글 작성")
+async def post_album_reply(request : Album_reply_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.post_album_reply(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/users/album/{photoId}/get/reply", responses = {200 : {"model" : Album_reply_response, "description" : "댓글 조회 성공"}, 400 : {"model" : Error_response, "description" : "댓글 조회 실패"}}, tags = ["User/sharedAlbum/reply"], summary = "댓글 조회")
+async def get_album_reply(photoId : str, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.get_album_reply(photoId, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 #새로운 활동 내역 불러오기(사진 업로드, 친구 요청, 친구 요청 수락 및 거절 메시지 등등)
