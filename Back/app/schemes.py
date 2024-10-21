@@ -167,7 +167,7 @@ class Login_response(BaseModel):
 class Album_info_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, Optional[Union[str, int, float]]] = Field({"albumName" : "가족사진", "albumMemberCount" : 2, "albumPictureCount" : 10, "currentUsage" : 100})
+    content : Dict[str, Optional[Union[str, int, float]]] = Field({"albumName" : "가족사진", "albumMemberCount" : 2, "albumPictureCount" : 10, "currentUsage" : 100, "totalUsage" : 15360000.0})
 
 class Album_picture_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -179,6 +179,10 @@ class Album_picture_info_response(BaseModel):
     message : str = Field("성공메시지 or 오류메시지")
     content : Dict[str, Optional[Union[int, float, str]]] = Field({"name" : "asdasd", "usage" : 10, "date" : "2024-07-25", "time" : "14:20:01", "uploadName" : "홍길동", "profileUrl" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "uploadDate" : "2024-07-25", "uploadTime" : "14:20:01"})
 
+class Album_reply_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Dict[str, str]] = Field([{"replyId" : "123456", "userName" : "홍길동", "userProfile" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "date" : "2024-07-25", "time" : "14:20:01", "message" : "댓글 내용"}])
 
 # Request Model
 class Phone_list(BaseModel):
@@ -264,3 +268,10 @@ class Album_thumbnail_request(BaseModel):
     albumId : str = Field(..., example = "123456")
     albumName : str = Field(..., example = "가족사진")
     albumThumbnail : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+
+class photo_delete_request(BaseModel):
+    content : List[Dict[str, str]] = Field([{"photoId" : "123456"}, {"photoId" : "654321"}])
+
+class Album_reply_request(BaseModel):
+    photoId : str = Field(..., example = "123456")
+    content : str = Field(..., example = "댓글 내용")
