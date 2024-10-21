@@ -64,6 +64,7 @@ class album_info(Base):
     create_user_id = Column(String(255))
     directory = Column(String(255))
     album_thumbnail = Column(String(255))
+    total_usage = Column(Float)
 
 class album_member_info(Base):
     __tablename__ = 'album_member_info'
@@ -102,3 +103,14 @@ class picture_info(Base):
     usage = Column(Double)
     date = Column(String(255))
     time = Column(String(255))
+
+class album_reply_info(Base):
+    __tablename__ = 'album_reply_info'
+
+    num = Column(Integer, index = True, primary_key=True)
+    reply_key = Column(String(255))
+    picture_id = Column(String(255))
+    user_id = Column(String(255))
+    date = Column(String(255))
+    time = Column(String(255))
+    content = Column(String(255))
