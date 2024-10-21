@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PictureInfo(
+class PictureState(
     val id: Long,
     val image: String,
     val imageSize: String = "",
@@ -34,7 +34,7 @@ class PictureInfo(
 }
 
 data class PictureOfAlbumUiState(
-    val pictures: ApiState<List<PictureInfo>> = ApiState.Loading,
+    val pictures: ApiState<List<PictureState>> = ApiState.Loading,
     val albumInfo: ApiState<AlbumInfo> = ApiState.Loading,
 )
 
@@ -43,8 +43,8 @@ class PictureOfAlbumViewModel @Inject constructor(
     val readAllPicturesUseCase: ReadAllPicturesUseCase,
     val readAlbumInfoUseCase: ReadAlbumInfoUseCase,
 ) : ViewModel() {
-    private val _pictures = MutableStateFlow(emptyList<PictureInfo>())
-    val pictures: StateFlow<List<PictureInfo>> = _pictures
+    private val _pictures = MutableStateFlow(emptyList<PictureState>())
+    val pictures: StateFlow<List<PictureState>> = _pictures
 
     private val _album = MutableStateFlow(AlbumInfo())
     val album: StateFlow<AlbumInfo> = _album
@@ -77,7 +77,7 @@ class PictureOfAlbumViewModel @Inject constructor(
                 is ApiState.NotResponse -> { Log.d("daeyoung", "fetchReadAllPictures: ${result.message}") }
                 is ApiState.Success -> {
                     _pictures.update {
-                        result.data.map { PictureInfo(id = it.photoId.toLong(), image = it.photoUrl, initialChecked = false) }
+                        result.data.map { PictureState(id = it.photoId.toLong(), image = it.photoUrl, initialChecked = false) }
                     }
                 }
             }

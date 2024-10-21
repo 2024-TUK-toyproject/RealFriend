@@ -1,6 +1,7 @@
 package com.example.connex.ui.album.view
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -80,8 +81,13 @@ fun AddPictureScreen(
     addPictureViewModel: AddPictureViewModel = hiltViewModel(),
     applicationState: ApplicationState,
     albumId: String,
+    currentFSize: Long,
+    totalFSize: Long,
+//    currentFSize2: String,
+//    totalFSize2: String,
 ) {
-
+    Log.d("albumInfo", "${currentFSize}")
+    Log.d("albumInfo", "${totalFSize}")
     val maxSelectCount = 10
 
     val takePhotoFromAlbumLauncher = takeMultiPhotoFromAlbumLauncher(maxSelectCount) {
@@ -154,8 +160,8 @@ fun AddPictureScreen(
                     .fillMaxWidth()
                     .background(White)
                     .padding(top = 20.dp),
-                maxFileSize = 15_000_000L,
-                currentFileSize = addPictureUiState.sumOf { it.fileSize }
+                maxFileSize = totalFSize,
+                currentFileSize = currentFSize
             )
             ColumnSpacer(height = 24.dp)
 
@@ -164,9 +170,9 @@ fun AddPictureScreen(
                     .fillMaxWidth()
                     .background(White)
                     .padding(top = 20.dp, bottom = 24.dp),
-                maxFileSize = 15_000_000L,
+                maxFileSize = totalFSize,
                 // TODO(현재 파일 크기 더해야 함)
-                currentFileSize = addPictureUiState.sumOf { it.fileSize }
+                currentFileSize = currentFSize + addPictureUiState.sumOf { it.fileSize }
             )
 
 
@@ -336,6 +342,7 @@ fun TwoStickGraph(modifier: Modifier, color1: Color, color2: Color, sizePercent:
 fun FutureStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, currentFileSize: Long) {
     val (maxFSize, maxFileUnit) = setMemorySizeAndUnit(maxFileSize)
     val (currentFSize, currentFileUnit) = setMemorySizeAndUnit(currentFileSize)
+    val (remainFSize, remainFileUnit) = setMemorySizeAndUnit(maxFileSize-currentFileSize)
 
     val accentTextStyle = SpanStyle(
         color = PrimaryBlue3,
@@ -373,7 +380,7 @@ fun FutureStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, curr
             text = buildAnnotatedString {
                 append("선택한 사진을 모두 업로드하면 ")
                 withStyle(accentTextStyle) {
-                    append("160MB")
+                    append("${remainFSize}$remainFileUnit")
                 }
                 append("가 남아요!")
             },

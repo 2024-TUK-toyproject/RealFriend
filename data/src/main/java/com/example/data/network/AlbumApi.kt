@@ -36,7 +36,7 @@ interface AlbumApi {
     @POST("/users/album/star")
     suspend fun updateAlbumFavorite(@Query("albumId") albumId: String): DefaultResponse<Unit>
 
-    // 앨범의 정보 조히
+    // 앨범의 정보 조회
     @GET("/users/get/album/{albumId}/info")
     suspend fun readAlbumInfo(@Path("albumId") albumId: String): DefaultResponse<AlbumInfoResponse>
 
@@ -44,9 +44,9 @@ interface AlbumApi {
     @GET("/users/album/get/photos")
     suspend fun readAllPhotos(@Query("albumId") albumId: String): DefaultResponse<List<PictureIdResponse>>
 
-    // 앨범의 사진 상세정보 불러오기
+    // 앨범의 사진 상세정보 조회
     @GET("/users/album/get/photos/{photoId}/info")
-    suspend fun readPhotoDetail(@Path("photoId") photoId: String): DefaultResponse<PictureInfoResponse>
+    suspend fun readPhotoInfo(@Path("photoId") photoId: String): DefaultResponse<PictureInfoResponse>
 
     // 앨범의 사진 업로드
     @Multipart

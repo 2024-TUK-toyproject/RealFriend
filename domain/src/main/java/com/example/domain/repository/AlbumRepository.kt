@@ -3,6 +3,8 @@ package com.example.domain.repository
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.PictureIdResponse
+import com.example.domain.model.response.PictureInfo
+import com.example.domain.model.response.PictureInfoResponse
 import com.example.domain.model.response.album.AlbumIdResponse
 import com.example.domain.model.response.album.AlbumInfo
 import com.example.domain.model.response.album.AlbumResponse
@@ -24,4 +26,5 @@ interface AlbumRepository {
 
     fun uploadPhotos(albumId: String, file: List<MultipartBody.Part>): Flow<ApiState<Unit>>
 
+    fun readPhotoInfo(photoId: String): Flow<ApiState<PictureInfo>>
 }

@@ -1,6 +1,7 @@
 package com.example.connex.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -186,12 +187,28 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         composable(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE) { entry ->
             PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
         }
-        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}") { entry ->
-            AddPictureScreen(applicationState = applicationState, albumId =  entry.arguments?.getString("albumId") ?: "",)
+        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}/{currentFileSize}/{totalFileSize}") { entry ->
+            val currentFSize = (entry.arguments?.getString("currentFileSize") ?: "").toDouble().toLong()
+            val totalFSize = (entry.arguments?.getString("totalFileSize") ?: "").toDouble().toLong()
+            AddPictureScreen(
+                applicationState = applicationState,
+                albumId = entry.arguments?.getString("albumId") ?: "",
+                currentFSize = currentFSize,
+                totalFSize = totalFSize,
+//                currentFSize2 = (entry.arguments?.getString("currentFileSize") ?: ""),
+//                totalFSize2 = (entry.arguments?.getString("totalFileSize") ?: "")
+//                currentFSize = entry.arguments?.getLong("currentFileSize") ?: 0L,
+//                totalFSize = entry.arguments?.getLong("totalFileSize") ?: 0L
+            )
         }
 
-//        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}") { entry ->
-//            AddPictureScreen(applicationState = applicationState, albumId =  "685764",)
+//        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}/{currentFSize}/{totalFSize}") { entry ->
+//            AddPictureScreen(
+//                applicationState = applicationState,
+//                albumId = "685764",
+//                currentFSize = 0L,
+//                totalFSize = 0L
+//            )
 //        }
     }
 

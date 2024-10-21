@@ -8,9 +8,12 @@ import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.album.AlbumResponse
 import com.example.domain.model.response.PictureIdResponse
+import com.example.domain.model.response.PictureInfo
+import com.example.domain.model.response.PictureInfoResponse
 import com.example.domain.model.response.album.AlbumInfo
 import com.example.domain.model.response.album.AlbumInfoResponse
 import com.example.domain.model.response.album.asDomain
+import com.example.domain.model.response.asDomain
 import com.example.domain.model.safeFlow
 import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowUnit
@@ -41,7 +44,7 @@ class AlbumRepositoryImpl @Inject constructor(
     }
 
     override fun readAlbumInfo(albumId: String): Flow<ApiState<AlbumInfo>> =
-        safeFlow2(apiFunc =  { albumApi.readAlbumInfo(albumId) }) { it.asDomain() }
+        safeFlow2(apiFunc = { albumApi.readAlbumInfo(albumId) }) { it.asDomain() }
 
     override fun readAllPhotos(albumId: String): Flow<ApiState<List<PictureIdResponse>>> =
         safeFlow { albumApi.readAllPhotos(albumId) }
@@ -54,5 +57,6 @@ class AlbumRepositoryImpl @Inject constructor(
             albumApi.uploadPhotos(albumId, file)
         }
 
-
+    override fun readPhotoInfo(photoId: String): Flow<ApiState<PictureInfo>> =
+        safeFlow2(apiFunc = { albumApi.readPhotoInfo(photoId) }) { it.asDomain() }
 }

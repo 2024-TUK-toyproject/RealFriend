@@ -41,6 +41,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +58,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.connex.ui.albumphoto.PhotoInfoViewModel
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.BottomNavItem
 import com.example.connex.ui.component.ColumnSpacer
@@ -84,7 +88,10 @@ sealed class PhotoOfAlbumScreenState(open val title: String) {
 }
 
 @Composable
-fun PhotoOfAlbumScreen(applicationState: ApplicationState) {
+fun PhotoOfAlbumScreen(
+    photoInfoViewModel: PhotoInfoViewModel = hiltViewModel(),
+    applicationState: ApplicationState,
+) {
 
     var photoOfAlbumScreenState by remember {
         mutableStateOf<PhotoOfAlbumScreenState>(PhotoOfAlbumScreenState.Default())
@@ -106,6 +113,12 @@ fun PhotoOfAlbumScreen(applicationState: ApplicationState) {
             easing = FastOutSlowInEasing
         )
     )
+
+    val photoUiState by photoInfoViewModel.photoInfo.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        photoInfoViewModel.fetchReadPhotoInfo("62987594")
+    }
 
     ManageBottomBarState(photoOfAlbumScreenState = photoOfAlbumScreenState) {
         isBottomBarVisible = it
@@ -138,7 +151,14 @@ fun PhotoOfAlbumScreen(applicationState: ApplicationState) {
                         DetailInfoBox(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
+                            profileImage = photoUiState.uploadUserProfile,
+                            fileName = photoUiState.name,
+                            userName = photoUiState.uploadUser,
+                            uploadDate = photoUiState.uploadDate,
+                            date = photoUiState.date,
+                            time = photoUiState.time,
+                            fileSize = "${photoUiState.usage}"
                         ) {
                             photoOfAlbumScreenState = PhotoOfAlbumScreenState.Default()
                         }
@@ -246,7 +266,17 @@ fun ManageBottomBarState(
 }
 
 @Composable
-fun DetailInfoBox(modifier: Modifier = Modifier, onClose: () -> Unit) {
+fun DetailInfoBox(
+    modifier: Modifier = Modifier,
+    profileImage: String,
+    fileName: String,
+    userName: String,
+    uploadDate: String,
+    date: String,
+    time: String,
+    fileSize: String,
+    onClose: () -> Unit,
+) {
     val uploadPersonStyle = TextStyle(
         fontSize = 16.sp,
         lineHeight = 22.4.sp,
@@ -279,7 +309,7 @@ fun DetailInfoBox(modifier: Modifier = Modifier, onClose: () -> Unit) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Card(modifier = Modifier.size(40.dp), shape = CircleShape) {
                     Image(
-                        painter = rememberAsyncImagePainter(model = Constants.DEFAULT_PROFILE),
+                        painter = rememberAsyncImagePainter(model = profileImage),
                         contentDescription = "image_profile",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
@@ -287,13 +317,13 @@ fun DetailInfoBox(modifier: Modifier = Modifier, onClose: () -> Unit) {
                 }
                 RowSpacer(width = 10.dp)
                 Text(
-                    text = "업로드한 사람",
+                    text = userName,
                     style = uploadPersonStyle,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
                 RowSpacer(width = 10.dp)
                 Text(
-                    text = "(2000.00.00)",
+                    text = uploadDate,
                     style = textStyle,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
@@ -301,13 +331,14 @@ fun DetailInfoBox(modifier: Modifier = Modifier, onClose: () -> Unit) {
             ColumnSpacer(height = 16.dp)
             HorizontalDivider(Modifier.fillMaxWidth(), color = Gray100, thickness = 0.5.dp)
             ColumnSpacer(height = 16.dp)
-            IconTextRow(icon = IconPack.IcCalendar, text = "2024년 00월 00일 00:00")
+            IconTextRow(icon = IconPack.IcCalendar, text = date)
             ColumnSpacer(height = 10.dp)
-            IconTextRow(icon = IconPack.IcImage, text = "20240000_0000.jpg")
+            IconTextRow(icon = IconPack.IcImage, text = fileName)
             ColumnSpacer(height = 10.dp)
-            IconTextRow(icon = IconPack.IcFile, text = "00KB")
+            IconTextRow(icon = IconPack.IcFile, text = fileSize)
             ColumnSpacer(height = 10.dp)
-            IconTextRow(icon = IconPack.IcLocation01, text = "위치")
+            IconTextRow(icon = IconPack.IcLocation01, text = time)
+//            IconTextRow(icon = IconPack.IcLocation01, text = "위치")
 
         }
         ColumnSpacer(height = 16.dp)

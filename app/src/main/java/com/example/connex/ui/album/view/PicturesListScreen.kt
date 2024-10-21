@@ -65,8 +65,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import com.example.connex.ui.album.PictureInfo
 import com.example.connex.ui.album.PictureOfAlbumViewModel
+import com.example.connex.ui.album.PictureState
 import com.example.connex.ui.component.AlbumSelectModeBottomBar
 import com.example.connex.ui.component.AppBarIcon
 import com.example.connex.ui.component.CheckButton
@@ -142,7 +142,7 @@ fun PicturesListScreen(
     ) {
         if (pictureOfAlbumUiState.pictures is ApiState.Success && pictureOfAlbumUiState.albumInfo is ApiState.Success) {
             val pictureUiState =
-                (pictureOfAlbumUiState.pictures as ApiState.Success<List<PictureInfo>>).data
+                (pictureOfAlbumUiState.pictures as ApiState.Success<List<PictureState>>).data
             val albumInfoUiState =
                 (pictureOfAlbumUiState.albumInfo as ApiState.Success<AlbumInfo>).data
             Box(modifier = Modifier.fillMaxSize()) {
@@ -231,7 +231,7 @@ fun PicturesListScreen(
                                             size = 0.dp,
                                             shape = RoundedCornerShape(15.dp)
                                         ) {
-                                            applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/685764")
+                                            applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/685764/${albumInfoUiState.currentUsage}/${albumInfoUiState.totalUsage}")
                                         }
                                     }
                                 }
