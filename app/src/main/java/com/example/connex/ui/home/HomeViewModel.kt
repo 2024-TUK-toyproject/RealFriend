@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.syncCallLog
 import com.example.data.datastore.TokenManager
+import com.example.domain.entity.user.MostCalledUsers
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledUsers
 import com.example.domain.usecase.ReadMostCallUsersUseCase
 import com.example.domain.usecase.SyncCallLogsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -17,6 +17,7 @@ val Black = Color(0xFF000000)
 val PrimaryBlue1 = Color(0xFF365FF0)
 val PrimaryBlue2 = Color(0xFF416BFF)
 val PrimaryBlue3 = Color(0XFF459AFE)
+val PrimaryRed = Color(0xFFFC4D4D)
 
 val Gray900 = Color(0xFF1C1B1F)
 val Gray800 = Color(0xFF303033)

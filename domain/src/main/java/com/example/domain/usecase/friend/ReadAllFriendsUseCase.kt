@@ -1,7 +1,7 @@
 package com.example.domain.usecase.friend
 
+import com.example.domain.entity.user.Friend
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.Friend
 import com.example.domain.repository.ContactRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

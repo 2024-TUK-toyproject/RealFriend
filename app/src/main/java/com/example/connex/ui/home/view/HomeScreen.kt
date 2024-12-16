@@ -61,9 +61,9 @@ import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
+import com.example.domain.entity.user.MostCalledUser
+import com.example.domain.entity.user.MostCalledUsers
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledUsers
-import com.example.domain.model.home.MostCalledUser
 import kotlin.math.absoluteValue
 
 @Composable

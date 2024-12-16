@@ -15,6 +15,7 @@ import com.example.connex.ui.album.view.AddPictureScreen
 import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
+import com.example.connex.ui.album_setting.ui.AlbumSettingScreen
 import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
@@ -179,7 +180,7 @@ fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
 fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
     navigation(
         route = Constants.ALBUM_INFO_GRAPH,
-        startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE
+        startDestination = Constants.ALBUM_SETTING_ROUTE
     ) {
         composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
             PicturesListScreen(applicationState = applicationState)
@@ -190,9 +191,6 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
                 picture = entry.arguments?.getString("pictureUrl")
             )
         }
-//        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{image}") { entry ->
-//            PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
-//        }
         composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{pictureUrl}") { entry ->
             PhotoCommentScreen(
                 picture = entry.arguments?.getString("pictureUrl")
@@ -207,21 +205,13 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
                 albumId = entry.arguments?.getString("albumId") ?: "",
                 currentFSize = currentFSize,
                 totalFSize = totalFSize,
-//                currentFSize2 = (entry.arguments?.getString("currentFileSize") ?: ""),
-//                totalFSize2 = (entry.arguments?.getString("totalFileSize") ?: "")
-//                currentFSize = entry.arguments?.getLong("currentFileSize") ?: 0L,
-//                totalFSize = entry.arguments?.getLong("totalFileSize") ?: 0L
             )
         }
 
-//        composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}/{currentFSize}/{totalFSize}") { entry ->
-//            AddPictureScreen(
-//                applicationState = applicationState,
-//                albumId = "685764",
-//                currentFSize = 0L,
-//                totalFSize = 0L
-//            )
-//        }
+        composable(route = Constants.ALBUM_SETTING_ROUTE) { entry ->
+            AlbumSettingScreen()
+        }
+
     }
 
 }

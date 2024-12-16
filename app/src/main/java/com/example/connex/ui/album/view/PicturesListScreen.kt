@@ -94,8 +94,8 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.domain.entity.album.AlbumInfo
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.album.AlbumInfo
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope

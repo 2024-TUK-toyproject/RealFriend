@@ -4,12 +4,12 @@ import com.example.data.datastore.TokenManager
 import com.example.data.network.AuthApi
 import com.example.data.network.LoginApi
 import com.example.data.network.UserApi
+import com.example.domain.entity.user.UserInfo
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.CertificateCodeRequest
 import com.example.domain.model.request.PhoneRequest
-import com.example.domain.model.response.user.CertificateCodeResponse
 import com.example.domain.model.response.Token
-import com.example.domain.model.response.user.UserInfo
+import com.example.domain.model.response.user.CertificateCodeResponse
 import com.example.domain.model.response.user.toEntity
 import com.example.domain.model.safeFlow
 import com.example.domain.model.safeFlow2

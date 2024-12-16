@@ -13,6 +13,7 @@ import com.example.domain.entity.contact.MobileCarrier
 import com.example.domain.entity.contact.Phone
 import com.example.domain.model.response.user.CertificateCodeResponse
 import com.example.domain.model.response.notification.asDomain
+import com.example.domain.model.response.user.asDomain
 import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
 import com.example.domain.usecase.user.SignupProfileImageUseCase

@@ -2,12 +2,12 @@ package com.example.connex.utils
 
 import android.content.ContentResolver
 import android.os.Build
-import com.example.domain.model.login.CallLog
 import android.provider.ContactsContract
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.data.datastore.TokenManager
 import com.example.domain.entity.contact.Contact
+import com.example.domain.entity.contact.ExtractedCallLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -43,8 +43,8 @@ suspend fun syncCallLog(
     tokenManager: TokenManager,
     resolver: ContentResolver,
     size: Int,
-): MutableList<CallLog> {
-    val callLogs = mutableListOf<CallLog>()
+): MutableList<ExtractedCallLog> {
+    val callLogs = mutableListOf<ExtractedCallLog>()
     val callLogLastDate = tokenManager.getCallLogLastDayToken().first()
 
     val selection = if (callLogLastDate != null) {
@@ -95,7 +95,7 @@ suspend fun syncCallLog(
 
             // name이 null일 수 있음, 전화번호에 저장되지 않고 모르는 번호로 전화온 case
             callLogs.add(
-                CallLog(
+                ExtractedCallLog(
                     name,
                     formatPhone,
 //                    duration.toLong(),

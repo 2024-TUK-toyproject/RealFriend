@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.entity.album.AlbumInfo
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.album.AlbumInfo
 import com.example.domain.usecase.album.ReadAlbumInfoUseCase
 import com.example.domain.usecase.album.ReadAllPicturesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

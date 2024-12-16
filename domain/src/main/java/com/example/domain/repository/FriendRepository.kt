@@ -1,9 +1,9 @@
 package com.example.domain.repository
 
-import com.example.domain.model.ApiState
+import com.example.domain.entity.contact.ContactInfo
 import com.example.domain.entity.notification.FriendRequestInfo
+import com.example.domain.model.ApiState
 import com.example.domain.model.request.ContactRequest
-import com.example.domain.model.response.ContactInfo
 import kotlinx.coroutines.flow.Flow
 
 interface FriendRepository {

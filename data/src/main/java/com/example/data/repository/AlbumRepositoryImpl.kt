@@ -1,17 +1,17 @@
 package com.example.data.repository
 
 import com.example.data.network.AlbumApi
+import com.example.domain.entity.album.AlbumInfo
+import com.example.domain.entity.album.PictureInfo
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.AlbumRequest
-import com.example.domain.model.response.album.AlbumIdResponse
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
+import com.example.domain.model.response.album.AlbumIdResponse
 import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
 import com.example.domain.model.response.album.PictureIdResponse
-import com.example.domain.model.response.album.PictureInfo
-import com.example.domain.model.response.album.AlbumInfo
+import com.example.domain.model.response.album.asDomain
 import com.example.domain.model.response.album.toEntity
-import com.example.domain.model.response.notification.asDomain
 import com.example.domain.model.safeFlow
 import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowUnit

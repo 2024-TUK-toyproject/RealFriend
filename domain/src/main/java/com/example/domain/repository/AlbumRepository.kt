@@ -1,12 +1,12 @@
 package com.example.domain.repository
 
+import com.example.domain.entity.album.AlbumInfo
+import com.example.domain.entity.album.PictureInfo
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.model.response.album.PictureIdResponse
-import com.example.domain.model.response.album.PictureInfo
 import com.example.domain.model.response.album.AlbumIdResponse
-import com.example.domain.model.response.album.AlbumInfo
 import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
+import com.example.domain.model.response.album.PictureIdResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
