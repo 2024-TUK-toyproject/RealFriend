@@ -7,7 +7,7 @@ import android.provider.ContactsContract
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.data.datastore.TokenManager
-import com.example.domain.model.login.Contact
+import com.example.domain.entity.contact.Contact
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

@@ -2,9 +2,8 @@ package com.example.connex.ui.albumphoto
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.connex.utils.asMultipart
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.PictureInfo
+import com.example.domain.model.response.album.PictureInfo
 import com.example.domain.usecase.album.ReadPhotoInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

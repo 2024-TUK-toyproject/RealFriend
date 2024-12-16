@@ -7,8 +7,7 @@ import com.example.connex.ui.home.FriendUiState
 import com.example.connex.utils.Constants
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.model.response.asDomain
-import com.example.domain.usecase.ReadAllFriendsUseCase
+import com.example.domain.usecase.friend.ReadAllFriendsUseCase
 import com.example.domain.usecase.album.CreateAlbumUseCase
 import com.example.domain.usecase.album.SetAlbumThumbnailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -105,7 +103,7 @@ class AlbumCreatingViewModel @Inject constructor(
 
                 is ApiState.Success -> {
                     result.data.also { list ->
-                        val mappedList = list.map { FriendUiState(it.asDomain(), false) }
+                        val mappedList = list.map { FriendUiState(it, false) }
                             .filter { it.friend.isFriend }
                         _friends.update { mappedList }
                         _filteredFriends.update { ApiState.Success(mappedList) }

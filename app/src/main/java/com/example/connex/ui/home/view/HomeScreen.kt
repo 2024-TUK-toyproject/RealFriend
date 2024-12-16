@@ -62,14 +62,14 @@ import com.example.connex.ui.theme.Subtitle2
 import com.example.connex.utils.Constants
 import com.example.connex.utils.Constants.NOTIFICATION_ROUTE
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledDateTime
+import com.example.domain.model.home.MostCalledUsers
 import com.example.domain.model.home.MostCalledUser
 import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    val homeScreenUiState = homeViewModel.mostCalledDateTime.collectAsStateWithLifecycle().value
+    val homeScreenUiState = homeViewModel.mostCalledUsers.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         homeViewModel.fetchSyncCallLogs()
@@ -145,7 +145,7 @@ fun HomeTitle(name: String) {
 
 
 @Composable
-fun ColumnScope.HomeBody(mostCalledDateTime: MostCalledDateTime) {
+fun ColumnScope.HomeBody(mostCalledUsers: MostCalledUsers) {
     val backgroundColor = Color(0xFFF2F4F8)
 
     Column(
@@ -160,23 +160,23 @@ fun ColumnScope.HomeBody(mostCalledDateTime: MostCalledDateTime) {
         Spacer(modifier = Modifier.height(32.dp))
         Text(text = "오늘 통화 기록", style = Subtitle2)
         Spacer(modifier = Modifier.height(16.dp))
-        HomeCallLogBox(Modifier.fillMaxWidth(), mostCalledDateTime)
+        HomeCallLogBox(Modifier.fillMaxWidth(), mostCalledUsers)
     }
 }
 
 @Composable
-fun HomeCallLogBox(modifier: Modifier = Modifier, mostCalledDateTime: MostCalledDateTime) {
+fun HomeCallLogBox(modifier: Modifier = Modifier, mostCalledUsers: MostCalledUsers) {
     ShadowBox(
         modifier = modifier,
         padding = 20.dp to 21.dp,
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            if (mostCalledDateTime.user.isEmpty()) {
+            if (mostCalledUsers.user.isEmpty()) {
                 Text(text = "오늘 통화기록이 없어요. 통화하러가기", style = Head2Semibold)
             } else {
-                HomeCallLogHeader(date = mostCalledDateTime.date, duration = mostCalledDateTime.user.sumOf { it.duration }, difference = mostCalledDateTime.difference)
-                HomeCallLogBody(modifier = Modifier.fillMaxWidth(), user = mostCalledDateTime.user)
+                HomeCallLogHeader(date = mostCalledUsers.date, duration = mostCalledUsers.user.sumOf { it.duration }, difference = mostCalledUsers.difference)
+                HomeCallLogBody(modifier = Modifier.fillMaxWidth(), user = mostCalledUsers.user)
                 General3Button(modifier = Modifier.height(47.dp), text = "상세 분석 보기") {
 
                 }

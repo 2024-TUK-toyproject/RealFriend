@@ -1,6 +1,6 @@
 package com.example.domain.model
 
-import com.example.domain.model.response.CertificateCodeResponse
+import com.example.domain.model.response.user.CertificateCodeResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

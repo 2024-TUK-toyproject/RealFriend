@@ -162,7 +162,10 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
-    navigation(route = Constants.ALBUM_CREATE_START_GRAPH, startDestination = Constants.ALBUM_CREATING_ROUTE) {
+    navigation(
+        route = Constants.ALBUM_CREATE_START_GRAPH,
+        startDestination = Constants.ALBUM_CREATING_ROUTE
+    ) {
         composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
             CreatingAlbumScreen(applicationState = applicationState)
         }
@@ -174,21 +177,30 @@ fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
-    navigation(route = Constants.ALBUM_INFO_GRAPH, startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) {
+    navigation(
+        route = Constants.ALBUM_INFO_GRAPH,
+        startDestination = Constants.ALBUM_INFO_PICTURE_LIST_ROUTE
+    ) {
         composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
             PicturesListScreen(applicationState = applicationState)
         }
-        composable(Constants.ALBUM_INFO_PHOTO_ROUTE) { entry ->
-            PhotoOfAlbumScreen(applicationState = applicationState)
+        composable("${Constants.ALBUM_INFO_PHOTO_ROUTE}/{pictureUrl}") { entry ->
+            PhotoOfAlbumScreen(
+                applicationState = applicationState,
+                picture = entry.arguments?.getString("pictureUrl")
+            )
         }
 //        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{image}") { entry ->
 //            PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
 //        }
-        composable(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE) { entry ->
-            PhotoCommentScreen(image = entry.arguments?.getString("image") ?: Constants.DEFAULT_PROFILE)
+        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{pictureUrl}") { entry ->
+            PhotoCommentScreen(
+                picture = entry.arguments?.getString("pictureUrl")
+            )
         }
         composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}/{currentFileSize}/{totalFileSize}") { entry ->
-            val currentFSize = (entry.arguments?.getString("currentFileSize") ?: "").toDouble().toLong()
+            val currentFSize =
+                (entry.arguments?.getString("currentFileSize") ?: "").toDouble().toLong()
             val totalFSize = (entry.arguments?.getString("totalFileSize") ?: "").toDouble().toLong()
             AddPictureScreen(
                 applicationState = applicationState,
@@ -213,8 +225,6 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
     }
 
 }
-
-
 
 
 @Composable

@@ -1,18 +1,18 @@
 package com.example.data.repository
 
 import com.example.data.network.ContactApi
+import com.example.domain.entity.contact.CallLog
+import com.example.domain.entity.contact.Contact
+import com.example.domain.entity.contact.ExtractedCallLog
+import com.example.domain.entity.user.Friend
+import com.example.domain.entity.user.MostCalledUsers
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledDateTime
-import com.example.domain.model.login.CallLog
-import com.example.domain.model.login.Contact
 import com.example.domain.model.request.ContactRequest
 import com.example.domain.model.request.ContactsRequest
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.toDTO
-import com.example.domain.model.response.CallLogResponse
-import com.example.domain.model.response.FriendResponse
-import com.example.domain.model.response.asDomain
-import com.example.domain.model.safeFlow
+import com.example.domain.model.response.contact.toEntity
+import com.example.domain.model.response.user.asDomain
 import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowUnit
 import com.example.domain.repository.ContactRepository
@@ -35,18 +35,14 @@ class ContactRepositoryImpl @Inject constructor(
     }
 
 
-    override fun syncCallLogs(callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>> =
-        safeFlow {
-            contactApi.syncCallLogs(ContentRequest(callLogs))
+    override fun syncCallLogs(callLogs: List<ExtractedCallLog>): Flow<ApiState<List<CallLog>>> =
+        safeFlow2(apiFunc = { contactApi.syncCallLogs(ContentRequest(callLogs)) }) { callLogs ->
+            callLogs.map { it.toEntity() }
         }
 
 
-    override fun readMostCallUsers(): Flow<ApiState<MostCalledDateTime>> =
-        safeFlow2(apiFunc = { contactApi.readMostCalledUsers() }) {
-            it.asDomain()
-        }
+    override fun readMostCallUsers(): Flow<ApiState<MostCalledUsers>> =
+        safeFlow2(apiFunc = { contactApi.readMostCalledUsers() }) { it.asDomain() }
 
-    override fun readAllFriends(): Flow<ApiState<List<FriendResponse>>> = safeFlow {
-        contactApi.readAllFriends()
-    }
+    override fun readAllFriends(): Flow<ApiState<List<Friend>>> = safeFlow2(apiFunc = { contactApi.readAllFriends() }) { list -> list.map { it.asDomain() }}
 }

@@ -13,6 +13,8 @@ import androidx.navigation.NavOptions
 import com.example.connex.utils.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Stable
 class ApplicationState(
@@ -56,6 +58,11 @@ class ApplicationState(
 
     fun navigate(uri: Uri) {
         navController.navigate(uri)
+    }
+
+    fun navigateEncodingUrl(prefixUrl: String, encodeUrl: String) {
+        val encodedUrl = URLEncoder.encode(encodeUrl, StandardCharsets.UTF_8.toString())
+        navController.navigate("$prefixUrl/$encodedUrl")
     }
 
     fun navigatePopBackStack(route: String) {

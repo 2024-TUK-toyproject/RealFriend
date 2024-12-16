@@ -1,13 +1,10 @@
 package com.example.data.network
 
 import com.example.domain.DefaultResponse
-import com.example.domain.model.ApiResponse
 import com.example.domain.model.request.CertificateCodeRequest
 import com.example.domain.model.request.PhoneRequest
-import com.example.domain.model.response.CertificateCodeResponse
-import com.example.domain.model.response.UserIdResponse
+import com.example.domain.model.response.user.CertificateCodeResponse
 import okhttp3.MultipartBody
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Multipart
 import retrofit2.http.POST

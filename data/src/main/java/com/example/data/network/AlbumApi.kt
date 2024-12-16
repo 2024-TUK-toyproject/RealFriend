@@ -5,9 +5,9 @@ import com.example.domain.model.request.AlbumRequest
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.album.AlbumIdResponse
-import com.example.domain.model.response.album.AlbumResponse
-import com.example.domain.model.response.PictureIdResponse
-import com.example.domain.model.response.PictureInfoResponse
+import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
+import com.example.domain.model.response.album.PictureIdResponse
+import com.example.domain.model.response.album.PictureInfoResponse
 import com.example.domain.model.response.album.AlbumInfoResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
@@ -27,10 +27,9 @@ interface AlbumApi {
     @POST("/users/album/setthumbnail")
     suspend fun setAlbumThumbnail(@Body album: AlbumRequest): DefaultResponse<Unit>
 
-
     // 앨범 리스트 조회
     @GET("/users/get/albums/lists")
-    suspend fun readAllAlbums(): DefaultResponse<List<AlbumResponse>>
+    suspend fun readAllAlbums(): DefaultResponse<List<AlbumThumbnailInfoResponse>>
 
     // 앨범 즐겨찾기 on, off
     @POST("/users/album/star")
@@ -52,4 +51,12 @@ interface AlbumApi {
     @Multipart
     @POST("/users/album/post")
     suspend fun uploadPhotos(@Query("albumId") albumId: String, @Part file: List<MultipartBody.Part>): DefaultResponse<Unit>
+
+    // 앨범의 사진 삭제
+
+    // 앨범의 사진 좋아요 on, off
+
+    // 앨범의 댓글 생성
+
+    // 앨범의 댓글 전체 조회
 }

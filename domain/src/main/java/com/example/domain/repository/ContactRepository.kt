@@ -1,12 +1,11 @@
 package com.example.domain.repository
 
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledDateTime
+import com.example.domain.model.home.MostCalledUsers
 import com.example.domain.model.login.CallLog
-import com.example.domain.model.login.Contact
-import com.example.domain.model.response.CallLogResponse
-import com.example.domain.model.response.FriendResponse
-import com.example.domain.model.response.MostCalledDateTimeResponse
+import com.example.domain.entity.contact.Contact
+import com.example.domain.model.response.contact.CallLogResponse
+import com.example.domain.model.response.Friend
 import kotlinx.coroutines.flow.Flow
 
 interface ContactRepository {
@@ -14,7 +13,7 @@ interface ContactRepository {
 
     fun syncCallLogs(callLogs: List<CallLog>): Flow<ApiState<List<CallLogResponse>>>
 
-    fun readMostCallUsers(): Flow<ApiState<MostCalledDateTime>>
+    fun readMostCallUsers(): Flow<ApiState<MostCalledUsers>>
 
-    fun readAllFriends(): Flow<ApiState<List<FriendResponse>>>
+    fun readAllFriends(): Flow<ApiState<List<Friend>>>
 }

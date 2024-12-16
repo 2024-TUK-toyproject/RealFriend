@@ -6,14 +6,12 @@ import com.example.domain.model.request.AlbumRequest
 import com.example.domain.model.response.album.AlbumIdResponse
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.model.response.album.AlbumResponse
-import com.example.domain.model.response.PictureIdResponse
-import com.example.domain.model.response.PictureInfo
-import com.example.domain.model.response.PictureInfoResponse
+import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
+import com.example.domain.model.response.album.PictureIdResponse
+import com.example.domain.model.response.album.PictureInfo
 import com.example.domain.model.response.album.AlbumInfo
-import com.example.domain.model.response.album.AlbumInfoResponse
-import com.example.domain.model.response.album.asDomain
-import com.example.domain.model.response.asDomain
+import com.example.domain.model.response.album.toEntity
+import com.example.domain.model.response.notification.asDomain
 import com.example.domain.model.safeFlow
 import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowUnit
@@ -35,7 +33,7 @@ class AlbumRepositoryImpl @Inject constructor(
             albumApi.setAlbumThumbnail(AlbumRequest(albumId, albumName, albumImage))
         }
 
-    override fun readAllAlbums(): Flow<ApiState<List<AlbumResponse>>> =
+    override fun readAllAlbums(): Flow<ApiState<List<AlbumThumbnailInfoResponse>>> =
         safeFlow { albumApi.readAllAlbums() }
 
 
@@ -44,7 +42,7 @@ class AlbumRepositoryImpl @Inject constructor(
     }
 
     override fun readAlbumInfo(albumId: String): Flow<ApiState<AlbumInfo>> =
-        safeFlow2(apiFunc = { albumApi.readAlbumInfo(albumId) }) { it.asDomain() }
+        safeFlow2(apiFunc = { albumApi.readAlbumInfo(albumId) }) { it.toEntity() }
 
     override fun readAllPhotos(albumId: String): Flow<ApiState<List<PictureIdResponse>>> =
         safeFlow { albumApi.readAllPhotos(albumId) }

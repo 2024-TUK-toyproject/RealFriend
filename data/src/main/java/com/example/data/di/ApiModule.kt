@@ -5,6 +5,7 @@ import com.example.data.network.AuthApi
 import com.example.data.network.ContactApi
 import com.example.data.network.FriendApi
 import com.example.data.network.LoginApi
+import com.example.data.network.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,6 +39,13 @@ object ApiModule {
     fun provideAlbumApi(@NetworkModule.ConnexAuthRetrofit retrofit: Retrofit): AlbumApi {
         return retrofit.create(AlbumApi::class.java)
     }
+
+    @Provides
+    fun provideUserApi(@NetworkModule.ConnexAuthRetrofit retrofit: Retrofit): UserApi {
+        return retrofit.create(UserApi::class.java)
+    }
+
+
 
 
 }

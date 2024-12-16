@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
-import com.example.domain.model.notification.FriendRequest
+import com.example.domain.entity.notification.FriendRequestInfo
 import com.example.domain.usecase.friend.AcceptFriendRequestUseCase
 import com.example.domain.usecase.friend.ReadAllFriendRequestUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,8 +29,8 @@ class NotificationViewModel @Inject constructor(
     val acceptFriendRequestUseCase: AcceptFriendRequestUseCase,
 ) : ViewModel() {
     val event = MutableStateFlow<Event>(Event.None)
-    private val _requestedFriend = MutableStateFlow<Map<String, List<FriendRequest>>>(mapOf())
-    val requestedFriend: StateFlow<Map<String, List<FriendRequest>>> =
+    private val _requestedFriend = MutableStateFlow<Map<String, List<FriendRequestInfo>>>(mapOf())
+    val requestedFriend: StateFlow<Map<String, List<FriendRequestInfo>>> =
         _requestedFriend.asStateFlow()
 
     fun handleDeeplink(uri: Uri) {

@@ -1,17 +1,15 @@
 package com.example.data.network
 
 import com.example.domain.model.request.ContactsRequest
-import com.example.domain.model.response.MostCalledDateTimeResponse
+import com.example.domain.model.response.user.MostCalledUsersResponse
 import com.example.domain.DefaultResponse
 import com.example.domain.model.login.CallLog
-import com.example.domain.model.request.CallLogRequest
 import com.example.domain.model.request.ContentRequest
-import com.example.domain.model.response.CallLogResponse
-import com.example.domain.model.response.FriendResponse
+import com.example.domain.model.response.contact.CallLogResponse
+import com.example.domain.model.response.user.FriendResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
 
 interface ContactApi {
 
@@ -25,7 +23,7 @@ interface ContactApi {
 
     // 가장 많이 연락한 사람 통화 기록 조회(3명)
     @GET("/users/get/longestcall")
-    suspend fun readMostCalledUsers(): DefaultResponse<MostCalledDateTimeResponse>
+    suspend fun readMostCalledUsers(): DefaultResponse<MostCalledUsersResponse>
 
     // 연락처 리스트 조회
     @GET("/users/get/friend")

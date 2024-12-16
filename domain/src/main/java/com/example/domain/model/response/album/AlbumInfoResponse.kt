@@ -1,5 +1,6 @@
 package com.example.domain.model.response.album
 
+import com.example.domain.entity.album.AlbumInfo
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -11,18 +12,7 @@ data class AlbumInfoResponse(
     val totalUsage: Double?
 )
 
-
-data class AlbumInfo(
-    val albumName: String = "기본 앨범",
-    val albumMemberCount: Int = 1,
-    val albumPictureCount: Int = 0,
-    val currentUsage: Double = 0.0,
-    val totalUsage: Double = 0.0
-)
-
-
-
-fun AlbumInfoResponse.asDomain() = AlbumInfo(
+fun AlbumInfoResponse.toEntity() = AlbumInfo(
     albumName = albumName ?: "기본 앨범",
     albumMemberCount = albumMemberCount ?: 0,
     albumPictureCount = albumPictureCount ?: 0,

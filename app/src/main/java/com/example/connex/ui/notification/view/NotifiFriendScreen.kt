@@ -41,21 +41,20 @@ import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray600
-import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.Text11ptRegular
 import com.example.connex.ui.theme.White
-import com.example.domain.model.notification.FriendRequest
+import com.example.domain.entity.notification.FriendRequestInfo
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotifiFriendScreen(
-    friendRequests: Map<String, List<FriendRequest>>,
+    friendRequestsInfo: Map<String, List<FriendRequestInfo>>,
     acceptFriendRequest: (Long) -> Unit,
     rejectFriendRequest: (Long) -> Unit,
 ) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        friendRequests.forEach { (date, list) ->
+        friendRequestsInfo.forEach { (date, list) ->
             item {
                 ColumnSpacer(height = 24.dp)
             }

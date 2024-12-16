@@ -46,7 +46,7 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head3Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.White
-import com.example.domain.model.login.MobileCarrier
+import com.example.domain.entity.contact.MobileCarrier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

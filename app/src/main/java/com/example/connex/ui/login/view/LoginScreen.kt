@@ -48,7 +48,7 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Heading1
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.utils.Constants
-import com.example.domain.model.login.MobileCarrier
+import com.example.domain.entity.contact.MobileCarrier
 
 
 @Composable
@@ -167,12 +167,6 @@ fun LoginScreen(applicationState: ApplicationState, loginViewModel: LoginViewMod
                     isCompleted = loginScreenState !is LoginScreenState.Phone
                 ) {
                     PhoneOutLineTextField(
-                        //                    text = loginPhoneAuthUiState.phoneNumber.number,
-                        //                    updatePhone = {
-                        //                        if (it.length <= 11) {
-                        //                            loginViewModel.updatePhone(it)
-                        //                        }
-                        //                    },
                         text = loginPhoneAuthUiState.phoneNumber.number,
                         updatePhone = {
                             if (it.length <= 11) {

@@ -1,6 +1,6 @@
 package com.example.domain.usecase.friend
 
-import com.example.domain.model.login.Contact
+import com.example.domain.entity.contact.Contact
 import com.example.domain.model.request.toDTO
 import com.example.domain.repository.FriendRepository
 import javax.inject.Inject

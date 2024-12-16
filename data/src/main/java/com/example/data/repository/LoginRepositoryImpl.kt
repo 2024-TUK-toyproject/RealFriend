@@ -1,34 +1,29 @@
 package com.example.data.repository
 
-import android.util.Log
 import com.example.data.datastore.TokenManager
 import com.example.data.network.AuthApi
 import com.example.data.network.LoginApi
+import com.example.data.network.UserApi
 import com.example.domain.model.ApiState
-import com.example.domain.model.UserId
-import com.example.domain.model.login.IsExistingUser
 import com.example.domain.model.request.CertificateCodeRequest
 import com.example.domain.model.request.PhoneRequest
-import com.example.domain.model.response.CertificateCodeResponse
+import com.example.domain.model.response.user.CertificateCodeResponse
 import com.example.domain.model.response.Token
-import com.example.domain.model.response.UserIdResponse
-import com.example.domain.model.response.asDomain
+import com.example.domain.model.response.user.UserInfo
+import com.example.domain.model.response.user.toEntity
 import com.example.domain.model.safeFlow
+import com.example.domain.model.safeFlow2
 import com.example.domain.model.safeFlowAndSaveToken
 import com.example.domain.model.safeFlowUnit
 import com.example.domain.repository.LoginRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
     private val loginApi: LoginApi,
     private val authApi: AuthApi,
+    private val userApi: UserApi,
     private val tokenManager: TokenManager,
 ) : LoginRepository {
     override fun checkAccessToken(): Flow<ApiState<Token>> = safeFlow {
@@ -68,5 +63,9 @@ class LoginRepositoryImpl @Inject constructor(
         file: MultipartBody.Part,
     ): Flow<ApiState<Unit>> = safeFlowUnit {
         loginApi.signupProfileImage(userId.toString(), name, fcmToken, file)
+    }
+
+    override fun readUserInfo(): Flow<ApiState<UserInfo>> = safeFlow2(apiFunc = { userApi.readUserInfo() }) {
+        it.toEntity()
     }
 }

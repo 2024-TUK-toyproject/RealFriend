@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.syncCallLog
 import com.example.data.datastore.TokenManager
 import com.example.domain.model.ApiState
-import com.example.domain.model.home.MostCalledDateTime
+import com.example.domain.model.home.MostCalledUsers
 import com.example.domain.usecase.ReadMostCallUsersUseCase
 import com.example.domain.usecase.SyncCallLogsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,8 +30,8 @@ class HomeViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
 ) : ViewModel() {
 
-    private val _mostCalledDateTime = MutableStateFlow<ApiState<MostCalledDateTime>>(ApiState.Loading)
-    val mostCalledDateTime: StateFlow<ApiState<MostCalledDateTime>> = _mostCalledDateTime.asStateFlow()
+    private val _mostCalledUsers = MutableStateFlow<ApiState<MostCalledUsers>>(ApiState.Loading)
+    val mostCalledUsers: StateFlow<ApiState<MostCalledUsers>> = _mostCalledUsers.asStateFlow()
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun fetchSyncCallLogs() {
@@ -56,7 +56,7 @@ class HomeViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun fetchReadMostCallUsers() {
-       _mostCalledDateTime.update {
+       _mostCalledUsers.update {
            readMostCallUsersUseCase().first()
        }
     }

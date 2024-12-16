@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.ApiState
-import com.example.domain.model.response.album.AlbumResponse
+import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
 import com.example.domain.usecase.album.ReadAllAlbumsUseCase
 import com.example.domain.usecase.album.UpdateAlbumFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,7 +42,7 @@ class Album(
         "Album(albumId='$albumId', albumName='$albumName', albumThumbnail='$albumThumbnail', userCount=$userCount, photoCount=$photoCount, isFavorite=$isFavorite)"
 }
 
-fun AlbumResponse.asDomain() =
+fun AlbumThumbnailInfoResponse.asDomain() =
     Album(
         albumId = albumId ?: "",
         albumName = albumName ?: "",
@@ -91,7 +91,7 @@ class AlbumViewModel @Inject constructor(
 
                 is ApiState.Success -> {
                     val albums =
-                        (result.data as List<AlbumResponse>).map { album -> album.asDomain() }
+                        (result.data as List<AlbumThumbnailInfoResponse>).map { album -> album.asDomain() }
                     _albums.update { ApiState.Success(albums) }
                     Log.d("daeyoung", "fetchReadAlbums: ${_albums.value}")
                 }

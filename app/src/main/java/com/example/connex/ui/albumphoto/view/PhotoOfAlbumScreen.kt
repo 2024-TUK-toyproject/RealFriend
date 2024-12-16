@@ -1,5 +1,6 @@
 package com.example.connex.ui.albumphoto.view
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -27,6 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.ChatBubbleOutline
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -79,6 +81,7 @@ import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.connex.utils.setMemorySizeAndUnit
 
 // 나중에 ViewModel로 옮겨
 sealed class PhotoOfAlbumScreenState(open val title: String) {
@@ -91,7 +94,9 @@ sealed class PhotoOfAlbumScreenState(open val title: String) {
 fun PhotoOfAlbumScreen(
     photoInfoViewModel: PhotoInfoViewModel = hiltViewModel(),
     applicationState: ApplicationState,
+    picture: String?
 ) {
+    Log.d("daeyoung", "picture: $picture")
 
     var photoOfAlbumScreenState by remember {
         mutableStateOf<PhotoOfAlbumScreenState>(PhotoOfAlbumScreenState.Default())
@@ -143,7 +148,8 @@ fun PhotoOfAlbumScreen(
                     modifier = Modifier
 //                    .align(Alignment.Center)
                         .fillMaxWidth(imageSize)
-                        .aspectRatio(1f)
+                        .aspectRatio(1f),
+                    picture = picture
                 )
                 ColumnSpacer(height = 32.dp)
                 if (photoOfAlbumScreenState is PhotoOfAlbumScreenState.DetailInfo) {
@@ -158,7 +164,7 @@ fun PhotoOfAlbumScreen(
                             uploadDate = photoUiState.uploadDate,
                             date = photoUiState.date,
                             time = photoUiState.time,
-                            fileSize = "${photoUiState.usage}"
+                            fileSize = photoUiState.usage.toLong()
                         ) {
                             photoOfAlbumScreenState = PhotoOfAlbumScreenState.Default()
                         }
@@ -175,9 +181,9 @@ fun PhotoOfAlbumScreen(
             onFavorite = { /*TODO*/ },
             onChat = {
 //                photoOfAlbumScreenState = PhotoOfAlbumScreenState.Comment()
-//                applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{${Constants.DEFAULT_PROFILE}}")
-                val t = Constants.DEFAULT_PROFILE
-                applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}")
+                picture?.let {
+                    applicationState.navigateEncodingUrl(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE, it)
+                }
             },
             onDetailInfo = {
                 photoOfAlbumScreenState = PhotoOfAlbumScreenState.DetailInfo()
@@ -188,7 +194,7 @@ fun PhotoOfAlbumScreen(
 }
 
 @Composable
-fun PhotoCard(modifier: Modifier = Modifier) {
+fun PhotoCard(modifier: Modifier = Modifier, picture: String?) {
     Card(
         modifier = modifier,
 //        onClick = { navigate() },
@@ -201,13 +207,13 @@ fun PhotoCard(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            /* TODO: API 연동할 시 바꿀 것
-            Image(
-                painter = rememberAsyncImagePainter(model = image),
-                contentDescription = "image_picture",
-                modifier = Modifier.fillMaxSize()
-            )
-            */
+            if (picture != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = picture),
+                    contentDescription = "image_picture",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
@@ -274,7 +280,7 @@ fun DetailInfoBox(
     uploadDate: String,
     date: String,
     time: String,
-    fileSize: String,
+    fileSize: Long,
     onClose: () -> Unit,
 ) {
     val uploadPersonStyle = TextStyle(
@@ -285,11 +291,12 @@ fun DetailInfoBox(
     )
 
     val textStyle = TextStyle(
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         lineHeight = 19.6.sp,
         fontWeight = FontWeight.Normal,
         color = Gray800,
     )
+    val (pictureFSize, pictureFUnit) = setMemorySizeAndUnit(fileSize)
 
     Column(modifier = modifier) {
         Column(
@@ -323,7 +330,7 @@ fun DetailInfoBox(
                 )
                 RowSpacer(width = 10.dp)
                 Text(
-                    text = uploadDate,
+                    text = "(업로드 시간: $uploadDate)",
                     style = textStyle,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
@@ -333,11 +340,12 @@ fun DetailInfoBox(
             ColumnSpacer(height = 16.dp)
             IconTextRow(icon = IconPack.IcCalendar, text = date)
             ColumnSpacer(height = 10.dp)
+            IconTextRow(icon = Icons.Outlined.AccessTime, text = time)
+            ColumnSpacer(height = 10.dp)
             IconTextRow(icon = IconPack.IcImage, text = fileName)
             ColumnSpacer(height = 10.dp)
-            IconTextRow(icon = IconPack.IcFile, text = fileSize)
-            ColumnSpacer(height = 10.dp)
-            IconTextRow(icon = IconPack.IcLocation01, text = time)
+            IconTextRow(icon = IconPack.IcFile, text = "${pictureFSize} $pictureFUnit")
+
 //            IconTextRow(icon = IconPack.IcLocation01, text = "위치")
 
         }

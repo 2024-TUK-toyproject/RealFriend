@@ -1,6 +1,6 @@
 package com.example.domain.model.request
 
-import com.example.domain.model.login.Contact
+import com.example.domain.entity.contact.Contact
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -17,8 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +26,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,26 +41,40 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
+import com.example.connex.ui.albumphoto.PhotoCommentViewModel
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.util.bottomNavigationPadding
+import com.example.connex.ui.svg.IconPack
+import com.example.connex.ui.svg.iconpack.IcSend
 import com.example.connex.ui.theme.Body3Semibold
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Text11ptRegular
+import com.example.connex.ui.theme.Text14ptRegular
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.domain.model.ApiState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhotoCommentScreen(image: String) {
+fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewModel(), picture: String?) {
     val bottomSheetState = rememberStandardBottomSheetState()
     val scope = rememberCoroutineScope()
+
+
+    val photoCommentUiState by photoCommentViewModel.photoCommentUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        photoCommentViewModel.fetchReadUserImage()
+    }
 
 
     Box(
@@ -67,54 +82,61 @@ fun PhotoCommentScreen(image: String) {
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-        BottomSheetScaffold(
-            sheetContent = {
+        if (photoCommentUiState.userProfile is ApiState.Success) {
+            BottomSheetScaffold(
+                sheetContent = {
+                    Column(
+                        Modifier
+                            .fillMaxSize(),
+                    ) {
+                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 24분", content = "여기 또 가고 싶다")
+                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 25분", content = "여기 또 가고 싶다")
+                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 30분", content = "여기 또 가고 싶다")
+                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 35분", content = "난 안갈래")
+                    }
+                },
+                sheetContainerColor = White,
+                containerColor = White,
+//            sheetDragHandle = null,
+                topBar = { BackArrowAppBar(text = "댓글") {} },
+                scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState),
+                sheetShadowElevation = 6.dp,
+                sheetPeekHeight = 500.dp // 최소 높이 설정
+            ) { paddingValues ->
+                // Main content
                 Column(
                     Modifier
+                        .statusBarsPadding()
+                        .padding(paddingValues)
+                        .padding(vertical = 8.dp)
                         .fillMaxSize(),
-                ) {
-                    CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 24분", content = "여기 또 가고 싶다")
-                    CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 25분", content = "여기 또 가고 싶다")
-                    CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 30분", content = "여기 또 가고 싶다")
-                    CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 35분", content = "난 안갈래")
-                }
-            },
-            sheetContainerColor = White,
-            containerColor = White,
-//            sheetDragHandle = null,
-            topBar = { BackArrowAppBar(text = "댓글") {} },
-            scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState),
-            sheetShadowElevation = 6.dp,
-            sheetPeekHeight = 500.dp // 최소 높이 설정
-        ) { paddingValues ->
-            // Main content
-            Column(
-                Modifier
-                    .statusBarsPadding()
-                    .padding(paddingValues)
-                    .padding(vertical = 8.dp)
-                    .fillMaxSize(),
 //                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.CenterHorizontally,
 //                verticalArrangement = Arrangement.Center
-            ) {
-                PhotoCard(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f)
-                )
+                ) {
+                    PhotoCard(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f),
+                        picture = picture
+                    )
+                }
             }
+            CommentTextField(
+                modifier = Modifier
+                    .imePadding()
+                    .background(Color.White)
+                    .bottomNavigationPadding(true)
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
+                text = photoCommentUiState.comment
+            ) {
+                photoCommentViewModel.updateComment(it)
+            }
+        } else {
+            CircularProgressIndicator()
         }
-        CommentTextField(
-            modifier = Modifier
-                .imePadding()
-                .background(Color.White)
-                .bottomNavigationPadding(true)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter), text = ""
-        ) {
 
-        }
     }
 
 
@@ -138,11 +160,7 @@ fun PhotoCommentScreen(image: String) {
 @Composable
 fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (String) -> Unit) {
     val color = if (text.isEmpty()) Gray400 else Gray600
-    val textStyle = TextStyle(
-        color = color,
-        fontSize = 14.sp,
-        lineHeight = 19.6.sp,
-    )
+
     BasicTextField(
         modifier = modifier.drawBehind {
             drawLine(
@@ -153,7 +171,7 @@ fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (S
         },
         value = text,
         onValueChange = { updateText(it) },
-        textStyle = textStyle,
+        textStyle = Text14ptRegular.copy(color),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions { updateText("$text\n") },
         cursorBrush = SolidColor(color),
@@ -169,10 +187,13 @@ fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (S
             RowSpacer(width = 16.dp)
             Box(modifier = Modifier.weight(1f)) {
                 innerTextField()
+                if (text.isEmpty()) {
+                    Text(text = "댓글을 남기기...", style = Text14ptRegular, color = color)
+                }
             }
             RowSpacer(width = 10.dp)
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = IconPack.IcSend,
                 contentDescription = "ic_done",
                 modifier = Modifier.size(20.dp),
                 tint = Gray400

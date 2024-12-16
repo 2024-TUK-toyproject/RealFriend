@@ -9,13 +9,13 @@ import com.example.connex.utils.asMultipart
 import com.example.connex.utils.formatPhoneDashNumber
 import com.example.data.datastore.TokenManager
 import com.example.domain.model.ApiState
-import com.example.domain.model.login.MobileCarrier
-import com.example.domain.model.login.Phone
-import com.example.domain.model.response.CertificateCodeResponse
-import com.example.domain.model.response.asDomain
+import com.example.domain.entity.contact.MobileCarrier
+import com.example.domain.entity.contact.Phone
+import com.example.domain.model.response.user.CertificateCodeResponse
+import com.example.domain.model.response.notification.asDomain
 import com.example.domain.usecase.CheckCertificateCodeUseCase
 import com.example.domain.usecase.PostRequestCertificateCodeUseCase
-import com.example.domain.usecase.SignupProfileImageUseCase
+import com.example.domain.usecase.user.SignupProfileImageUseCase
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,8 +59,8 @@ class LoginViewModel @Inject constructor(
 
     var userId = 0L
 
-    private val _phone = MutableStateFlow(com.example.domain.model.login.Phone.default())
-    val phone: StateFlow<com.example.domain.model.login.Phone> = _phone.asStateFlow()
+    private val _phone = MutableStateFlow(Phone.default())
+    val phone: StateFlow<Phone> = _phone.asStateFlow()
 
     private val _verificationCode = MutableStateFlow("")
     val verificationCode: StateFlow<String> = _verificationCode.asStateFlow()

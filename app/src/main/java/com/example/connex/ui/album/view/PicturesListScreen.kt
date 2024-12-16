@@ -101,6 +101,8 @@ import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @Composable
@@ -210,7 +212,9 @@ fun PicturesListScreen(
                                             )
                                         },
                                         longPress = { if (!isSelectMode) isSelectMode = it }
-                                    ) { applicationState.navigate(Constants.ALBUM_INFO_PHOTO_ROUTE) }
+                                    ) {
+                                        applicationState.navigateEncodingUrl(Constants.ALBUM_INFO_PHOTO_ROUTE, pictureUiState[index].image)
+                                    }
                                 }
 
                                 1 -> {

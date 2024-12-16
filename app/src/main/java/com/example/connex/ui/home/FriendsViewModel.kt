@@ -10,11 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.connex.utils.syncContact
 import com.example.domain.model.ApiState
-import com.example.domain.model.login.Contact
+import com.example.domain.entity.contact.Contact
 import com.example.domain.model.response.ContactInfo
 import com.example.domain.model.response.Friend
-import com.example.domain.model.response.asDomain
-import com.example.domain.usecase.ReadAllFriendsUseCase
+import com.example.domain.usecase.friend.ReadAllFriendsUseCase
 import com.example.domain.usecase.friend.AddFriendUseCase
 import com.example.domain.usecase.friend.DeleteFriendUseCase
 import com.example.domain.usecase.friend.ReadAllContactsUseCase
@@ -204,10 +203,10 @@ class FriendsViewModel @Inject constructor(
                 is ApiState.Success -> {
                     result.data.also { list ->
                         _friendsRemoveUserList.value =
-                            list.map { FriendUiState(it.asDomain(), false) }
+                            list.map { FriendUiState(it, false) }
                                 .filter { it.friend.isFriend }
 //                        _friendsUserList.value = list.map { it.asDomain().copy(isFriend = true) }
-                        _friendsUserList.value = list.map { it.asDomain() }
+                        _friendsUserList.value = list
                     }
                     _filteredFriendsRemoveUserList.value = friendsRemoveUserList.value
                     _filteredFriendsUserList.value = friendsUserList.value
