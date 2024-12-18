@@ -12,20 +12,27 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.album_setting.ui.SettingScreenInfo.Companion.FIRST_SCREEN_TITLE_SIZE
 import com.example.connex.ui.album_setting.ui.SettingScreenInfo.Companion.SECOND_SCREEN_TITLE_SIZE
 import com.example.connex.ui.album_setting.ui.SettingScreenInfo.Companion.THIRD_SCREEN_TITLE_SIZE
+import com.example.connex.ui.component.AlbumGetOutModalBottomSheet
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.util.ClickableRowContent
 import com.example.connex.ui.component.util.RoundedWhiteBox
 import com.example.connex.ui.component.util.SwitchRowContent
+import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.PrimaryRed
+import com.example.connex.utils.Constants
 
 data class SettingScreenInfo(
     val title: String,
@@ -40,16 +47,22 @@ data class SettingScreenInfo(
 
 
 @Composable
-fun AlbumSettingScreen() {
-    val scope = rememberCoroutineScope()
+fun AlbumSettingScreen(applicationState: ApplicationState) {
 
-
+    var isShowAlbumGetOutBottomSheet by remember {
+        mutableStateOf(false)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
     ) {
+        if (isShowAlbumGetOutBottomSheet) {
+            AlbumGetOutModalBottomSheet(onClose = {isShowAlbumGetOutBottomSheet = false}) {
+
+            }
+        }
         val scrollState = rememberScrollState()
         BackArrowAppBar(text = "앨범 설정") {}
         Column(
@@ -60,19 +73,19 @@ fun AlbumSettingScreen() {
                 .padding(horizontal = 24.dp, vertical = 28.dp)
         ) {
             val settingScreens = listOf(
-                SettingScreenInfo("앨범 정보") {},
-                SettingScreenInfo("대표 이미지 변경") {},
+                SettingScreenInfo("앨범 정보") {applicationState.navigate(Constants.ALBUM_INFO_ROUTE)},
+                SettingScreenInfo("대표 이미지 변경") {applicationState.navigate(Constants.ALBUM_INFO_THUMBNAIL_ROUTE)},
                 SettingScreenInfo("멤버 보기") {},
                 SettingScreenInfo("멤버 권한 설정") {},
                 SettingScreenInfo("멤버 초대하기") {},
                 SettingScreenInfo("휴지통") {},
                 SettingScreenInfo("앨범 편집 알림") {},
                 SettingScreenInfo("멤버 변경 알림") {},
-                SettingScreenInfo("공유 앨범 나가기") {},
+                SettingScreenInfo("공유 앨범 나가기") {isShowAlbumGetOutBottomSheet = true},
             )
             RoundedWhiteBox {
                 val firstSettingScreen = settingScreens.first()
-                ClickableRowContent(text = firstSettingScreen.title) { firstSettingScreen.onClick }
+                ClickableRowContent(text = firstSettingScreen.title) { firstSettingScreen.onClick() }
             }
             ColumnSpacer(height = 24.dp)
 
@@ -81,7 +94,7 @@ fun AlbumSettingScreen() {
                     settingScreens
                         .slice(FIRST_SCREEN_TITLE_SIZE..SECOND_SCREEN_TITLE_SIZE)
                 secondSettingScreen.forEachIndexed { index, settingScreenInfo ->
-                    ClickableRowContent(text = settingScreenInfo.title, navIcon = true) {}
+                    ClickableRowContent(text = settingScreenInfo.title, navIcon = true) {settingScreenInfo.onClick()}
                     if (index != secondSettingScreen.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
@@ -114,7 +127,7 @@ fun AlbumSettingScreen() {
 
             RoundedWhiteBox {
                 val fourthSettingScreen = settingScreens.last()
-                ClickableRowContent(text = fourthSettingScreen.title, textColor = PrimaryRed) {}
+                ClickableRowContent(text = fourthSettingScreen.title, textColor = PrimaryRed) {fourthSettingScreen.onClick()}
             }
         }
 
