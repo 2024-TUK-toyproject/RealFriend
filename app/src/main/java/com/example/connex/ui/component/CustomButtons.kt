@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Regular
+import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray50
@@ -48,10 +49,8 @@ import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.White
 
 @Composable
-fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
+fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean = true, onClick: () -> Unit) {
     val color = PrimaryBlue2
-    val textStyle =
-        TextStyle(fontSize = 16.sp, fontWeight = FontWeight.SemiBold, lineHeight = 19.sp)
 
     Button(
         onClick = { onClick() },
@@ -61,14 +60,16 @@ fun GeneralButton(modifier: Modifier, text: String, enabled: Boolean, onClick: (
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.White,
             containerColor = color,
+            disabledContainerColor = Gray100,
+            disabledContentColor = Gray400
         )
     ) {
-        Text(text = text, style = textStyle)
+        Text(text = text, style = Body2Medium)
     }
 }
 
 @Composable
-fun General2Button(modifier: Modifier, text: String, enabled: Boolean, onClick: () -> Unit) {
+fun General2Button(modifier: Modifier, text: String, enabled: Boolean = true, onClick: () -> Unit) {
     val color = PrimaryBlue1
     val textStyle =
         TextStyle(fontSize = 14.sp, fontWeight = FontWeight.SemiBold, lineHeight = (16.7).sp)

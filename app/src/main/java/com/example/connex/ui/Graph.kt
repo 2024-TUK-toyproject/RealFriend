@@ -1,7 +1,6 @@
 package com.example.connex.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -15,7 +14,10 @@ import com.example.connex.ui.album.view.AddPictureScreen
 import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
+import com.example.connex.ui.album_setting.ui.AlbumInfoScreen
+import com.example.connex.ui.album_setting.ui.AlbumMemberGrantedScreen
 import com.example.connex.ui.album_setting.ui.AlbumSettingScreen
+import com.example.connex.ui.album_setting.ui.ThumbnailSettingScreen
 import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
@@ -209,9 +211,17 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         }
 
         composable(route = Constants.ALBUM_SETTING_ROUTE) { entry ->
-            AlbumSettingScreen()
+            AlbumSettingScreen(applicationState = applicationState)
         }
-
+        composable(route = Constants.ALBUM_INFO_ROUTE) { entry ->
+            AlbumInfoScreen(applicationState = applicationState)
+        }
+        composable(route = Constants.ALBUM_INFO_THUMBNAIL_ROUTE) { entry ->
+            ThumbnailSettingScreen(applicationState = applicationState)
+        }
+        composable(route = Constants.ALBUM_INFO_MEMBER_GRANTED_ROUTE) { entry ->
+            AlbumMemberGrantedScreen(applicationState = applicationState)
+        }
     }
 
 }

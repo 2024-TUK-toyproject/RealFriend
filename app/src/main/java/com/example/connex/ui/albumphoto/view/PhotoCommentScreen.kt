@@ -48,6 +48,7 @@ import com.example.connex.ui.albumphoto.PhotoCommentViewModel
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.RowSpacer
+import com.example.connex.ui.component.PhotoCard
 import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcSend

@@ -42,9 +42,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
@@ -78,6 +80,7 @@ import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Text16ptSemibold
+import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -340,13 +343,14 @@ fun FriendsScreenStickyHeader(
 fun ContactCard(
     modifier: Modifier = Modifier,
     size: Dp = 60.dp,
+    backgroundColor: Color = White,
     image: String,
     name: String,
     phone: String,
     iconLayout: @Composable () -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.background(backgroundColor),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

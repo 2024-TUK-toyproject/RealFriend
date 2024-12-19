@@ -39,10 +39,12 @@ import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcBlackWarning
 import com.example.connex.ui.svg.iconpack.IcConnexUsedUser
 import com.example.connex.ui.svg.iconpack.IcRedWarning
+import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
+import com.example.connex.ui.theme.Head2Semibold
 import com.example.connex.ui.theme.Head3Semibold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.White
@@ -332,6 +334,68 @@ fun FriendAddModalBottomSheet(
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlbumGetOutModalBottomSheet(
+    onClose: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = onClose,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topEnd = 13.dp, topStart = 13.dp),
+        windowInsets = WindowInsets.displayCutout,
+        containerColor = Color.White,
+        dragHandle = null
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(
+                    start = 24.dp,
+                    end = 24.dp,
+                    bottom = 24.dp,
+                    top = 36.dp
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(imageVector = IconPack.IcRedWarning, contentDescription = "warning_icon")
+            ColumnSpacer(height = 20.dp)
+            Text(text = "정말 공유 앨범을 나가시겠습니까?", style = Head2Semibold)
+            ColumnSpacer(height = 12.dp)
+            Text(text = "앨범을 나가게 되면 초대 받기 전까지\u2028다시 들어올 수 없습니다.", style = Body2Medium)
+            ColumnSpacer(height = 28.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
+                HalfRoundButton(
+                    modifier = Modifier.weight(1f),
+                    containerColor = Gray50,
+                    contentColor = Gray500,
+                    text = "뒤로가기"
+                ) {
+                    onClose()
+                }
+                RowSpacer(width = 16.dp)
+                HalfRoundButton(
+                    modifier = Modifier.weight(1f),
+                    containerColor = Gray900,
+                    contentColor = White,
+                    text = "나가기"
+                ) {
+                    onDelete()
+                }
+
+            }
+        }
+    }
+}
+
 
 data class TempleAlbumData(
     val image: String,

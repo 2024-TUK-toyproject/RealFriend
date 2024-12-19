@@ -3,6 +3,8 @@ package com.example.connex.ui.component.util
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.component.ArrowBackIcon
@@ -32,12 +35,11 @@ import com.example.connex.ui.theme.PrimaryBlue2
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
-fun RoundedWhiteBox(content: @Composable () -> Unit) {
-    Column(
+fun RoundedWhiteBox(shape: Shape = RoundedCornerShape(12.dp), content: @Composable () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(12.dp))
+            .clip(shape)
             .background(Color.White)
     ) {
         content()

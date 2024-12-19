@@ -128,7 +128,7 @@ val Body2Medium = TextStyle(
     fontSize = 14.sp,
     lineHeight = 19.6.sp,
     fontWeight = FontWeight.Medium,
-    color = Gray500,
+//    color = Gray800,
 //    letterSpacing = 0.2.sp,
 )
 
@@ -142,14 +142,14 @@ val Body3Semibold = TextStyle(
     fontSize = 12.sp,
     lineHeight = 16.8.sp,
     fontWeight = FontWeight.SemiBold,
-    color = Gray500,
+    color = Gray800,
 )
 
 val Body3Medium = TextStyle(
     fontSize = 12.sp,
     lineHeight = 16.8.sp,
     fontWeight = FontWeight.Medium,
-    color = Gray500,
+    color = Gray800,
 )
 
 val Body3Regular = TextStyle(

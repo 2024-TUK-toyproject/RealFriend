@@ -34,7 +34,6 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -69,12 +68,12 @@ import com.example.connex.ui.component.BottomNavItem
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.General4Button
 import com.example.connex.ui.component.RowSpacer
+import com.example.connex.ui.component.PhotoCard
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcCalendar
 import com.example.connex.ui.svg.iconpack.IcFile
 import com.example.connex.ui.svg.iconpack.IcImage
-import com.example.connex.ui.svg.iconpack.IcLocation01
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
@@ -193,30 +192,7 @@ fun PhotoOfAlbumScreen(
     }
 }
 
-@Composable
-fun PhotoCard(modifier: Modifier = Modifier, picture: String?) {
-    Card(
-        modifier = modifier,
-//        onClick = { navigate() },
-        shape = RoundedCornerShape(13.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Gray100,
-//            contentColor = PrimaryBlue3
-        )
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (picture != null) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = picture),
-                    contentDescription = "image_picture",
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-    }
-}
+
 
 @Composable
 fun BoxScope.PhotoOfAlbumBottomBar(

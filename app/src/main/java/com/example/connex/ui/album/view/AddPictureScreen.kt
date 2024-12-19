@@ -48,6 +48,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,6 +65,7 @@ import com.example.connex.ui.domain.takeMultiPhotoFromAlbumLauncher
 import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Body2Semibold
+import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.PrimaryBlue2
@@ -174,8 +176,6 @@ fun AddPictureScreen(
                 // TODO(현재 파일 크기 더해야 함)
                 currentFileSize = currentFSize + addPictureUiState.sumOf { it.fileSize }
             )
-
-
         }
     }
 
@@ -241,7 +241,6 @@ fun SelectPhotoCard(image: Uri, onDelete: () -> Unit) {
                 contentColor = PrimaryBlue3
             )
         ) {
-
             Image(
                 painter = rememberAsyncImagePainter(model = image),
                 contentDescription = "image_add_photo",
@@ -275,7 +274,11 @@ fun SelectPhotoCard(image: Uri, onDelete: () -> Unit) {
 }
 
 @Composable
-fun CurrentStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, currentFileSize: Long) {
+fun CurrentStorageSizeArea(
+    modifier: Modifier = Modifier,
+    maxFileSize: Long,
+    currentFileSize: Long,
+) {
     val (maxFSize, maxFileUnit) = setMemorySizeAndUnit(maxFileSize)
     val (currentFSize, currentFileUnit) = setMemorySizeAndUnit(currentFileSize)
     Column(modifier) {
@@ -313,19 +316,24 @@ fun CurrentStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, cur
             Text(text = "앨범 정리하러 가기", style = Body1Semibold, color = Gray900)
             Text(text = "중복된 사진 0개 삭제 가능", style = Text14ptRegular, color = Color(0xFFACACAC))
         }
-
     }
 }
 
 @Composable
-fun TwoStickGraph(modifier: Modifier, color1: Color, color2: Color, sizePercent: Float) {
-    val shape = RoundedCornerShape(8.dp)
-    val h = 40.dp
+fun TwoStickGraph(
+    modifier: Modifier = Modifier,
+    height: Dp = 40.dp,
+    shape: RoundedCornerShape = RoundedCornerShape(8.dp),
+    color1: Color,
+    color2: Color,
+    sizePercent: Float,
+) {
+    val percent = (sizePercent * 100).toInt()
     Box(
         modifier = modifier
             .clip(shape)
             .fillMaxWidth()
-            .height(h)
+            .height(height)
             .background(color1)
     ) {
         Box(
@@ -334,7 +342,11 @@ fun TwoStickGraph(modifier: Modifier, color1: Color, color2: Color, sizePercent:
                 .fillMaxHeight()
                 .fillMaxWidth(sizePercent)
                 .background(color2)
-        )
+        ) {
+            if (percent != 0) {
+                Text(text = "${percent}%", color = White, style = Body3Medium, modifier = Modifier.align(Alignment.Center))
+            }
+        }
     }
 }
 
@@ -342,7 +354,7 @@ fun TwoStickGraph(modifier: Modifier, color1: Color, color2: Color, sizePercent:
 fun FutureStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, currentFileSize: Long) {
     val (maxFSize, maxFileUnit) = setMemorySizeAndUnit(maxFileSize)
     val (currentFSize, currentFileUnit) = setMemorySizeAndUnit(currentFileSize)
-    val (remainFSize, remainFileUnit) = setMemorySizeAndUnit(maxFileSize-currentFileSize)
+    val (remainFSize, remainFileUnit) = setMemorySizeAndUnit(maxFileSize - currentFileSize)
 
     val accentTextStyle = SpanStyle(
         color = PrimaryBlue3,

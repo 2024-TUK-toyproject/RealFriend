@@ -48,6 +48,7 @@ import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.home.FriendUiState
 import com.example.connex.ui.home.view.ContactCard
 import com.example.connex.ui.home.view.ContactCardCheckBox
+import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold

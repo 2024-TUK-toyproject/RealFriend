@@ -76,7 +76,7 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                 SettingScreenInfo("앨범 정보") {applicationState.navigate(Constants.ALBUM_INFO_ROUTE)},
                 SettingScreenInfo("대표 이미지 변경") {applicationState.navigate(Constants.ALBUM_INFO_THUMBNAIL_ROUTE)},
                 SettingScreenInfo("멤버 보기") {},
-                SettingScreenInfo("멤버 권한 설정") {},
+                SettingScreenInfo("멤버 권한 설정") {applicationState.navigate(Constants.ALBUM_INFO_MEMBER_GRANTED_ROUTE)},
                 SettingScreenInfo("멤버 초대하기") {},
                 SettingScreenInfo("휴지통") {},
                 SettingScreenInfo("앨범 편집 알림") {},
@@ -93,16 +93,21 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                 val secondSettingScreen =
                     settingScreens
                         .slice(FIRST_SCREEN_TITLE_SIZE..SECOND_SCREEN_TITLE_SIZE)
-                secondSettingScreen.forEachIndexed { index, settingScreenInfo ->
-                    ClickableRowContent(text = settingScreenInfo.title, navIcon = true) {settingScreenInfo.onClick()}
-                    if (index != secondSettingScreen.lastIndex) {
-                        HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            thickness = 1.dp,
-                            color = Gray100
-                        )
+                Column {
+                    secondSettingScreen.forEachIndexed { index, settingScreenInfo ->
+                        ClickableRowContent(text = settingScreenInfo.title, navIcon = true) {settingScreenInfo.onClick()}
+                        if (index != secondSettingScreen.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                thickness = 1.dp,
+                                color = Gray100
+                            )
+                        }
                     }
                 }
+
             }
 
             ColumnSpacer(height = 24.dp)
@@ -115,7 +120,9 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                     SwitchRowContent(text = settingScreenInfo.title)
                     if (index != thirdSettingScreen.lastIndex) {
                         HorizontalDivider(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
                             thickness = 1.dp,
                             color = Gray100
                         )
