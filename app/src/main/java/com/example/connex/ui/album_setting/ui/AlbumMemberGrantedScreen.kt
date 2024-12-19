@@ -25,7 +25,7 @@ import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.HorizontalGrayDivider
 import com.example.connex.ui.component.RowSpacerWithWeight
 import com.example.connex.ui.component.TempImageCard
-import com.example.connex.ui.component.util.RoundedWhiteBox
+import com.example.connex.ui.component.RoundedWhiteBox
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.view.ContactCard
 import com.example.connex.ui.theme.BackgroundGray

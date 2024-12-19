@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +17,9 @@ import androidx.compose.ui.unit.dp
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.GeneralButton
-import com.example.connex.ui.component.ImageCard
 import com.example.connex.ui.component.RowSpacerWithWeight
 import com.example.connex.ui.component.TempImageCard
-import com.example.connex.ui.component.util.RoundedWhiteBox
-import com.example.connex.ui.component.util.bottomBarsPadding
+import com.example.connex.ui.component.RoundedWhiteBox
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.BackgroundGray
 

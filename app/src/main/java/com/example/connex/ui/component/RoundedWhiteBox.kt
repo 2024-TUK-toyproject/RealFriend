@@ -1,4 +1,4 @@
-package com.example.connex.ui.component.util
+package com.example.connex.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

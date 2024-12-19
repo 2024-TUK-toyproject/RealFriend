@@ -25,10 +25,10 @@ import androidx.compose.ui.unit.dp
 import com.example.connex.ui.album.view.TwoStickGraph
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
+import com.example.connex.ui.component.HorizontalGrayDivider
 import com.example.connex.ui.component.RowSpacerWithWeight
-import com.example.connex.ui.component.ImageCard
 import com.example.connex.ui.component.TempImageCard
-import com.example.connex.ui.component.util.RoundedWhiteBox
+import com.example.connex.ui.component.RoundedWhiteBox
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Body1Medium
@@ -90,11 +90,7 @@ fun ThumbnailOfAlbumArea(image: String, title: String, memberCount: Int, maxMemb
                     style = Body1Semibold,
                     color = Gray800,
                 )
-                HorizontalDivider(
-                    thickness = 0.5.dp, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 15.dp)
-                )
+                HorizontalGrayDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 15.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     Text(text = "구성원", style = Body2Medium)
                     Text(text = buildAnnotatedString {

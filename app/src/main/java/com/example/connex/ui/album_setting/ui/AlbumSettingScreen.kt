@@ -1,21 +1,16 @@
 package com.example.connex.ui.album_setting.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,13 +19,13 @@ import com.example.connex.ui.album_setting.ui.SettingScreenInfo.Companion.SECOND
 import com.example.connex.ui.album_setting.ui.SettingScreenInfo.Companion.THIRD_SCREEN_TITLE_SIZE
 import com.example.connex.ui.component.AlbumGetOutModalBottomSheet
 import com.example.connex.ui.component.BackArrowAppBar
+import com.example.connex.ui.component.ClickableRowContent
 import com.example.connex.ui.component.ColumnSpacer
-import com.example.connex.ui.component.util.ClickableRowContent
-import com.example.connex.ui.component.util.RoundedWhiteBox
-import com.example.connex.ui.component.util.SwitchRowContent
+import com.example.connex.ui.component.HorizontalGrayDivider
+import com.example.connex.ui.component.RoundedWhiteBox
+import com.example.connex.ui.component.SwitchRowContent
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.BackgroundGray
-import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.PrimaryRed
 import com.example.connex.utils.Constants
 
@@ -97,13 +92,7 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                     secondSettingScreen.forEachIndexed { index, settingScreenInfo ->
                         ClickableRowContent(text = settingScreenInfo.title, navIcon = true) {settingScreenInfo.onClick()}
                         if (index != secondSettingScreen.lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                thickness = 1.dp,
-                                color = Gray100
-                            )
+                            HorizontalGrayDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         }
                     }
                 }
@@ -119,13 +108,7 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                 thirdSettingScreen.forEachIndexed { index, settingScreenInfo ->
                     SwitchRowContent(text = settingScreenInfo.title)
                     if (index != thirdSettingScreen.lastIndex) {
-                        HorizontalDivider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            thickness = 1.dp,
-                            color = Gray100
-                        )
+                        HorizontalGrayDivider(modifier = Modifier.padding(horizontal = 16.dp))
                     }
                 }
             }
