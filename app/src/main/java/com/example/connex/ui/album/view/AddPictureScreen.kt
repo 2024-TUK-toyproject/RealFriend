@@ -58,7 +58,7 @@ import com.example.connex.ui.album.AddPictureViewModel
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.GeneralButton
-import com.example.connex.ui.component.GrayDivider
+import com.example.connex.ui.component.HorizontalGrayDivider
 import com.example.connex.ui.component.PlusCardButton
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.domain.takeMultiPhotoFromAlbumLauncher
@@ -73,7 +73,6 @@ import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.Text14ptMedium
 import com.example.connex.ui.theme.Text14ptRegular
 import com.example.connex.ui.theme.White
-import com.example.connex.utils.kbToGB
 import com.example.connex.utils.setMemorySizeAndUnit
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -304,7 +303,7 @@ fun CurrentStorageSizeArea(
             textAlign = TextAlign.End
         )
         ColumnSpacer(height = 24.dp)
-        GrayDivider(
+        HorizontalGrayDivider(
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)

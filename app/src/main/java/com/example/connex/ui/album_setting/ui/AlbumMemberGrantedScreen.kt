@@ -1,6 +1,5 @@
 package com.example.connex.ui.album_setting.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,9 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +22,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
+import com.example.connex.ui.component.HorizontalGrayDivider
 import com.example.connex.ui.component.RowSpacerWithWeight
 import com.example.connex.ui.component.TempImageCard
 import com.example.connex.ui.component.util.RoundedWhiteBox
@@ -34,7 +32,6 @@ import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Medium
-import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.Head3Medium
@@ -66,9 +63,11 @@ fun AlbumMemberGrantedScreen(applicationState: ApplicationState) {
                     0 -> { /* first 인 경우*/
                         RoundedCornerShape(12.dp, 12.dp, 0.dp, 0.dp) to true
                     }
+
                     9 -> { /*  last 인 경우 */
                         RoundedCornerShape(0.dp, 0.dp, 12.dp, 12.dp) to false
                     }
+
                     else -> {
                         RoundedCornerShape(0.dp) to true
                     }
@@ -140,11 +139,10 @@ fun LazyItemScope.MemberArea(member: Any, shape: Shape, isExistDivider: Boolean 
                 Text(text = "visitor")
             }
             if (isExistDivider) {
-                HorizontalDivider(
+                HorizontalGrayDivider(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp), thickness = 0.5.dp, color = Gray100
+                        .padding(horizontal = 16.dp)
                 )
             }
         }
