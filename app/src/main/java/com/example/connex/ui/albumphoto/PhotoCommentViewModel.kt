@@ -23,7 +23,7 @@ import javax.inject.Inject
 data class PhotoCommentUiState(
     val input: String = "",
     val userProfile: ApiState<String> = ApiState.Loading,
-    val comments: ApiState<List<CommentInfo>> = ApiState.Loading,
+    val comments: ApiState<Set<CommentInfo>> = ApiState.Loading,
 )
 
 @HiltViewModel
@@ -40,8 +40,8 @@ class PhotoCommentViewModel @Inject constructor(
     private val _userProfile = MutableStateFlow("")
     val userProfile: StateFlow<String> = _userProfile.asStateFlow()
 
-    private val _comments = MutableStateFlow<List<CommentInfo>>(emptyList())
-    val comments: StateFlow<List<CommentInfo>> = _comments.asStateFlow()
+    private val _comments = MutableStateFlow<Set<CommentInfo>>(emptySet())
+    val comments: StateFlow<Set<CommentInfo>> = _comments.asStateFlow()
 
     val photoCommentUiState = combine(_input, _userProfile, _comments) { input, userProfile, comments ->
         PhotoCommentUiState(input = input, userProfile = ApiState.Success(userProfile), comments = ApiState.Success(comments))
@@ -66,13 +66,28 @@ class PhotoCommentViewModel @Inject constructor(
         }
     }
 
-    fun fetchReadAllCommentsUseCase(photoId: String) {
+    fun fetchReadAllComments(photoId: String) {
         viewModelScope.launch {
             when (val result = readAllCommentsUseCase(photoId).first()) {
                 is ApiState.Error -> { Log.d("daeyoung", "error: ${result.errMsg}") }
                 ApiState.Loading -> TODO()
                 is ApiState.NotResponse -> { Log.d("daeyoung", "error: ${result.exception}, msg: ${result.message}") }
-                is ApiState.Success -> { _comments.update { result.data } }
+                is ApiState.Success -> { _comments.update { result.data.toSet() } }
+            }
+        }
+    }
+
+    fun fetchPostComment(photoId: String, comment: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            when (val result = postCommentUseCase(photoId = photoId, comment = comment).first()) {
+                is ApiState.Error -> { Log.d("daeyoung", "error: ${result.errMsg}") }
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> { Log.d("daeyoung", "error: ${result.exception}, msg: ${result.message}") }
+                is ApiState.Success -> {
+                    fetchReadAllComments(photoId)
+                    _input.update { "" }
+                    onSuccess()
+                }
             }
         }
     }

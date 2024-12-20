@@ -1,6 +1,8 @@
 package com.example.connex.ui.albumphoto.view
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -37,6 +39,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
@@ -51,6 +54,7 @@ import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.PhotoCard
 import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.util.bottomNavigationPadding
+import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcSend
 import com.example.connex.ui.theme.Body3Semibold
@@ -75,6 +79,7 @@ fun PhotoCommentScreen(
     photoId: String?,
 ) {
     val bottomSheetState = rememberStandardBottomSheetState()
+    val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
 
@@ -83,7 +88,7 @@ fun PhotoCommentScreen(
     LaunchedEffect(Unit) {
         Log.d("daeyoung", "photoId: $photoId")
         photoCommentViewModel.fetchReadUserImage()
-        photoId?.let { photoCommentViewModel.fetchReadAllCommentsUseCase(it) }
+        photoId?.let { photoCommentViewModel.fetchReadAllComments(it) }
     }
 
 
@@ -138,9 +143,15 @@ fun PhotoCommentScreen(
                     .bottomNavigationPadding(true)
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
-                text = photoCommentUiState.input
-            ) {
-                photoCommentViewModel.updateComment(it)
+                text = photoCommentUiState.input,
+                updateText = { photoCommentViewModel.updateComment(it) }
+            ) { comment: String ->
+                photoId?.let {
+                    photoCommentViewModel.fetchPostComment(
+                        photoId = it,
+                        comment = comment
+                    ) { focusManager.clearFocus() }
+                }
             }
         } else {
             CircularProgressIndicator()
@@ -151,7 +162,12 @@ fun PhotoCommentScreen(
 
 
 @Composable
-fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (String) -> Unit) {
+fun CommentTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    updateText: (String) -> Unit,
+    onPost: (String) -> Unit,
+) {
     val color = if (text.isEmpty()) Gray400 else Gray600
 
     BasicTextField(
@@ -188,13 +204,16 @@ fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (S
             Icon(
                 imageVector = IconPack.IcSend,
                 contentDescription = "ic_done",
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier
+                    .size(20.dp)
+                    .noRippleClickable { onPost(text) },
                 tint = Gray400
             )
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CommentItem(commentInfo: CommentInfo) {
     val textStyle = TextStyle(
@@ -221,7 +240,7 @@ fun CommentItem(commentInfo: CommentInfo) {
                 )
             }
             ColumnSpacer(height = 1.dp)
-            Text(text = "여기 또 가고 싶다", style = textStyle, color = Gray800)
+            Text(text = commentInfo.message, style = textStyle, color = Gray800)
         }
     }
 }
