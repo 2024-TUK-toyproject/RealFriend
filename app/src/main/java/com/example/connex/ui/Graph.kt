@@ -189,15 +189,17 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
             PicturesListScreen(applicationState = applicationState)
         }
-        composable("${Constants.ALBUM_INFO_PHOTO_ROUTE}/{pictureUrl}") { entry ->
+        composable("${Constants.ALBUM_INFO_PHOTO_ROUTE}/{photoUrl}/{photoId}") { entry ->
             PhotoOfAlbumScreen(
                 applicationState = applicationState,
-                picture = entry.arguments?.getString("pictureUrl")
+                photo = entry.arguments?.getString("photoUrl"),
+                photoId = entry.arguments?.getString("photoId")
             )
         }
-        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{pictureUrl}") { entry ->
+        composable("${Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE}/{photoUrl}/{photoId}") { entry ->
             PhotoCommentScreen(
-                picture = entry.arguments?.getString("pictureUrl")
+                photo = entry.arguments?.getString("photoUrl"),
+                photoId = entry.arguments?.getString("photoId")
             )
         }
         composable("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/{albumId}/{currentFileSize}/{totalFileSize}") { entry ->

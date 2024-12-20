@@ -60,9 +60,9 @@ class ApplicationState(
         navController.navigate(uri)
     }
 
-    fun navigateEncodingUrl(prefixUrl: String, encodeUrl: String) {
+    fun navigateEncodingUrl(prefixUrl: String, encodeUrl: String, param: String) {
         val encodedUrl = URLEncoder.encode(encodeUrl, StandardCharsets.UTF_8.toString())
-        navController.navigate("$prefixUrl/$encodedUrl")
+        navController.navigate("$prefixUrl/$encodedUrl/$param")
     }
 
     fun navigatePopBackStack(route: String) {

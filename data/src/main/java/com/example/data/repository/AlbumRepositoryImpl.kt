@@ -2,9 +2,11 @@ package com.example.data.repository
 
 import com.example.data.network.AlbumApi
 import com.example.domain.entity.album.AlbumInfo
+import com.example.domain.entity.album.CommentInfo
 import com.example.domain.entity.album.PictureInfo
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.AlbumRequest
+import com.example.domain.model.request.CommentRequest
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.album.AlbumIdResponse
@@ -57,4 +59,19 @@ class AlbumRepositoryImpl @Inject constructor(
 
     override fun readPhotoInfo(photoId: String): Flow<ApiState<PictureInfo>> =
         safeFlow2(apiFunc = { albumApi.readPhotoInfo(photoId) }) { it.asDomain() }
+
+    override fun updatePhotoOfAlbumFavorite(photoId: String): Flow<ApiState<Unit>> = safeFlowUnit {
+        albumApi.updatePhotoOfAlbumFavorite(photoId)
+    }
+
+    override fun postComment(photoId: String, comment: String): Flow<ApiState<Unit>> =
+        safeFlowUnit {
+            val commentRequest = CommentRequest(photoId, comment)
+            albumApi.postComment(commentRequest)
+        }
+
+    override fun readAllComments(photoId: String): Flow<ApiState<List<CommentInfo>>> =
+        safeFlow2(apiFunc = { albumApi.readAllComments(photoId) }) { commentResponse ->
+            commentResponse.map { it.toEntity() }
+        }
 }

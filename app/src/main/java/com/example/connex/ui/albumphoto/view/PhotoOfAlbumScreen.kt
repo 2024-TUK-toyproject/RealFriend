@@ -67,8 +67,8 @@ import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.BottomNavItem
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.General4Button
-import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.PhotoCard
+import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcCalendar
@@ -93,9 +93,10 @@ sealed class PhotoOfAlbumScreenState(open val title: String) {
 fun PhotoOfAlbumScreen(
     photoInfoViewModel: PhotoInfoViewModel = hiltViewModel(),
     applicationState: ApplicationState,
-    picture: String?
+    photo: String?,
+    photoId: String?,
 ) {
-    Log.d("daeyoung", "picture: $picture")
+    Log.d("daeyoung", "picture: $photo")
 
     var photoOfAlbumScreenState by remember {
         mutableStateOf<PhotoOfAlbumScreenState>(PhotoOfAlbumScreenState.Default())
@@ -148,7 +149,7 @@ fun PhotoOfAlbumScreen(
 //                    .align(Alignment.Center)
                         .fillMaxWidth(imageSize)
                         .aspectRatio(1f),
-                    picture = picture
+                    picture = photo
                 )
                 ColumnSpacer(height = 32.dp)
                 if (photoOfAlbumScreenState is PhotoOfAlbumScreenState.DetailInfo) {
@@ -180,8 +181,8 @@ fun PhotoOfAlbumScreen(
             onFavorite = { /*TODO*/ },
             onChat = {
 //                photoOfAlbumScreenState = PhotoOfAlbumScreenState.Comment()
-                picture?.let {
-                    applicationState.navigateEncodingUrl(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE, it)
+                if (photo != null && photoId != null) {
+                    applicationState.navigateEncodingUrl(Constants.ALBUM_INFO_PHOTO_COMMENT_ROUTE, photo, photoId)
                 }
             },
             onDetailInfo = {

@@ -2,6 +2,7 @@ package com.example.data.network
 
 import com.example.domain.DefaultResponse
 import com.example.domain.model.request.AlbumRequest
+import com.example.domain.model.request.CommentRequest
 import com.example.domain.model.request.ContentRequest
 import com.example.domain.model.request.FriendIdRequest
 import com.example.domain.model.response.album.AlbumIdResponse
@@ -9,6 +10,7 @@ import com.example.domain.model.response.album.AlbumThumbnailInfoResponse
 import com.example.domain.model.response.album.PictureIdResponse
 import com.example.domain.model.response.album.PictureInfoResponse
 import com.example.domain.model.response.album.AlbumInfoResponse
+import com.example.domain.model.response.album.CommentResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -55,8 +57,15 @@ interface AlbumApi {
     // 앨범의 사진 삭제
 
     // 앨범의 사진 좋아요 on, off
+    /* TODO("api 수정 이후 url 수정") */
+    @POST("/users/album/star")
+    suspend fun updatePhotoOfAlbumFavorite(@Query("photoId") photoId: String): DefaultResponse<Unit>
 
-    // 앨범의 댓글 생성
+    // 앨범의 댓글 작성
+    @POST("/users/album/reply")
+    suspend fun postComment(@Body comment: CommentRequest): DefaultResponse<Unit>
 
     // 앨범의 댓글 전체 조회
+    @GET("/users/album/{photoId}/get/reply")
+    suspend fun readAllComments(@Path("photoId") photoId: String): DefaultResponse<List<CommentResponse>>
 }

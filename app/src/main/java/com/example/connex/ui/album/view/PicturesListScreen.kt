@@ -213,7 +213,11 @@ fun PicturesListScreen(
                                         },
                                         longPress = { if (!isSelectMode) isSelectMode = it }
                                     ) {
-                                        applicationState.navigateEncodingUrl(Constants.ALBUM_INFO_PHOTO_ROUTE, pictureUiState[index].image)
+                                        applicationState.navigateEncodingUrl(
+                                            prefixUrl = Constants.ALBUM_INFO_PHOTO_ROUTE,
+                                            encodeUrl = pictureUiState[index].image,
+                                            param = pictureUiState[index].id.toString()
+                                        )
                                     }
                                 }
 

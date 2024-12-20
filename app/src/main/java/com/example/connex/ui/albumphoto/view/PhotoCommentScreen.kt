@@ -1,5 +1,6 @@
 package com.example.connex.ui.albumphoto.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -47,8 +48,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.connex.ui.albumphoto.PhotoCommentViewModel
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
-import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.PhotoCard
+import com.example.connex.ui.component.RowSpacer
 import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcSend
@@ -61,12 +62,18 @@ import com.example.connex.ui.theme.Text11ptRegular
 import com.example.connex.ui.theme.Text14ptRegular
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
+import com.example.connex.utils.toFormatDate
+import com.example.domain.entity.album.CommentInfo
 import com.example.domain.model.ApiState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewModel(), picture: String?) {
+fun PhotoCommentScreen(
+    photoCommentViewModel: PhotoCommentViewModel = hiltViewModel(),
+    photo: String?,
+    photoId: String?,
+) {
     val bottomSheetState = rememberStandardBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -74,7 +81,9 @@ fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewMo
     val photoCommentUiState by photoCommentViewModel.photoCommentUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
+        Log.d("daeyoung", "photoId: $photoId")
         photoCommentViewModel.fetchReadUserImage()
+        photoId?.let { photoCommentViewModel.fetchReadAllCommentsUseCase(it) }
     }
 
 
@@ -83,17 +92,16 @@ fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewMo
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-        if (photoCommentUiState.userProfile is ApiState.Success) {
+        if (photoCommentUiState.comments is ApiState.Success) {
             BottomSheetScaffold(
                 sheetContent = {
                     Column(
                         Modifier
                             .fillMaxSize(),
                     ) {
-                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 24분", content = "여기 또 가고 싶다")
-                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 25분", content = "여기 또 가고 싶다")
-                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 30분", content = "여기 또 가고 싶다")
-                        CommentItem(image = Constants.DEFAULT_PROFILE, name = "주희", time = "오후 4시 35분", content = "난 안갈래")
+                        (photoCommentUiState.comments as ApiState.Success<List<CommentInfo>>).data.forEach {
+                            CommentItem(commentInfo = it)
+                        }
                     }
                 },
                 sheetContainerColor = White,
@@ -119,7 +127,7 @@ fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewMo
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(1f),
-                        picture = picture
+                        picture = photo
                     )
                 }
             }
@@ -130,7 +138,7 @@ fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewMo
                     .bottomNavigationPadding(true)
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
-                text = photoCommentUiState.comment
+                text = photoCommentUiState.input
             ) {
                 photoCommentViewModel.updateComment(it)
             }
@@ -139,22 +147,6 @@ fun PhotoCommentScreen(photoCommentViewModel: PhotoCommentViewModel = hiltViewMo
         }
 
     }
-
-
-    // Bottom Sheet가 완전히 닫히지 않도록 제어 (Hidden 상태 방지)
-//    LaunchedEffect(bottomSheetState) {
-//        snapshotFlow { bottomSheetState.currentValue }.collect { value ->
-//            if (value == SheetValue.Hidden) {
-////                bottomSheetState.collapse()
-//                Log.d("SheetValue", "SheetValue.Hidden")
-//                bottomSheetState.expand()
-//            } else if (value == SheetValue.Expanded) {
-//                Log.d("SheetValue", "SheetValue.Expanded")
-//            } else if (value == SheetValue.PartiallyExpanded) {
-//                Log.d("SheetValue", "SheetValue.PartiallyExpanded")
-//            }
-//        }
-//    }
 }
 
 
@@ -204,22 +196,29 @@ fun CommentTextField(modifier: Modifier = Modifier, text: String, updateText: (S
 }
 
 @Composable
-fun CommentItem(modifier: Modifier = Modifier, image: String, name: String, time: String, content: String) {
+fun CommentItem(commentInfo: CommentInfo) {
     val textStyle = TextStyle(
         fontSize = 14.sp,
         lineHeight = 19.6.sp,
     )
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 20.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        ProfileCard(size = 32.dp, image = image)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProfileCard(size = 32.dp, image = commentInfo.userProfile)
         RowSpacer(width = 12.dp)
         Column {
             Row {
-                Text(text = "주희", style = Body3Semibold, color = Gray600)
+                Text(text = commentInfo.userName, style = Body3Semibold, color = Gray600)
                 RowSpacer(width = 5.dp)
-                Text(text = "오후 4시 24분", style = Text11ptRegular, color = Gray400)
+                Text(
+                    text = toFormatDate(date = commentInfo.date, time = commentInfo.time),
+                    style = Text11ptRegular,
+                    color = Gray400
+                )
             }
             ColumnSpacer(height = 1.dp)
             Text(text = "여기 또 가고 싶다", style = textStyle, color = Gray800)

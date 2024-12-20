@@ -3,13 +3,16 @@ package com.example.connex.ui.albumphoto
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.connex.ui.album.PictureOfAlbumUiState
+import com.example.domain.entity.album.CommentInfo
 import com.example.domain.model.ApiState
+import com.example.domain.usecase.album.PostCommentUseCase
+import com.example.domain.usecase.album.ReadAllCommentsUseCase
 import com.example.domain.usecase.user.ReadUserImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -18,24 +21,30 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class PhotoCommentUiState(
-    val comment: String = "",
-    val userProfile: ApiState<String> = ApiState.Loading
+    val input: String = "",
+    val userProfile: ApiState<String> = ApiState.Loading,
+    val comments: ApiState<List<CommentInfo>> = ApiState.Loading,
 )
 
 @HiltViewModel
 class PhotoCommentViewModel @Inject constructor(
-    val readUserImageUseCase: ReadUserImageUseCase
+    private val readUserImageUseCase: ReadUserImageUseCase,
+    private val readAllCommentsUseCase: ReadAllCommentsUseCase,
+    private val postCommentUseCase: PostCommentUseCase,
 
-): ViewModel() {
+    ): ViewModel() {
 
-    private val _comment = MutableStateFlow("")
-    val comment: StateFlow<String> = _comment
+    private val _input = MutableStateFlow("")
+    val input: StateFlow<String> = _input.asStateFlow()
 
     private val _userProfile = MutableStateFlow("")
-    val userProfile: StateFlow<String> = _userProfile
+    val userProfile: StateFlow<String> = _userProfile.asStateFlow()
 
-    val photoCommentUiState = combine(_comment, _userProfile) { comment, userProfile ->
-        PhotoCommentUiState(comment = comment, userProfile = ApiState.Success(userProfile))
+    private val _comments = MutableStateFlow<List<CommentInfo>>(emptyList())
+    val comments: StateFlow<List<CommentInfo>> = _comments.asStateFlow()
+
+    val photoCommentUiState = combine(_input, _userProfile, _comments) { input, userProfile, comments ->
+        PhotoCommentUiState(input = input, userProfile = ApiState.Success(userProfile), comments = ApiState.Success(comments))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -43,7 +52,7 @@ class PhotoCommentViewModel @Inject constructor(
     )
 
     fun updateComment(newComment: String) {
-        _comment.value = newComment
+        _input.value = newComment
     }
 
     fun fetchReadUserImage() {
@@ -53,6 +62,17 @@ class PhotoCommentViewModel @Inject constructor(
                 ApiState.Loading -> TODO()
                 is ApiState.NotResponse -> { Log.d("daeyoung", "error: ${result.exception}, msg: ${result.message}") }
                 is ApiState.Success -> { _userProfile.update { result.data.profileImage } }
+            }
+        }
+    }
+
+    fun fetchReadAllCommentsUseCase(photoId: String) {
+        viewModelScope.launch {
+            when (val result = readAllCommentsUseCase(photoId).first()) {
+                is ApiState.Error -> { Log.d("daeyoung", "error: ${result.errMsg}") }
+                ApiState.Loading -> TODO()
+                is ApiState.NotResponse -> { Log.d("daeyoung", "error: ${result.exception}, msg: ${result.message}") }
+                is ApiState.Success -> { _comments.update { result.data } }
             }
         }
     }

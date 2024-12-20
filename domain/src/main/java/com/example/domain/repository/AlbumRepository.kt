@@ -1,6 +1,7 @@
 package com.example.domain.repository
 
 import com.example.domain.entity.album.AlbumInfo
+import com.example.domain.entity.album.CommentInfo
 import com.example.domain.entity.album.PictureInfo
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
@@ -26,4 +27,11 @@ interface AlbumRepository {
     fun uploadPhotos(albumId: String, file: List<MultipartBody.Part>): Flow<ApiState<Unit>>
 
     fun readPhotoInfo(photoId: String): Flow<ApiState<PictureInfo>>
+
+    fun updatePhotoOfAlbumFavorite(photoId: String): Flow<ApiState<Unit>>
+
+    fun postComment(photoId: String, comment: String): Flow<ApiState<Unit>>
+
+    fun readAllComments(photoId: String): Flow<ApiState<List<CommentInfo>>>
+
 }

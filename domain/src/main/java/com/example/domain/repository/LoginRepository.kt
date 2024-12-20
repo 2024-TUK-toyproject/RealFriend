@@ -16,5 +16,4 @@ interface LoginRepository {
     fun signupProfileImage(userId: Long, name: String, fcmToken: String, file: MultipartBody.Part): Flow<ApiState<Unit>>
 
     fun readUserInfo(): Flow<ApiState<UserInfo>>
-
 }
