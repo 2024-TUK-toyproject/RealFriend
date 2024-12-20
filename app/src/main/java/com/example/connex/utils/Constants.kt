@@ -58,6 +58,7 @@ object Constants {
     const val ALBUM_INFO_THUMBNAIL_ROUTE = "nav-album-info-thumbnail"
     const val ALBUM_INFO_MEMBER_ROUTE = "nav-album-info-member"
     const val ALBUM_INFO_MEMBER_GRANTED_SETTING_ROUTE = "nav-album-info-member-granted-setting"
+    const val ALBUM_INFO_MEMBER_ADD_ROUTE = "nav-album-info-member-add"
 
 
 

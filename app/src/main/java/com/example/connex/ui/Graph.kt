@@ -14,6 +14,7 @@ import com.example.connex.ui.album.view.AddPictureScreen
 import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
+import com.example.connex.ui.album_setting.ui.AddMemberToAlbumScreen
 import com.example.connex.ui.album_setting.ui.AlbumInfoScreen
 import com.example.connex.ui.album_setting.ui.MembersOfAlbumScreen
 import com.example.connex.ui.album_setting.ui.AlbumSettingScreen
@@ -225,6 +226,9 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         }
         composable(route = Constants.ALBUM_INFO_MEMBER_GRANTED_SETTING_ROUTE) { entry ->
             MemberGrantedSettingScreen(applicationState = applicationState)
+        }
+        composable(route = Constants.ALBUM_INFO_MEMBER_ADD_ROUTE) { entry ->
+            AddMemberToAlbumScreen(applicationState = applicationState)
         }
 
 

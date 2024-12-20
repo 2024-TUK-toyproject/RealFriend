@@ -3,13 +3,13 @@ package com.example.connex.ui.album_create
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.connex.ui.home.FriendUiState
+import com.example.connex.ui.component.FriendSelectedState
 import com.example.connex.utils.Constants
 import com.example.domain.model.ApiState
 import com.example.domain.model.request.FriendIdRequest
-import com.example.domain.usecase.friend.ReadAllFriendsUseCase
 import com.example.domain.usecase.album.CreateAlbumUseCase
 import com.example.domain.usecase.album.SetAlbumThumbnailUseCase
+import com.example.domain.usecase.friend.ReadAllFriendsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 data class FriendSelectUiState(
     val search: String = "",
-    val friends: ApiState<List<FriendUiState>> = ApiState.Loading,
+    val friends: ApiState<List<FriendSelectedState>> = ApiState.Loading,
 )
 
 @HiltViewModel
@@ -40,11 +40,11 @@ class AlbumCreatingViewModel @Inject constructor(
     private val _search = MutableStateFlow("")
     val search: StateFlow<String> = _search.asStateFlow()
 
-    private val _friends = MutableStateFlow(emptyList<FriendUiState>())
-    val friends: StateFlow<List<FriendUiState>> = _friends.asStateFlow()
+    private val _friends = MutableStateFlow(emptyList<FriendSelectedState>())
+    val friends: StateFlow<List<FriendSelectedState>> = _friends.asStateFlow()
 
-    private val _filteredFriends = MutableStateFlow<ApiState<List<FriendUiState>>>(ApiState.Loading)
-    val filteredFriends: StateFlow<ApiState<List<FriendUiState>>> = _filteredFriends.asStateFlow()
+    private val _filteredFriends = MutableStateFlow<ApiState<List<FriendSelectedState>>>(ApiState.Loading)
+    val filteredFriends: StateFlow<ApiState<List<FriendSelectedState>>> = _filteredFriends.asStateFlow()
 
     private val _albumName = MutableStateFlow("")
     val albumName: StateFlow<String> = _albumName
@@ -80,7 +80,7 @@ class AlbumCreatingViewModel @Inject constructor(
     fun selectOrUnSelectFriend(userId: Long, isSelect: Boolean) {
         friends.value.find { it.friend.userId == userId }
             ?.let { it.isSelect = isSelect }
-        (filteredFriends.value as ApiState.Success<List<FriendUiState>>).data.find { it.friend.userId == userId }
+        (filteredFriends.value as ApiState.Success<List<FriendSelectedState>>).data.find { it.friend.userId == userId }
             ?.let {
                 it.isSelect = isSelect
             }
@@ -103,7 +103,7 @@ class AlbumCreatingViewModel @Inject constructor(
 
                 is ApiState.Success -> {
                     result.data.also { list ->
-                        val mappedList = list.map { FriendUiState(it, false) }
+                        val mappedList = list.map { FriendSelectedState(it, false) }
                             .filter { it.friend.isFriend }
                         _friends.update { mappedList }
                         _filteredFriends.update { ApiState.Success(mappedList) }

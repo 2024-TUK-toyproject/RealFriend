@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.connex.ui.component.FriendSelectedState
 import com.example.connex.utils.syncContact
 import com.example.domain.entity.contact.Contact
 import com.example.domain.entity.contact.ContactInfo
@@ -32,16 +33,11 @@ import java.net.ConnectException
 import javax.inject.Inject
 
 
-class FriendUiState(
-    val friend: Friend,
-    initialChecked: Boolean = false,
-) {
-    var isSelect by mutableStateOf(initialChecked)
-}
+
 
 data class FriendsRemoveUiState(
     val search: String = "",
-    val userList: List<FriendUiState> = emptyList(),
+    val userList: List<FriendSelectedState> = emptyList(),
 )
 
 data class FriendsUiState(
@@ -62,11 +58,11 @@ class FriendsViewModel @Inject constructor(
     private val _friendsRemoveSearch = MutableStateFlow("")
     val friendsRemoveSearch: StateFlow<String> = _friendsRemoveSearch.asStateFlow()
 
-    private val _friendsRemoveUserList = MutableStateFlow(emptyList<FriendUiState>())
-    val friendsRemoveUserList: StateFlow<List<FriendUiState>> = _friendsRemoveUserList.asStateFlow()
+    private val _friendsRemoveUserList = MutableStateFlow(emptyList<FriendSelectedState>())
+    val friendsRemoveUserList: StateFlow<List<FriendSelectedState>> = _friendsRemoveUserList.asStateFlow()
 
-    private val _filteredFriendsRemoveUserList = MutableStateFlow(emptyList<FriendUiState>())
-    val filteredFriendsRemoveUserList: StateFlow<List<FriendUiState>> =
+    private val _filteredFriendsRemoveUserList = MutableStateFlow(emptyList<FriendSelectedState>())
+    val filteredFriendsRemoveUserList: StateFlow<List<FriendSelectedState>> =
         _filteredFriendsRemoveUserList.asStateFlow()
 
     private val _friendsSearch = MutableStateFlow("")
@@ -203,7 +199,7 @@ class FriendsViewModel @Inject constructor(
                 is ApiState.Success -> {
                     result.data.also { list ->
                         _friendsRemoveUserList.value =
-                            list.map { FriendUiState(it, false) }
+                            list.map { FriendSelectedState(it, false) }
                                 .filter { it.friend.isFriend }
 //                        _friendsUserList.value = list.map { it.asDomain().copy(isFriend = true) }
                         _friendsUserList.value = list
