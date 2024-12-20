@@ -39,7 +39,7 @@ data class PictureOfAlbumUiState(
 )
 
 @HiltViewModel
-class PictureOfAlbumViewModel @Inject constructor(
+class PhotoOfAlbumViewModel @Inject constructor(
     val readAllPicturesUseCase: ReadAllPicturesUseCase,
     val readAlbumInfoUseCase: ReadAlbumInfoUseCase,
 ) : ViewModel() {

@@ -1,6 +1,5 @@
 package com.example.connex.ui.album.view
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -65,7 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberAsyncImagePainter
-import com.example.connex.ui.album.PictureOfAlbumViewModel
+import com.example.connex.ui.album.PhotoOfAlbumViewModel
 import com.example.connex.ui.album.PictureState
 import com.example.connex.ui.component.AlbumSelectModeBottomBar
 import com.example.connex.ui.component.AppBarIcon
@@ -101,14 +100,13 @@ import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
 import me.onebone.toolbar.ScrollStrategy
 import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 
 @Composable
-fun PicturesListScreen(
+fun PhotosScreen(
     applicationState: ApplicationState,
-    pictureOfAlbumViewModel: PictureOfAlbumViewModel = hiltViewModel(),
+    photoOfAlbumViewModel: PhotoOfAlbumViewModel = hiltViewModel(),
+    albumId: String?,
 ) {
     val state = rememberCollapsingToolbarScaffoldState()
     val lazyGridState = rememberLazyGridState()
@@ -122,8 +120,7 @@ fun PicturesListScreen(
         }
     }
 
-    val pictureOfAlbumUiState by pictureOfAlbumViewModel.pictureOfAlbumUiState.collectAsStateWithLifecycle()
-    Log.d("daeyoung", "pictureOfAlbumUiState: $pictureOfAlbumUiState")
+    val pictureOfAlbumUiState by photoOfAlbumViewModel.pictureOfAlbumUiState.collectAsStateWithLifecycle()
     BackHandler {
         if (isSelectMode) isSelectMode = false
         else if (isSortMenuExpanded) isDropDownMenuExpanded = false
@@ -131,8 +128,8 @@ fun PicturesListScreen(
     }
 
     LaunchedEffect(Unit) {
-        pictureOfAlbumViewModel.fetchReadAllPictures("685764")
-        pictureOfAlbumViewModel.fetchReadAlbumInfo("685764")
+        photoOfAlbumViewModel.fetchReadAllPictures("685764")
+        photoOfAlbumViewModel.fetchReadAlbumInfo("685764")
     }
 
     Surface(
@@ -159,8 +156,8 @@ fun PicturesListScreen(
                             SelectModeAppBar(
                                 albumName = albumInfoUiState.albumName,
                                 selectedImageCount = pictureUiState.count { it.isSelected },
-                                onClickAllSelect = { pictureOfAlbumViewModel.selectAllOfPicture() }) {
-                                pictureOfAlbumViewModel.unselectAllOfPicture()
+                                onClickAllSelect = { photoOfAlbumViewModel.selectAllOfPicture() }) {
+                                photoOfAlbumViewModel.unselectAllOfPicture()
                             }
                         } else {
                             BackArrowAppBar2(
@@ -198,7 +195,7 @@ fun PicturesListScreen(
                             span = { GridItemSpan(if (it == 0) 2 else 1) }) { index ->
                             when (index) {
                                 0 -> {
-                                    FirstPictureCard(
+                                    BigSizePhotoOfAlbumCard(
                                         modifier = Modifier.aspectRatio(1f),
                                         name = "올린 사람",
                                         time = "8h",
@@ -207,7 +204,7 @@ fun PicturesListScreen(
                                         isSelectMode = isSelectMode,
                                         isSelected = pictureUiState[index].isSelected,
                                         onCheck = {
-                                            pictureOfAlbumViewModel.changeSelectedStateOfPicture(
+                                            photoOfAlbumViewModel.changeSelectedStateOfPicture(
                                                 pictureUiState[index].id
                                             )
                                         },
@@ -223,40 +220,55 @@ fun PicturesListScreen(
 
                                 1 -> {
                                     Column {
-                                        TestCard(
+                                        PhotoOfAlbumCard(
                                             modifier = Modifier.aspectRatio(1f),
                                             image = pictureUiState[index].image,
                                             isSelectMode = isSelectMode,
                                             isSelected = pictureUiState[index].isSelected,
                                             onCheck = {
-                                                pictureOfAlbumViewModel.changeSelectedStateOfPicture(
+                                                photoOfAlbumViewModel.changeSelectedStateOfPicture(
                                                     pictureUiState[index].id
                                                 )
                                             },
-                                            longPress = { if (!isSelectMode) isSelectMode = it }) {}
+                                            longPress = { if (!isSelectMode) isSelectMode = it }
+                                        ) {
+                                            applicationState.navigateEncodingUrl(
+                                                prefixUrl = Constants.ALBUM_INFO_PHOTO_ROUTE,
+                                                encodeUrl = pictureUiState[index].image,
+                                                param = pictureUiState[index].id.toString()
+                                            )
+                                        }
                                         Spacer(modifier = Modifier.height(9.dp))
                                         PlusCardButton(
                                             size = 0.dp,
                                             shape = RoundedCornerShape(15.dp)
                                         ) {
-                                            applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/685764/${albumInfoUiState.currentUsage}/${albumInfoUiState.totalUsage}")
+                                            albumId?.let {
+                                                applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_ADD_ROUTE}/${it}/${albumInfoUiState.currentUsage}/${albumInfoUiState.totalUsage}")
+                                            }
                                         }
                                     }
                                 }
 
                                 else -> {
-                                    TestCard(
+                                    PhotoOfAlbumCard(
                                         modifier = Modifier.aspectRatio(1f),
                                         image = pictureUiState[index].image,
                                         isSelectMode = isSelectMode,
                                         isSelected = pictureUiState[index].isSelected,
                                         onCheck = {
-                                            pictureOfAlbumViewModel.changeSelectedStateOfPicture(
+                                            photoOfAlbumViewModel.changeSelectedStateOfPicture(
                                                 pictureUiState[index].id
                                             )
                                         },
                                         longPress = { if (!isSelectMode) isSelectMode = it }
-                                    ) {}
+                                    ) {
+                                        applicationState.navigateEncodingUrl(
+                                            prefixUrl = Constants.ALBUM_INFO_PHOTO_ROUTE,
+                                            encodeUrl = pictureUiState[index].image,
+                                            param = pictureUiState[index].id.toString()
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -281,7 +293,7 @@ fun PicturesListScreen(
 }
 
 @Composable
-fun TestCard(
+fun PhotoOfAlbumCard(
     modifier: Modifier = Modifier,
     image: String,
     isSelectMode: Boolean,
@@ -298,7 +310,7 @@ fun TestCard(
                     if (isSelectMode) onCheck()
                 })
         },
-//        onClick = { navigate() },
+        onClick = { navigate() },
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF2F3F7),
@@ -329,7 +341,7 @@ fun TestCard(
 }
 
 @Composable
-fun FirstPictureCard(
+fun BigSizePhotoOfAlbumCard(
     modifier: Modifier = Modifier,
     name: String,
     time: String,

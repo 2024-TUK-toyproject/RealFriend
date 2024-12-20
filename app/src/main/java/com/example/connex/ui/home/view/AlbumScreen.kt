@@ -69,7 +69,6 @@ import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head2Semibold
-import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.Text16ptSemibold
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
@@ -185,7 +184,7 @@ fun AlbumScreen(
                                 userCount = it.userCount,
                                 imageCount = it.photoCount,
                                 isFavorite = it.isFavorite,
-                                navigate = { applicationState.navigate(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) }
+                                navigate = { applicationState.navigate("${Constants.ALBUM_INFO_PHOTO_LIST_ROUTE}/${it.albumId}") }
                             ) {
                                 albumViewModel.fetchUpdateAlbumFavorite(it.albumId) {
                                     applicationState.showSnackbar("인터넷이 연결이 되어 있지 않습니다.")

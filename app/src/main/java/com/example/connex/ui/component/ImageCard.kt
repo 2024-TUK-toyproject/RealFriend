@@ -37,7 +37,8 @@ fun PhotoCard(modifier: Modifier = Modifier, picture: String?) {
                 Image(
                     painter = rememberAsyncImagePainter(model = picture),
                     contentDescription = "image_picture",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
         }

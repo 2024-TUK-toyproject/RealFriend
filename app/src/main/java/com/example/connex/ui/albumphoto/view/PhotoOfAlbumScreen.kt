@@ -122,9 +122,8 @@ fun PhotoOfAlbumScreen(
     val photoUiState by photoInfoViewModel.photoInfo.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        photoInfoViewModel.fetchReadPhotoInfo("62987594")
+        photoId?.let { photoInfoViewModel.fetchReadPhotoInfo(it) }
     }
-
     ManageBottomBarState(photoOfAlbumScreenState = photoOfAlbumScreenState) {
         isBottomBarVisible = it
     }

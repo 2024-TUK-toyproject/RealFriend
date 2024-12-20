@@ -11,7 +11,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.connex.ui.album.view.AddPictureScreen
-import com.example.connex.ui.album.view.PicturesListScreen
+import com.example.connex.ui.album.view.PhotosScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.album_setting.ui.AddMemberToAlbumScreen
@@ -186,8 +186,11 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         route = Constants.ALBUM_INFO_GRAPH,
         startDestination = Constants.ALBUM_SETTING_ROUTE
     ) {
-        composable(Constants.ALBUM_INFO_PICTURE_LIST_ROUTE) { entry ->
-            PicturesListScreen(applicationState = applicationState)
+        composable("${Constants.ALBUM_INFO_PHOTO_LIST_ROUTE}/{albumId}") { entry ->
+            PhotosScreen(
+                applicationState = applicationState,
+                albumId = entry.arguments?.getString("albumId")
+            )
         }
         composable("${Constants.ALBUM_INFO_PHOTO_ROUTE}/{photoUrl}/{photoId}") { entry ->
             PhotoOfAlbumScreen(
