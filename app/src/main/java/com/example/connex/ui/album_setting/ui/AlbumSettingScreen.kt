@@ -71,7 +71,7 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                 SettingScreenInfo("앨범 정보") {applicationState.navigate(Constants.ALBUM_INFO_ROUTE)},
                 SettingScreenInfo("대표 이미지 변경") {applicationState.navigate(Constants.ALBUM_INFO_THUMBNAIL_ROUTE)},
                 SettingScreenInfo("멤버 보기") {},
-                SettingScreenInfo("멤버 권한 설정") {applicationState.navigate(Constants.ALBUM_INFO_MEMBER_GRANTED_ROUTE)},
+                SettingScreenInfo("멤버 권한 설정") {applicationState.navigate(Constants.ALBUM_INFO_MEMBER_ROUTE)},
                 SettingScreenInfo("멤버 초대하기") {},
                 SettingScreenInfo("휴지통") {},
                 SettingScreenInfo("앨범 편집 알림") {},

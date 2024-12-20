@@ -15,8 +15,9 @@ import com.example.connex.ui.album.view.PicturesListScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumCompleteScreen
 import com.example.connex.ui.album_create.view.CreatingAlbumScreen
 import com.example.connex.ui.album_setting.ui.AlbumInfoScreen
-import com.example.connex.ui.album_setting.ui.AlbumMemberGrantedScreen
+import com.example.connex.ui.album_setting.ui.MembersOfAlbumScreen
 import com.example.connex.ui.album_setting.ui.AlbumSettingScreen
+import com.example.connex.ui.album_setting.ui.MemberGrantedSettingScreen
 import com.example.connex.ui.album_setting.ui.ThumbnailSettingScreen
 import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
@@ -219,9 +220,14 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         composable(route = Constants.ALBUM_INFO_THUMBNAIL_ROUTE) { entry ->
             ThumbnailSettingScreen(applicationState = applicationState)
         }
-        composable(route = Constants.ALBUM_INFO_MEMBER_GRANTED_ROUTE) { entry ->
-            AlbumMemberGrantedScreen(applicationState = applicationState)
+        composable(route = Constants.ALBUM_INFO_MEMBER_ROUTE) { entry ->
+            MembersOfAlbumScreen(applicationState = applicationState)
         }
+        composable(route = Constants.ALBUM_INFO_MEMBER_GRANTED_SETTING_ROUTE) { entry ->
+            MemberGrantedSettingScreen(applicationState = applicationState)
+        }
+
+
     }
 
 }

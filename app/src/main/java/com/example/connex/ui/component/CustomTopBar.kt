@@ -21,7 +21,7 @@ import com.example.connex.ui.theme.Gray900
 import com.example.connex.ui.theme.Head3Medium
 
 @Composable
-fun BackArrowAppBar(modifier: Modifier = Modifier, text: String, onBack: () -> Unit) {
+fun BackArrowAppBar(modifier: Modifier = Modifier, text: String = "", onBack: () -> Unit) {
 
     Box(
         modifier = Modifier
