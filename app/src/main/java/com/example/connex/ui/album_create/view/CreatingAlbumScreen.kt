@@ -29,7 +29,7 @@ import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.component.ColumnSpacer
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.domain.ApplicationState
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.utils.Constants
 
@@ -63,7 +63,7 @@ fun CreatingAlbumScreen(albumCreatingViewModel: AlbumCreatingViewModel = hiltVie
                     withStyle(SpanStyle(color = Gray300)) {
                         append(" / 3")
                     }
-                }, style = Body1Semibold, modifier = Modifier.padding(horizontal = 24.dp))
+                }, style = Body1SemiBold, modifier = Modifier.padding(horizontal = 24.dp))
                 ColumnSpacer(height = 12.dp)
                 CreatingAlbumNavHost(albumCreatingViewModel = albumCreatingViewModel, navController = navController, applicationState = applicationState)
             }

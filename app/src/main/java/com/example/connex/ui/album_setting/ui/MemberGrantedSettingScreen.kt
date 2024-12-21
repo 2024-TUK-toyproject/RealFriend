@@ -41,9 +41,8 @@ import com.example.connex.ui.svg.iconpack.ImageGrantedManager
 import com.example.connex.ui.svg.iconpack.ImageGrantedMember
 import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Body1Medium
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body2Medium
-import com.example.connex.ui.theme.Body2Semibold
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray800
@@ -107,7 +106,7 @@ fun ProfileArea(profileImage: String, name: String, granted: String) {
             modifier = Modifier.weight(0.3f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = name, style = Body1Semibold)
+            Text(text = name, style = Body1SemiBold)
             ColumnSpacer(height = 8.dp)
             Text(text = granted, style = Body2Medium, color = Gray800)
         }
@@ -141,7 +140,7 @@ fun GrantedSelectedButton(
         ) {
             Text(
                 text = granted1.value,
-                style = Body1Semibold,
+                style = Body1SemiBold,
                 color = granted1TextColor,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -156,7 +155,7 @@ fun GrantedSelectedButton(
         ) {
             Text(
                 text = granted2.value,
-                style = Body1Semibold,
+                style = Body1SemiBold,
                 color = granted2TextColor,
                 modifier = Modifier.align(Alignment.Center)
             )

@@ -30,7 +30,7 @@ import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.home.view.ContactCard
 import com.example.connex.ui.home.view.ContactCardCheckBox
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Head2Semibold
+import com.example.connex.ui.theme.Head2SemiBold
 import com.example.domain.model.ApiState
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -53,7 +53,7 @@ fun FriendSelectScreen(
     ) {
         Text(
             text = "함께할 친구를 \n선택해 주세요",
-            style = Head2Semibold,
+            style = Head2SemiBold,
             color = Gray900,
             modifier = Modifier.padding(horizontal = 24.dp)
         )

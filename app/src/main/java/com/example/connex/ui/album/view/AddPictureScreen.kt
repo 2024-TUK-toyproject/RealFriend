@@ -63,8 +63,8 @@ import com.example.connex.ui.component.PlusCardButton
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.domain.takeMultiPhotoFromAlbumLauncher
 import com.example.connex.ui.theme.BackgroundGray
-import com.example.connex.ui.theme.Body1Semibold
-import com.example.connex.ui.theme.Body2Semibold
+import com.example.connex.ui.theme.Body1SemiBold
+import com.example.connex.ui.theme.Body2SemiBold
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray900
@@ -194,13 +194,13 @@ fun SelectPhotoArea(
         Text(
             text = buildAnnotatedString {
                 append("선택한 사진 ")
-                withStyle(Body2Semibold.toSpanStyle()) {
+                withStyle(Body2SemiBold.toSpanStyle()) {
                     append("(${count}/${maxCount})")
                 }
 
             },
             modifier = Modifier.padding(start = 24.dp),
-            style = Body1Semibold,
+            style = Body1SemiBold,
             color = Gray900
         )
 
@@ -284,7 +284,7 @@ fun CurrentStorageSizeArea(
         Text(
             text = "현재 앨범 저장 공간",
             modifier = Modifier.padding(start = 24.dp),
-            style = Body1Semibold,
+            style = Body1SemiBold,
             color = Gray900
         )
         ColumnSpacer(height = 16.dp)
@@ -312,7 +312,7 @@ fun CurrentStorageSizeArea(
             .fillMaxWidth()
             .clickable { }
             .padding(horizontal = 24.dp, vertical = 20.dp)) {
-            Text(text = "앨범 정리하러 가기", style = Body1Semibold, color = Gray900)
+            Text(text = "앨범 정리하러 가기", style = Body1SemiBold, color = Gray900)
             Text(text = "중복된 사진 0개 삭제 가능", style = Text14ptRegular, color = Color(0xFFACACAC))
         }
     }
@@ -367,7 +367,7 @@ fun FutureStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, curr
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 24.dp),
-            style = Body1Semibold,
+            style = Body1SemiBold,
             color = Gray900,
             textAlign = TextAlign.Start
         )

@@ -42,11 +42,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalFocusManager
@@ -70,7 +68,7 @@ import com.example.connex.ui.svg.iconpack.IcAlbumOff
 import com.example.connex.ui.svg.iconpack.IcAlbumOn
 import com.example.connex.ui.svg.iconpack.IcCall
 import com.example.connex.ui.svg.iconpack.IcSettingList
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
@@ -78,8 +76,8 @@ import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray200
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Head2Semibold
-import com.example.connex.ui.theme.Text16ptSemibold
+import com.example.connex.ui.theme.Head2SemiBold
+import com.example.connex.ui.theme.Text16ptSemiBold
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
 
@@ -251,11 +249,11 @@ fun FriendsScreenAppBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row {
-            Text(text = "친구", style = Head2Semibold)
+            Text(text = "친구", style = Head2SemiBold)
             Text(
                 text = " ${count}명",
                 modifier = Modifier.alpha(alpha),
-                style = Head2Semibold
+                style = Head2SemiBold
             )
         }
 
@@ -293,7 +291,7 @@ fun FriendsScreenHeader(modifier: Modifier = Modifier) {
                 modifier = modifier
                     .weight(1f)
             ) {
-                Text(text = "누구에게 안부를 전해볼까요?", style = Body1Semibold)
+                Text(text = "누구에게 안부를 전해볼까요?", style = Body1SemiBold)
                 ColumnSpacer(height = 4.dp)
                 Text(text = "연락할 친구를 랜덤으로 추천받아 보세요!", style = Body3Medium)
             }
@@ -371,7 +369,7 @@ fun ContactCard(
         }
         RowSpacer(width = 22.dp)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-            Text(text = name, style = Text16ptSemibold)
+            Text(text = name, style = Text16ptSemiBold)
             ColumnSpacer(height = 4.dp)
             Text(text = phone, style = Body3Regular)
         }

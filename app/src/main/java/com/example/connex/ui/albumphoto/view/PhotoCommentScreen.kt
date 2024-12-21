@@ -57,7 +57,7 @@ import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.component.util.noRippleClickable
 import com.example.connex.ui.svg.IconPack
 import com.example.connex.ui.svg.iconpack.IcSend
-import com.example.connex.ui.theme.Body3Semibold
+import com.example.connex.ui.theme.Body3SemiBold
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray400
 import com.example.connex.ui.theme.Gray600
@@ -231,7 +231,7 @@ fun CommentItem(commentInfo: CommentInfo) {
         RowSpacer(width = 12.dp)
         Column {
             Row {
-                Text(text = commentInfo.userName, style = Body3Semibold, color = Gray600)
+                Text(text = commentInfo.userName, style = Body3SemiBold, color = Gray600)
                 RowSpacer(width = 5.dp)
                 Text(
                     text = toFormatDate(date = commentInfo.date, time = commentInfo.time),

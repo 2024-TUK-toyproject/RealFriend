@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.example.connex.ui.component.GeneralButton
 import com.example.connex.ui.component.SearchTextField
 import com.example.connex.ui.component.util.addFocusCleaner
@@ -53,7 +52,7 @@ import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.friendinit.FriendSyncViewModel
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray400
-import com.example.connex.ui.theme.Head2Semibold
+import com.example.connex.ui.theme.Head2SemiBold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.utils.Constants
 import rememberConnexLogo1
@@ -112,7 +111,7 @@ fun FriendSyncScreen(
             ) {
                 Text(
                     text = "${name}님을 위한\n추천 친구 목록이에요.",
-                    style = Head2Semibold,
+                    style = Head2SemiBold,
                 )
                 Image(
                     imageVector = rememberConnexLogo1(),

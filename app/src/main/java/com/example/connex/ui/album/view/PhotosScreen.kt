@@ -79,9 +79,9 @@ import com.example.connex.ui.component.util.bottomBarsPadding
 import com.example.connex.ui.component.util.bottomNavigationPadding
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.Black
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body2Medium
-import com.example.connex.ui.theme.Body2Semibold
+import com.example.connex.ui.theme.Body2SemiBold
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
@@ -173,8 +173,9 @@ fun PhotosScreen(
                                     RoundedDropDownMenu(
                                         expanded = isDropDownMenuExpanded,
                                         onClose = { isDropDownMenuExpanded = false },
-                                        onClick1 = { isSelectMode = true }) {
-                                        isSortMenuExpanded = true
+                                        changeSelectMode = { isSelectMode = true },
+                                        onClick = { isSortMenuExpanded = true }) {
+                                        applicationState.navigate(Constants.ALBUM_SETTING_ROUTE)
                                     }
                                 },
                                 onBack = { applicationState.popBackStack() }
@@ -249,7 +250,6 @@ fun PhotosScreen(
                                         }
                                     }
                                 }
-
                                 else -> {
                                     PhotoOfAlbumCard(
                                         modifier = Modifier.aspectRatio(1f),
@@ -412,7 +412,7 @@ fun BigSizePhotoOfAlbumCard(
                 }
                 RowSpacer(width = 8.dp)
                 Column {
-                    Text(text = name, style = Body2Semibold, color = Gray900)
+                    Text(text = name, style = Body2SemiBold, color = Gray900)
                     Text(text = time, style = Body3Medium, color = Gray900)
                 }
             }
@@ -508,7 +508,7 @@ fun CollapsingToolbarScope.SelectModeAppBar(
         RowSpacer(width = 18.dp)
         Column {
             Text(text = albumName, style = Body3Regular, color = Gray500)
-            Text(text = isCountText.value, style = Body1Semibold, color = Gray900)
+            Text(text = isCountText.value, style = Body1SemiBold, color = Gray900)
         }
     }
 }
@@ -516,7 +516,7 @@ fun CollapsingToolbarScope.SelectModeAppBar(
 @Composable
 fun PicturesListAppBarText(text: String, userCount: Int, pictureCount: Int) {
     Column {
-        Text(text = text, style = Body1Semibold, color = Gray900)
+        Text(text = text, style = Body1SemiBold, color = Gray900)
         Row {
             Text(text = "🗣️ $userCount", style = Body3Regular, color = Gray500)
             RowSpacer(width = 2.dp)

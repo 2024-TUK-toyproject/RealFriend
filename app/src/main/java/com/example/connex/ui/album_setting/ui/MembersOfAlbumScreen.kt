@@ -1,6 +1,5 @@
 package com.example.connex.ui.album_setting.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -30,7 +29,7 @@ import com.example.connex.ui.component.RoundedWhiteBox
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.home.view.ContactCard
 import com.example.connex.ui.theme.BackgroundGray
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Gray500
@@ -106,7 +105,7 @@ fun FounderArea(name: String, granted: String) {
                 ColumnSpacer(4.dp)
                 Text(
                     text = name,
-                    style = Body1Semibold,
+                    style = Body1SemiBold,
                     color = Gray800,
                 )
                 ColumnSpacer(4.dp)

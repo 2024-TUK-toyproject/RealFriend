@@ -15,7 +15,7 @@ import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.White
 
 @Composable
-fun RoundedDropDownMenu(expanded: Boolean = false, onClose: () -> Unit, onClick1: () -> Unit, onClick2: () -> Unit) {
+fun RoundedDropDownMenu(expanded: Boolean = false, onClose: () -> Unit, changeSelectMode: () -> Unit, onClick: () -> Unit, goSettingScreen: () -> Unit) {
     DropdownMenu(
         modifier = Modifier
             .shadow(
@@ -29,20 +29,20 @@ fun RoundedDropDownMenu(expanded: Boolean = false, onClose: () -> Unit, onClick1
         DropdownMenuItem(
             text = { Text(text = "편집", style = Body3Regular, color = Gray500) },
             onClick = {
-                onClick1()
+                changeSelectMode()
                 onClose()
             }
         )
         DropdownMenuItem(
             text = { Text(text = "정렬", style = Body3Regular, color = Gray500) },
             onClick = {
-                onClick2()
+                onClick()
                 onClose()
             }
         )
         DropdownMenuItem(
             text = { Text(text = "앨범 설정", style = Body3Regular, color = Gray500) },
-            onClick = { /*TODO*/ }
+            onClick = { goSettingScreen() }
         )
     }
 }

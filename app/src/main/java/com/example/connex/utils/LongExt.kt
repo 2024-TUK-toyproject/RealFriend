@@ -15,3 +15,25 @@ fun Long.toLocalDateTime(): String {
         ZoneId.of("Asia/Seoul")
     ).format(DateTimeFormatter.ofPattern("yyMMddHHmmss"))
 }
+
+
+fun Int.toFormatTime(): String {
+    val callTimeList = mutableListOf<Int>()
+    var callTime = this
+    while (callTime > 0) {
+        callTimeList.add(0, callTime % 60)
+        callTime /= 60
+    }
+    return when(callTimeList.size) {
+        3 -> {
+            "${callTimeList[2]}시간 ${callTimeList[1]}분 ${callTimeList[0]}초"
+        }
+        2 -> {
+            "${callTimeList[1]}분 ${callTimeList[0]}초"
+        }
+        1 -> {
+            "${callTimeList[0]}초"
+        }
+        else -> "0"
+    }
+}

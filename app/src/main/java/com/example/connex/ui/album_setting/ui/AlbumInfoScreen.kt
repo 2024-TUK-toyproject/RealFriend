@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +31,7 @@ import com.example.connex.ui.component.RoundedWhiteBox
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.theme.BackgroundGray
 import com.example.connex.ui.theme.Body1Medium
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Body3Medium
 import com.example.connex.ui.theme.Gray800
@@ -87,7 +86,7 @@ fun ThumbnailOfAlbumArea(image: String, title: String, memberCount: Int, maxMemb
             ) {
                 Text(
                     text = title,
-                    style = Body1Semibold,
+                    style = Body1SemiBold,
                     color = Gray800,
                 )
                 HorizontalGrayDivider(modifier = Modifier.padding(horizontal = 8.dp, vertical = 15.dp))
@@ -98,7 +97,7 @@ fun ThumbnailOfAlbumArea(image: String, title: String, memberCount: Int, maxMemb
                             append(memberCount.toString())
                         }
                         append(" / $maxMemberCount")
-                    }, style = Body1Semibold)
+                    }, style = Body1SemiBold)
                 }
             }
             RowSpacerWithWeight(weight = 0.1f)

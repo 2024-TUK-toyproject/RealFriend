@@ -32,13 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.connex.ui.theme.Body3Semibold
-import com.example.connex.ui.theme.Gray400
+import com.example.connex.ui.theme.Body3SemiBold
 import com.example.connex.ui.theme.Gray500
-import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.White
 import com.example.domain.entity.user.Friend
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 class FriendSelectedState(
     val friend: Friend,
@@ -121,6 +118,6 @@ fun SelectedFriendCard(friend: FriendSelectedState, onDelete: () -> Unit) {
             }
         }
         ColumnSpacer(height = 3.dp)
-        Text(text = friend.friend.name, style = Body3Semibold, color = Gray500)
+        Text(text = friend.friend.name, style = Body3SemiBold, color = Gray500)
     }
 }

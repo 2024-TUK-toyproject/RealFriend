@@ -28,7 +28,7 @@ import com.example.connex.ui.theme.Body2Medium
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Head2Semibold
+import com.example.connex.ui.theme.Head2SemiBold
 import com.example.connex.utils.Constants
 
 @Composable
@@ -45,7 +45,7 @@ fun AlbumNameSettingScreen(albumCreatingViewModel: AlbumCreatingViewModel) {
     ) {
         Text(
             text = "공유 앨범 이름을 설정해 주세요.",
-            style = Head2Semibold,
+            style = Head2SemiBold,
             color = Gray900,
             modifier = Modifier.padding(horizontal = 24.dp)
         )

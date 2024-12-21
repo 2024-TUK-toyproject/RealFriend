@@ -1,7 +1,6 @@
 package com.example.connex.ui.home.view
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,7 +52,7 @@ import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray500
-import com.example.connex.ui.theme.Text16ptSemibold
+import com.example.connex.ui.theme.Text16ptSemiBold
 import com.example.connex.utils.Constants
 
 @Composable
@@ -209,7 +207,7 @@ fun ConnexUsedContactCard(
         RowSpacer(width = 22.dp)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = name, style = Text16ptSemibold)
+                Text(text = name, style = Text16ptSemiBold)
                 RowSpacer(width = 5.dp)
                 Image(
                     imageVector = IconPack.IcConnexUsedUser,

@@ -81,6 +81,8 @@ dependencies {
 
     // compose-permission
     implementation(libs.compose.permissions)
+    // compose-lottie
+    implementation(libs.compose.lottie)
 
 
 }

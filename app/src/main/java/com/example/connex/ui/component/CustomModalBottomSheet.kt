@@ -44,8 +44,8 @@ import com.example.connex.ui.theme.Gray50
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Head2Semibold
-import com.example.connex.ui.theme.Head3Semibold
+import com.example.connex.ui.theme.Head2SemiBold
+import com.example.connex.ui.theme.Head3SemiBold
 import com.example.connex.ui.theme.PrimaryBlue2
 import com.example.connex.ui.theme.White
 import com.example.domain.entity.contact.MobileCarrier
@@ -250,7 +250,7 @@ fun ShareAlbumModalBottomSheet(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "공유 앨범", style = Head3Semibold, color = Gray900)
+                Text(text = "공유 앨범", style = Head3SemiBold, color = Gray900)
                 Icon(
                     imageVector = Icons.Default.ArrowForwardIos,
                     contentDescription = "forward_icon",
@@ -365,7 +365,7 @@ fun AlbumGetOutModalBottomSheet(
         ) {
             Image(imageVector = IconPack.IcRedWarning, contentDescription = "warning_icon")
             ColumnSpacer(height = 20.dp)
-            Text(text = "정말 공유 앨범을 나가시겠습니까?", style = Head2Semibold)
+            Text(text = "정말 공유 앨범을 나가시겠습니까?", style = Head2SemiBold)
             ColumnSpacer(height = 12.dp)
             Text(text = "앨범을 나가게 되면 초대 받기 전까지\u2028다시 들어올 수 없습니다.", style = Body2Medium)
             ColumnSpacer(height = 28.dp)

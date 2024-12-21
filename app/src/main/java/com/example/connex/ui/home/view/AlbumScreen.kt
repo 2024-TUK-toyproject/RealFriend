@@ -63,13 +63,13 @@ import com.example.connex.ui.svg.iconpack.IcFavoriteOff
 import com.example.connex.ui.svg.iconpack.IcFavoriteOn
 import com.example.connex.ui.svg.iconpack.IcNotification
 import com.example.connex.ui.theme.Black
-import com.example.connex.ui.theme.Body1Semibold
+import com.example.connex.ui.theme.Body1SemiBold
 import com.example.connex.ui.theme.Body3Regular
 import com.example.connex.ui.theme.Gray100
 import com.example.connex.ui.theme.Gray500
 import com.example.connex.ui.theme.Gray900
-import com.example.connex.ui.theme.Head2Semibold
-import com.example.connex.ui.theme.Text16ptSemibold
+import com.example.connex.ui.theme.Head2SemiBold
+import com.example.connex.ui.theme.Text16ptSemiBold
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
 import com.example.domain.model.ApiState
@@ -241,7 +241,7 @@ fun AlbumCard(
                 .align(Alignment.BottomStart)
                 .offset(16.dp, (-16).dp)
         ) {
-            Text(text = name, style = Text16ptSemibold, color = White)
+            Text(text = name, style = Text16ptSemiBold, color = White)
             Row {
                 Text(text = "🗣️ $userCount", style = Body3Regular, color = White)
                 RowSpacer(width = 2.dp)
@@ -285,7 +285,7 @@ fun CollapsingToolbarScope.AlbumAppbar(modifier: Modifier = Modifier, onClick: (
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "앨범", style = Head2Semibold, color = Gray900)
+        Text(text = "앨범", style = Head2SemiBold, color = Gray900)
         Icon(
             imageVector = IconPack.IcNotification,
             contentDescription = "notification",
@@ -306,7 +306,7 @@ fun NewUploadPictureSection(newPictures: List<TempleAlbumData>) {
     ) {
         Text(
             text = "새로 올라온 사진 모아보기 📷",
-            style = Body1Semibold,
+            style = Body1SemiBold,
             color = Gray900,
             modifier = Modifier.padding(horizontal = 24.dp)
         )
@@ -365,7 +365,7 @@ fun AlbumSearchSection(category: String = "즐겨찾기순", search: String, upd
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
-            Text(text = "공유 앨범 🖼️", style = Body1Semibold, color = Gray900)
+            Text(text = "공유 앨범 🖼️", style = Body1SemiBold, color = Gray900)
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(text = category, style = Body3Regular, color = Gray500)
                 RowSpacer(width = 2.dp)

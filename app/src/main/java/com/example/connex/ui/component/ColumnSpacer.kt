@@ -1,6 +1,7 @@
 package com.example.connex.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -16,8 +17,8 @@ fun ColumnSpacer(height: Dp) {
 }
 
 @Composable
-fun ColumnWhiteSpacer(height: Dp) {
-    Spacer(modifier = Modifier.height(height).background(Color.White))
+fun ColumnScope.ColumnSpacerWithWeight(weight: Float) {
+    Spacer(modifier = Modifier.weight(weight))
 }
 
 @Composable

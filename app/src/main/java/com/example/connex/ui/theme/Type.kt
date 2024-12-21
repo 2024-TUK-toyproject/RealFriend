@@ -50,24 +50,6 @@ val Typography = Typography(
         color = Gray900,
         letterSpacing = 0.2.sp,
     ),
-
-
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
 )
 
 val Heading1 = TextStyle(
@@ -78,7 +60,7 @@ val Heading1 = TextStyle(
     color = Gray900
 )
 
-val Head2Semibold = TextStyle(
+val Head2SemiBold = TextStyle(
     fontSize = 20.sp,
     lineHeight = 28.sp,
     fontWeight = FontWeight.SemiBold,
@@ -86,7 +68,14 @@ val Head2Semibold = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
-val Head3Semibold = TextStyle(
+val Head3Bold = TextStyle(
+    fontSize = 18.sp,
+    lineHeight = 25.2.sp,
+    fontWeight = FontWeight.Bold,
+    color = Gray900,
+)
+
+val Head3SemiBold = TextStyle(
     fontSize = 18.sp,
     lineHeight = 25.2.sp,
     fontWeight = FontWeight.SemiBold,
@@ -102,7 +91,7 @@ val Head3Medium = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
-val Body1Semibold = TextStyle(
+val Body1SemiBold = TextStyle(
     fontSize = 16.sp,
     lineHeight = 22.4.sp,
     fontWeight = FontWeight.SemiBold,
@@ -132,17 +121,16 @@ val Body2Medium = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
-val Body2Semibold = TextStyle(
+val Body2SemiBold = TextStyle(
     fontSize = 14.sp,
     lineHeight = 19.6.sp,
     fontWeight = FontWeight.SemiBold
 )
 
-val Body3Semibold = TextStyle(
+val Body3SemiBold = TextStyle(
     fontSize = 12.sp,
     lineHeight = 16.8.sp,
     fontWeight = FontWeight.SemiBold,
-    color = Gray800,
 )
 
 val Body3Medium = TextStyle(
@@ -159,7 +147,7 @@ val Body3Regular = TextStyle(
 //    letterSpacing = 0.2.sp,
 )
 
-val Text16ptSemibold = TextStyle(
+val Text16ptSemiBold = TextStyle(
     fontSize = 16.sp,
     lineHeight = 22.4.sp,
     fontWeight = FontWeight.SemiBold,
@@ -176,14 +164,30 @@ val Text14ptRegular = TextStyle(
 val Text14ptMedium = TextStyle(
     fontSize = 14.sp,
     lineHeight = 19.6.sp,
-    fontWeight = FontWeight.Medium
+    fontWeight = FontWeight.Medium,
+    letterSpacing = 0.1.sp,
 )
+
 
 val Text11ptRegular = TextStyle(
     fontSize = 11.sp,
     lineHeight = 15.4.sp,
     fontWeight = FontWeight.Normal
 )
+
+val Text10ptMedium = TextStyle(
+    fontSize = 11.sp,
+    lineHeight = 12.sp,
+    fontWeight = FontWeight.Medium,
+    letterSpacing = 0.1.sp,
+)
+val Text10ptRegular = TextStyle(
+    fontSize = 11.sp,
+    lineHeight = 12.sp,
+    fontWeight = FontWeight.Normal,
+    letterSpacing = 0.1.sp,
+)
+
 
 val Btn11ptRegular = TextStyle(
     fontSize = 11.sp,

@@ -28,6 +28,9 @@ compose-keyboard-controller = "1.7.0-beta06"
 compose-callapsingToolbar = "2.3.5"
 compose-bottomsheet = "0.1.0"
 compose-permission = "0.36.0"
+arbnb-lottie = "6.0.0"
+
+
 
 
 androidxAppCompat = "1.6.1"
@@ -113,7 +116,7 @@ compose-keyboard-controller = { group = "tech.thdev", name = "extensions-compose
 compose-collapsingtoolbar = { group = "me.onebone", name = "toolbar-compose", version.ref = "compose-callapsingToolbar" }
 compose-bottomsheet = { group = "io.morfly.compose", name = "advanced-bottomsheet-material3", version.ref = "compose-bottomsheet" }
 compose-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "compose-permission" }
-
+compose-lottie = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "arbnb-lottie" }
 
 # junit
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }

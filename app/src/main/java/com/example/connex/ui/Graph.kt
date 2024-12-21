@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -23,6 +24,7 @@ import com.example.connex.ui.album_setting.ui.ThumbnailSettingScreen
 import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
+import com.example.connex.ui.friend_recommend.view.RecommendFriendLoadingScreen
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.home.view.AlbumScreen
@@ -110,7 +112,7 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
                 navController = applicationState.navController,
                 graph = HOME_GRAPH
             )
-            HomeScreen(navController = applicationState.navController)
+            HomeScreen(applicationState = applicationState)
         }
         composable(Screen.Friends.route) { entry ->
             val backStackEntry = rememberNavControllerBackEntry(
@@ -168,7 +170,7 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
     navigation(
-        route = Constants.ALBUM_CREATE_START_GRAPH,
+            route = Constants.ALBUM_CREATE_START_GRAPH,
         startDestination = Constants.ALBUM_CREATING_ROUTE
     ) {
         composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
@@ -235,10 +237,21 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
         composable(route = Constants.ALBUM_INFO_MEMBER_ADD_ROUTE) { entry ->
             AddMemberToAlbumScreen(applicationState = applicationState)
         }
+    }
+}
 
-
+fun NavGraphBuilder.recommendedFriendGraph(applicationState: ApplicationState) {
+    navigation(
+        route = Constants.RECOMMENDED_FRIEND_GRAPH,
+        startDestination = Constants.RECOMMENDED_FRIEND_LOGGING_ROUTE
+    ) {
+        composable(route = Constants.RECOMMENDED_FRIEND_LOGGING_ROUTE) { entry ->
+            RecommendFriendLoadingScreen()
+        }
     }
 
+
+    
 }
 
 

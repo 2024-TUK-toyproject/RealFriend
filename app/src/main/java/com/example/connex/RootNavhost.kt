@@ -19,6 +19,7 @@ import com.example.connex.ui.homeGraph
 import com.example.connex.ui.initSettingGraph
 import com.example.connex.ui.loginGraph
 import com.example.connex.ui.notificationComposable
+import com.example.connex.ui.recommendedFriendGraph
 import com.example.connex.ui.splashComposable
 import com.example.connex.utils.Constants
 
@@ -58,6 +59,7 @@ fun RootNavhost(
             splashComposable(appState)
             creatingAlbumGraph(appState)
             albumGraph(appState)
+            recommendedFriendGraph(appState)
         }
         BottomBar(appState)
     }

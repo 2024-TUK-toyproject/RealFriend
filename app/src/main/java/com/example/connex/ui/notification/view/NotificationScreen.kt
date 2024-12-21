@@ -1,6 +1,5 @@
 package com.example.connex.ui.notification.view
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,25 +16,21 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.example.connex.ui.component.BackArrowAppBar
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.notification.NotificationViewModel
 import com.example.connex.ui.theme.Body1Medium
 import com.example.connex.ui.theme.Body1Regular
-import com.example.connex.ui.theme.Body1Semibold
 import com.example.connex.ui.theme.Gray300
 import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.PrimaryBlue1
-import com.example.connex.utils.Constants
 import kotlinx.coroutines.launch
 
 @Composable

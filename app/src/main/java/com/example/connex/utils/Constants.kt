@@ -53,12 +53,16 @@ object Constants {
     const val ALBUM_INFO_PHOTO_ROUTE = "nav-album-info-photo"
     const val ALBUM_INFO_PHOTO_COMMENT_ROUTE = "nav-album-info-photo-comment"
     const val ALBUM_INFO_PHOTO_ADD_ROUTE = "nav-album-info-photo-add"
+
+
     const val ALBUM_SETTING_ROUTE = "nav-album-setting"
     const val ALBUM_INFO_ROUTE = "nav-album-info"
     const val ALBUM_INFO_THUMBNAIL_ROUTE = "nav-album-info-thumbnail"
     const val ALBUM_INFO_MEMBER_ROUTE = "nav-album-info-member"
     const val ALBUM_INFO_MEMBER_GRANTED_SETTING_ROUTE = "nav-album-info-member-granted-setting"
     const val ALBUM_INFO_MEMBER_ADD_ROUTE = "nav-album-info-member-add"
+
+    const val RECOMMENDED_FRIEND_LOGGING_ROUTE = "nav-recommended-friend-logging"
 
 
 
@@ -93,6 +97,7 @@ object Constants {
     const val ALBUM_CREATE_START_GRAPH = "album-create-start-graph"
     const val ALBUM_CREATING_GRAPH = "album-creating-graph"
     const val ALBUM_INFO_GRAPH = "album-info-graph"
+    const val RECOMMENDED_FRIEND_GRAPH = "album-recommended-friend-graph"
     const val SETTING_GRAPH = "setting-graph"
     const val SIGNIN_GRAPH = "signin-graph"
     const val DETAIL_GRAPH = "detail-graph"
