@@ -26,10 +26,10 @@ fun Int.toFormatTime(): String {
     }
     return when(callTimeList.size) {
         3 -> {
-            "${callTimeList[2]}시간 ${callTimeList[1]}분 ${callTimeList[0]}초"
+            "${callTimeList[0]}시간 ${callTimeList[1]}분 ${callTimeList[2]}초"
         }
         2 -> {
-            "${callTimeList[1]}분 ${callTimeList[0]}초"
+            "${callTimeList[0]}분 ${callTimeList[1]}초"
         }
         1 -> {
             "${callTimeList[0]}초"
