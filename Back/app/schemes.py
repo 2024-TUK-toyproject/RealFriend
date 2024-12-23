@@ -164,10 +164,22 @@ class Login_response(BaseModel):
         example={"accessToken": "asdasdasd", "refreshToken": "asdasdasd"}
     )
 
+class Album_member_info(BaseModel):
+    userId : str = Field(..., example = "123456")
+    userName : str = Field(..., example = "홍길동")
+    userProfile : str = Field(..., example = "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg")
+    authority : str = Field(..., example = "manager")
+    pictureCount : int = Field(..., example = "10")
+
+class Album_member_info_response(BaseModel):
+    status : str = Field("success", example = "success or error")
+    message : str = Field("성공메시지 or 오류메시지")
+    content : List[Album_member_info]
+
 class Album_info_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, Optional[Union[str, int, float]]] = Field({"albumName" : "가족사진", "albumMemberCount" : 2, "albumPictureCount" : 10, "currentUsage" : 100, "totalUsage" : 15360000.0})
+    content : Dict[str, Optional[Union[str, int, float, List[Dict[str, Optional[Union[str, int]]]]]]] = Field({"albumName" : "가족사진", "albumThumbnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "totalUsage" : 10, "albumFoundate" : "2024-07-25", "albumfounder" : "홍길동", "albumMemberInfo" : [{"userId" : "123456", "userName" : "홍길동", "userProfile" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "pictureCount" : 10, "authority" : "manager"}], "albumPictureCouint" : 10, "albumPictureCountFromCurrentUser" : 5, "trashUsage" : 0, "currentUsage" : 100000, "totalUsage" : 10000000})   
 
 class Album_picture_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -254,13 +266,11 @@ class Album_authority_request(BaseModel):
     content : List[Dict[str, str]] = Field(
         [{
             "friendId" : "123456",
-            "post" : "1",
-            "delete" : "1"
+            "authority" : "manager"
         },
         {
             "friendId" : "654321",
-            "post" : "1",
-            "delete" : "1"
+            "authority" : "member"
         }]
     )
 
