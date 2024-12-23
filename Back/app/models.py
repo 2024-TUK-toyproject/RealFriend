@@ -62,6 +62,7 @@ class album_info(Base):
     album_id = Column(String(255))
     album_name = Column(String(255))
     create_user_id = Column(String(255))
+    create_date = Column(String(255))
     directory = Column(String(255))
     album_thumbnail = Column(String(255))
     total_usage = Column(Float)
@@ -73,9 +74,8 @@ class album_member_info(Base):
     album_id = Column(String(255))
     user_id = Column(String(255))
     is_stared = Column(Boolean)
-    post = Column(Boolean)
-    delete = Column(Boolean)
-
+    autherization = Column(Integer)
+    
 class fcm_token_info(Base):
     __tablename__ = 'fcm_token_info'
 
