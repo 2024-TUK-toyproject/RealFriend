@@ -128,8 +128,7 @@ class Album_service:
             album_id = new_key,
             user_id = user["key"],
             is_stared = False,
-            post = True,
-            delete = True
+            autherization = 1       # 1 : founder(추가 삭제, 사진 복구, 엘범 용량 확장, 권한 수정) 2 : manager(사진 추가 삭제) 3 : member(사진 추가 삭제 - 본인것만)
         )
         self.db.add(new_album_member)
         for friend in request.content:
@@ -155,8 +154,7 @@ class Album_service:
                 album_id = new_key,
                 user_id = friend["friendId"],
                 is_stared = False,
-                post = False,
-                delete = False
+                autherization = 3
             )
             self.db.add(new_album_member)
 
@@ -164,6 +162,7 @@ class Album_service:
             album_id = new_key,
             create_user_id = user["key"],
             album_name = "기본 엘범",
+            create_date = datetime.now().strftime("%Y-%m-%d"),
             directory = directroy,
             album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket), #나중에 바꿔라
             total_usage = 15360000.0
@@ -244,10 +243,7 @@ class Album_service:
 
         if not authority:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
-        
-        if authority.post is False:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
-        
+      
 
         for f in file:
             f.file.seek(0, os.SEEK_END)
@@ -326,9 +322,15 @@ class Album_service:
             if existing_album_member is None:
                 raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
             
-            existing_album_member.post = friend["post"]
-            existing_album_member.delete = friend["delete"]
-
+            if friend["authority"] == "founder":
+                existing_album_member.autherization = 1
+            elif friend["authority"] == "manager":
+                existing_album_member.autherization = 2
+            elif friend["authority"] == "member":
+                existing_album_member.autherization = 3
+            else:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="권한 설정이 잘못되었습니다.")
+            
         self.db.commit()
 
         return CommoneResponse(status = "success", message = "앨범 권한 설정 성공")
@@ -346,17 +348,81 @@ class Album_service:
         if not existing_album:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
         
-        album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id).count()
+        album_member = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id)
+        album_member_info = []
+        for member in album_member:
+            member_info = self.db.query(models.user_info).filter(models.user_info.user_id == member.user_id).first()
+            if member.autherization == 1:
+                authority = "founder"
+            elif member.autherization == 2:
+                authority = "manager"
+            elif member.autherization == 3:
+                authority = "member"
+
+            album_member_info.append({
+                "userId": member_info.user_id,
+                "userName": member_info.name,
+                "userProfile": member_info.profile_image,
+                "pictureCount": self.db.query(models.picture_info).filter(models.picture_info.user_id == member.user_id).count(),
+                "authority": authority
+            })
+        
         album_picture_count, total_size = self.count_album_picture(existing_album.directory)
+        album_picture_count_from_current_user = self.db.query(models.picture_info).filter(
+            and_(
+                models.picture_info.album_id == album_id,
+                models.picture_info.user_id == user["key"]
+            )
+        ).count()
+
         album_info = {
             "albumName": existing_album.album_name,
-            "albumMemberCount": album_member_count,
+            "albumThumbnail": existing_album.album_thumbnail,
+            "albumFounder" : existing_user.name,
+            "albumFoundate" : existing_album.create_date,
+            "albumMemberInfo" : album_member_info,
             "albumPictureCount": album_picture_count,
+            "albumPictureCountFromCurrentUser": album_picture_count_from_current_user,
+            "trashUsage" : 0, #나중에 구현
             "currentUsage" : round(total_size / 1024,2),
             "totalUsage" : existing_album.total_usage
         }
 
         return Album_info_response(status = "success", message = "앨범 정보 조회 성공", content = album_info)
+
+    async def get_album_member_info(self, album_id : str, token : str) -> Album_member_info_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album_id).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id)
+        album_member_info = []
+        for member in album_member:
+            member_info = self.db.query(models.user_info).filter(models.user_info.user_id == member.user_id).first()
+            if member.autherization == 1:
+                authority = "founder"
+            elif member.autherization == 2:
+                authority = "manager"
+            elif member.autherization == 3:
+                authority = "member"
+
+            album_member_info.append({
+                "userId": member_info.user_id,
+                "userName": member_info.name,
+                "userProfile": member_info.profile_image,
+                "pictureCount": self.db.query(models.picture_info).filter(models.picture_info.user_id == member.user_id).count(),
+                "authority": authority
+            })
+
+        return Album_member_info_response(status = "success", message = "앨범 멤버 정보 조회 성공", content = album_member_info)
 
     async def get_photo_from_album(self, album_id : str, token : str) -> Album_picture_response:
         user = self.jwt.check_token_expired(token)
@@ -379,9 +445,6 @@ class Album_service:
         ).first()
         if not album_member:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
-        
-        if album_member.post is False:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
         
         response = s3.list_objects_v2(
             Bucket=Config.s3_bucket,
@@ -423,9 +486,6 @@ class Album_service:
         ).first()
         if not album_member:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
-        
-        if album_member.post is False:
-            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 업로드 권한이 없습니다.")
         
         photo_info = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photo_id).first()
         if not photo_info:
@@ -475,10 +535,12 @@ class Album_service:
                 if not album_member:
                     raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
             
-                if album_member.delete is False:
-                    raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범에 삭제 권한이 없습니다.")
+                if album_member.autherization == 3:
+                    if existing_photo.user_id != user["key"]:
+                        raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="삭제 권한이 없습니다.")
                 else:
                     delete = True
+                    
             s3.delete_object(
                 Bucket=Config.s3_bucket,
                 Key=f"albums/{existing_photo.album_id}/{existing_photo.name}"
