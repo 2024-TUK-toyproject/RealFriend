@@ -184,7 +184,7 @@ class Album_info_response(BaseModel):
 class Album_picture_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : List[Dict[str,str]] = Field([{"pictureId" : "123456", "pictureUrl" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg"}])
+    content : List[Dict[str,Optional[Union[str, bool]]]] = Field([{"pictureId" : "123456", "pictureUrl" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "isStared" : True}])
 
 class Album_picture_info_response(BaseModel):
     status : str = Field("success", example = "success or error")
@@ -285,3 +285,6 @@ class photo_delete_request(BaseModel):
 class Album_reply_request(BaseModel):
     photoId : str = Field(..., example = "123456")
     content : str = Field(..., example = "댓글 내용")
+
+class photo_star_request(BaseModel):
+    photoId : str = Field(..., example = "123456")
