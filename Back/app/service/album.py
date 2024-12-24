@@ -454,9 +454,20 @@ class Album_service:
         photo_list = []
         for content in response.get("Contents", []):
             pic_info = self.db.query(models.picture_info).filter(models.picture_info.name == content["Key"].split("/")[-1]).first() # albums/685764/스크린샷 2024-10-16 오후 3.54.18.png
+            is_stared = self.db.query(models.star_photo_info).filter(
+                and_(
+                    models.star_photo_info.picture_id == pic_info.picture_id,
+                    models.star_photo_info.star_user_id == user["key"]
+                )
+            ).first()
+            if is_stared:
+                star = True
+            else:
+                star = False
             photo_list.append({
                 "photoId": pic_info.picture_id,
-                "photoUrl": f"https://%s.s3.amazonaws.com/%s" % (Config.s3_bucket, content["Key"])
+                "photoUrl": f"https://%s.s3.amazonaws.com/%s" % (Config.s3_bucket, content["Key"]),
+                "star" : star
             })
         
         return Album_picture_response(status = "success", message = "앨범 사진 조회 성공", content = photo_list)
@@ -625,7 +636,51 @@ class Album_service:
 
         return Album_reply_response(status = "success", message = "앨범 댓글 조회 성공", content = reply_list)
 
+    async def star_photo(self, photoId : str, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_photo = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photoId).first()
+        if not existing_photo:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        
+        album_member = self.db.query(models.album_member_info).filter(
+            and_(
+                models.album_member_info.album_id == existing_photo.album_id,
+                models.album_member_info.user_id == user["key"]
+            )
+        ).first()
+        if not album_member:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="앨범 멤버가 아닙니다.")
+        
+        already_star = self.db.query(models.star_photo_info).filter(
+            and_(
+                models.star_photo_info.picture_id == photoId,
+                models.star_photo_info.star_user_id == user["key"]
+            )
+        ).first()
 
+        if already_star:
+            self.db.delete(already_star)
+            message = "사진 즐겨찾기 해제 성공"
+        else:
+            new_star = models.star_photo_info(
+                picture_id = photoId,
+                upload_user_id = existing_photo.user_id,
+                star_user_id = user["key"],
+                album_id = existing_photo.album_id
+            )
+            self.db.add(new_star)
+            message = "사진 즐겨찾기 설정 성공"
+
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = message)
 
     #페이징 사용 -> 1000장 이상가져올 수 있음
     def count_album_picture(self, album_directory : str):
