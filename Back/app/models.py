@@ -104,6 +104,15 @@ class picture_info(Base):
     date = Column(String(255))
     time = Column(String(255))
 
+class star_photo_info(Base):
+    __tablename__ = 'star_photo_info'
+
+    num = Column(Integer, index = True, primary_key=True)
+    upload_user_id = Column(String(255))
+    picture_id = Column(String(255))
+    star_user_id = Column(String(255))
+    album_id = Column(String(255))
+
 class album_reply_info(Base):
     __tablename__ = 'album_reply_info'
 
