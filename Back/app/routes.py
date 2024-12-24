@@ -271,6 +271,14 @@ async def delete_album_photo(request : photo_delete_request, token = Depends(API
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.post("/users/album/star/photos", responses = {200 : {"model" : CommoneResponse, "description" : "앨범 사진 즐겨찾기 성공"}, 400 : {"model" : Error_response, "description" : "앨범 사진 즐겨찾기 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 사진 즐겨찾기")
+async def star_album_photo(photoId : str, token = Depends(APIKeyHeader(name="Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.star_photo(photoId, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 #User/Album/reply
 @router.post("/users/album/reply", responses = {200 : {"model" : CommoneResponse, "description" : "댓글 작성 성공"}, 400 : {"model" : Error_response, "description" : "댓글 작성 실패"}}, tags = ["User/sharedAlbum/reply"], summary = "댓글 작성")
 async def post_album_reply(request : Album_reply_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
