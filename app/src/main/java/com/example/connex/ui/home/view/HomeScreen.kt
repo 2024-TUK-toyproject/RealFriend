@@ -116,7 +116,7 @@ fun HomeScreen(applicationState: ApplicationState, homeViewModel: HomeViewModel 
 
             is ApiState.Success -> {
                 HomeBody(mostCalledUsers = result.data, onClickWithLeftBox = {}) {
-                    applicationState.navigate(Constants.RECOMMENDED_FRIEND_GRAPH)
+                    applicationState.navigate(Constants.RECOMMENDED_CONTACT_GRAPH)
                 }
             }
         }

@@ -62,19 +62,3 @@ fun setFileName(s1: String, s2: String): String {
     val split = s1.split(".")
     return split[0] + "/" + s2 + "." + split[1]
 }
-
-// KB를 크기에 맞게 변환
-fun setMemorySizeAndUnit(memory: Long) =
-    if (memory / 1_000_000 > 0) {
-        // GB로 변환
-        kbToGB(memory) to "GB"
-    } else if (memory / 1_000 > 0) {
-        // MB로 변환
-        kbToMB(memory) to "MB"
-    } else {
-        // KB 유지
-        memory.toInt() to "KB"
-    }
-
-fun kbToMB(memory: Long) = (memory / 100f).roundToInt() / 10f
-fun kbToGB(memory: Long) = (memory / 100_000f).roundToInt() / 10f

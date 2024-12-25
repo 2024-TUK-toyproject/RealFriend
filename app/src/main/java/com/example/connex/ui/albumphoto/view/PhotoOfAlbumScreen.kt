@@ -80,7 +80,7 @@ import com.example.connex.ui.theme.Gray600
 import com.example.connex.ui.theme.Gray800
 import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
-import com.example.connex.utils.setMemorySizeAndUnit
+import com.example.connex.utils.toMemorySizeAndUnit
 
 // 나중에 ViewModel로 옮겨
 sealed class PhotoOfAlbumScreenState(open val title: String) {
@@ -272,7 +272,7 @@ fun DetailInfoBox(
         fontWeight = FontWeight.Normal,
         color = Gray800,
     )
-    val (pictureFSize, pictureFUnit) = setMemorySizeAndUnit(fileSize)
+    val (pictureFSize, pictureFUnit) = fileSize.toMemorySizeAndUnit()
 
     Column(modifier = modifier) {
         Column(

@@ -95,6 +95,8 @@ import com.example.connex.ui.theme.White
 import com.example.connex.utils.Constants
 import com.example.domain.entity.album.AlbumInfo
 import com.example.domain.model.ApiState
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import me.onebone.toolbar.CollapsingToolbarScaffold
 import me.onebone.toolbar.CollapsingToolbarScope
@@ -128,8 +130,12 @@ fun PhotosScreen(
     }
 
     LaunchedEffect(Unit) {
-        photoOfAlbumViewModel.fetchReadAllPictures("685764")
-        photoOfAlbumViewModel.fetchReadAlbumInfo("685764")
+        albumId?.let {
+            listOf(
+                async { photoOfAlbumViewModel.fetchReadAllPictures(it) },
+                async { photoOfAlbumViewModel.fetchReadAlbumInfo(it) }
+            ).awaitAll()
+        }
     }
 
     Surface(
@@ -164,7 +170,7 @@ fun PhotosScreen(
                                 textComposable = {
                                     PicturesListAppBarText(
                                         text = albumInfoUiState.albumName,
-                                        userCount = albumInfoUiState.albumMemberCount,
+                                        userCount = albumInfoUiState.albumMemberInfo.count(),
                                         pictureCount = albumInfoUiState.albumPictureCount
                                     )
                                 },
@@ -175,7 +181,7 @@ fun PhotosScreen(
                                         onClose = { isDropDownMenuExpanded = false },
                                         changeSelectMode = { isSelectMode = true },
                                         onClick = { isSortMenuExpanded = true }) {
-                                        applicationState.navigate(Constants.ALBUM_SETTING_ROUTE)
+                                        applicationState.navigate("${Constants.ALBUM_SETTING_ROUTE}/$albumId")
                                     }
                                 },
                                 onBack = { applicationState.popBackStack() }
@@ -250,6 +256,7 @@ fun PhotosScreen(
                                         }
                                     }
                                 }
+
                                 else -> {
                                     PhotoOfAlbumCard(
                                         modifier = Modifier.aspectRatio(1f),

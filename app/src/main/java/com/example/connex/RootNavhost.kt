@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import com.example.connex.ui.albumGraph
+import com.example.connex.ui.albumSettingGraph
 import com.example.connex.ui.component.BottomBar
 import com.example.connex.ui.creatingAlbumGraph
 import com.example.connex.ui.domain.ApplicationState
@@ -59,6 +60,7 @@ fun RootNavhost(
             splashComposable(appState)
             creatingAlbumGraph(appState)
             albumGraph(appState)
+            albumSettingGraph(appState)
             recommendedFriendGraph(appState)
         }
         BottomBar(appState)

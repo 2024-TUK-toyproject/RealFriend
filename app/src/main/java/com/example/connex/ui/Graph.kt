@@ -1,10 +1,10 @@
 package com.example.connex.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -24,7 +24,7 @@ import com.example.connex.ui.album_setting.ui.ThumbnailSettingScreen
 import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
-import com.example.connex.ui.friend_recommend.view.RecommendFriendLoadingScreen
+import com.example.connex.ui.contact_recommend.view.RecommendContactLoadingScreen
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.home.view.AlbumScreen
@@ -170,7 +170,7 @@ fun NavGraphBuilder.homeGraph(applicationState: ApplicationState) {
 @RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.creatingAlbumGraph(applicationState: ApplicationState) {
     navigation(
-            route = Constants.ALBUM_CREATE_START_GRAPH,
+        route = Constants.ALBUM_CREATE_START_GRAPH,
         startDestination = Constants.ALBUM_CREATING_ROUTE
     ) {
         composable(Constants.ALBUM_CREATING_ROUTE) { entry ->
@@ -218,12 +218,31 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
                 totalFSize = totalFSize,
             )
         }
+    }
+}
 
-        composable(route = Constants.ALBUM_SETTING_ROUTE) { entry ->
-            AlbumSettingScreen(applicationState = applicationState)
+fun NavGraphBuilder.albumSettingGraph(applicationState: ApplicationState) {
+    navigation(
+        route = Constants.ALBUM_SETTING_GRAPH,
+        startDestination = Constants.ALBUM_SETTING_ROUTE
+    ) {
+        composable(route = "${Constants.ALBUM_SETTING_ROUTE}/{albumId}") { entry ->
+            AlbumSettingScreen(
+                applicationState = applicationState,
+                albumId = entry.arguments?.getString("albumId")
+            )
         }
-        composable(route = Constants.ALBUM_INFO_ROUTE) { entry ->
-            AlbumInfoScreen(applicationState = applicationState)
+        composable(route = "${Constants.ALBUM_INFO_ROUTE}/{albumId}") { entry ->
+            val backStackEntry = rememberNavControllerBackEntry(
+                entry = entry,
+                navController = applicationState.navController,
+                graph = Constants.ALBUM_SETTING_GRAPH
+            )
+            AlbumInfoScreen(
+                applicationState = applicationState,
+                albumInfoViewModel = hiltViewModel(backStackEntry),
+                albumId = entry.arguments?.getString("albumId")
+            )
         }
         composable(route = Constants.ALBUM_INFO_THUMBNAIL_ROUTE) { entry ->
             ThumbnailSettingScreen(applicationState = applicationState)
@@ -242,16 +261,15 @@ fun NavGraphBuilder.albumGraph(applicationState: ApplicationState) {
 
 fun NavGraphBuilder.recommendedFriendGraph(applicationState: ApplicationState) {
     navigation(
-        route = Constants.RECOMMENDED_FRIEND_GRAPH,
-        startDestination = Constants.RECOMMENDED_FRIEND_LOGGING_ROUTE
+        route = Constants.RECOMMENDED_CONTACT_GRAPH,
+        startDestination = Constants.RECOMMENDED_CONTACT_LOGGING_ROUTE
     ) {
-        composable(route = Constants.RECOMMENDED_FRIEND_LOGGING_ROUTE) { entry ->
-            RecommendFriendLoadingScreen()
+        composable(route = Constants.RECOMMENDED_CONTACT_LOGGING_ROUTE) { entry ->
+            RecommendContactLoadingScreen()
         }
     }
 
 
-    
 }
 
 

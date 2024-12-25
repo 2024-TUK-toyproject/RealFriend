@@ -73,7 +73,7 @@ import com.example.connex.ui.theme.PrimaryBlue3
 import com.example.connex.ui.theme.Text14ptMedium
 import com.example.connex.ui.theme.Text14ptRegular
 import com.example.connex.ui.theme.White
-import com.example.connex.utils.setMemorySizeAndUnit
+import com.example.connex.utils.toMemorySizeAndUnit
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -278,8 +278,8 @@ fun CurrentStorageSizeArea(
     maxFileSize: Long,
     currentFileSize: Long,
 ) {
-    val (maxFSize, maxFileUnit) = setMemorySizeAndUnit(maxFileSize)
-    val (currentFSize, currentFileUnit) = setMemorySizeAndUnit(currentFileSize)
+    val (maxFSize, maxFileUnit) = maxFileSize.toMemorySizeAndUnit()
+    val (currentFSize, currentFileUnit) = currentFileSize.toMemorySizeAndUnit()
     Column(modifier) {
         Text(
             text = "현재 앨범 저장 공간",
@@ -351,9 +351,9 @@ fun TwoStickGraph(
 
 @Composable
 fun FutureStorageSizeArea(modifier: Modifier = Modifier, maxFileSize: Long, currentFileSize: Long) {
-    val (maxFSize, maxFileUnit) = setMemorySizeAndUnit(maxFileSize)
-    val (currentFSize, currentFileUnit) = setMemorySizeAndUnit(currentFileSize)
-    val (remainFSize, remainFileUnit) = setMemorySizeAndUnit(maxFileSize - currentFileSize)
+    val (maxFSize, maxFileUnit) = maxFileSize.toMemorySizeAndUnit()
+    val (currentFSize, currentFileUnit) = currentFileSize.toMemorySizeAndUnit()
+    val (remainFSize, remainFileUnit) = (maxFileSize - currentFileSize).toMemorySizeAndUnit()
 
     val accentTextStyle = SpanStyle(
         color = PrimaryBlue3,

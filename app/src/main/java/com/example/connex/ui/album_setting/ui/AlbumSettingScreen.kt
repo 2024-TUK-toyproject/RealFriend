@@ -42,7 +42,7 @@ data class SettingScreenInfo(
 
 
 @Composable
-fun AlbumSettingScreen(applicationState: ApplicationState) {
+fun AlbumSettingScreen(applicationState: ApplicationState, albumId: String?) {
 
     var isShowAlbumGetOutBottomSheet by remember {
         mutableStateOf(false)
@@ -68,7 +68,7 @@ fun AlbumSettingScreen(applicationState: ApplicationState) {
                 .padding(horizontal = 24.dp, vertical = 28.dp)
         ) {
             val settingScreens = listOf(
-                SettingScreenInfo("앨범 정보") {applicationState.navigate(Constants.ALBUM_INFO_ROUTE)},
+                SettingScreenInfo("앨범 정보") {applicationState.navigate("${Constants.ALBUM_INFO_ROUTE}/$albumId")},
                 SettingScreenInfo("대표 이미지 변경") {applicationState.navigate(Constants.ALBUM_INFO_THUMBNAIL_ROUTE)},
                 SettingScreenInfo("멤버 보기") {},
                 SettingScreenInfo("멤버 권한 설정") {applicationState.navigate(Constants.ALBUM_INFO_MEMBER_ROUTE)},
