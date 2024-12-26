@@ -66,6 +66,7 @@ class album_info(Base):
     directory = Column(String(255))
     album_thumbnail = Column(String(255))
     total_usage = Column(Float)
+    total_member = Column(Integer)
 
 class album_member_info(Base):
     __tablename__ = 'album_member_info'
