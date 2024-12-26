@@ -274,7 +274,8 @@ class Album_service:
                 upload_time = datetime.now().strftime("%H:%M:%S"),
                 usage = file_size,
                 time = _time,
-                date = _date
+                date = _date,
+                is_intrash = False
             )
             self.db.add(new_album_picture)
         
@@ -375,16 +376,22 @@ class Album_service:
                 "userId": member_info.user_id,
                 "userName": member_info.name,
                 "userProfile": member_info.profile_image,
-                "pictureCount": self.db.query(models.picture_info).filter(models.picture_info.user_id == member.user_id).count(),
+                "pictureCount": self.db.query(models.picture_info).filter(and_(models.picture_info.user_id == member.user_id, models.picture_info.is_intrash == False)).count(),
                 "usage": round(album_usage/1024 , 2),
                 "authority": authority
             })
         
-        album_picture_count, total_size = self.count_album_picture(existing_album.directory)
+        album_picture_count = self.db.query(models.picture_info).filter(and_(models.picture_info.album_id == album_id, models.picture_info.is_intrash == False)).count()
+        album_total_size = self.db.query(models.picture_info).filter(models.picture_info.album_id == album_id).all()
+        total_size = 0
+        for picture in album_total_size:
+            total_size += picture.usage
+        
         album_picture_count_from_current_user = self.db.query(models.picture_info).filter(
             and_(
                 models.picture_info.album_id == album_id,
-                models.picture_info.user_id == user["key"]
+                models.picture_info.user_id == user["key"],
+                models.picture_info.is_intrash == False
             )
         ).count()
 
@@ -397,7 +404,7 @@ class Album_service:
             "albumMemberInfo" : album_member_info,
             "albumPictureCount": album_picture_count,
             "albumPictureCountFromCurrentUser": album_picture_count_from_current_user,
-            "trashUsage" : 0, #나중에 구현
+            "trashCount" : self.db.query(models.picture_info).filter(models.picture_info.is_intrash == True).count(), 
             "currentUsage" : round(total_size/1024, 2),
             "totalUsage" : existing_album.total_usage
         }
@@ -565,16 +572,22 @@ class Album_service:
                         raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="삭제 권한이 없습니다.")
                 else:
                     delete = True
-                    
+            s3.copy_object(
+            Bucket=Config.s3_bucket,
+            CopySource={'Bucket': Config.s3_bucket, 'Key': f"albums/{existing_photo.album_id}/{existing_photo.name}"},
+            Key=f"albums/{existing_photo.album_id}/trash/{existing_photo.name}"
+            )
+
             s3.delete_object(
                 Bucket=Config.s3_bucket,
                 Key=f"albums/{existing_photo.album_id}/{existing_photo.name}"
             )
-            self.db.delete(existing_photo)
+            existing_photo.is_intrash = True
+            existing_photo.in_trash_date = datetime.now().strftime("%Y-%m-%d")
 
         self.db.commit()
 
-        return CommoneResponse(status = "success", message = "사진 삭제 성공")
+        return CommoneResponse(status = "success", message = "사진 휴지통으로 이동 성공")
 
     async def post_album_reply(self, request : Album_reply_request, token : str) -> CommoneResponse:
         user = self.jwt.check_token_expired(token)
@@ -701,7 +714,9 @@ class Album_service:
         count = 0
         total_size = 0
 
+        valid_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', ".heic", ".heif", ".mp4"}
         continuation_token = None
+
         while True:
             if continuation_token:
                 response = s3.list_objects_v2(
@@ -714,9 +729,13 @@ class Album_service:
                     Bucket=Config.s3_bucket,
                     Prefix=album_directory
                 )
-            count += len(response.get("Contents", []))
-
-            total_size += sum([content["Size"] for content in response.get("Contents", [])])
+            contents = response.get("Contents", [])
+            for content in contents:
+                file_key = content["Key"]
+                # 확장자 확인
+                if any(file_key.lower().endswith(ext) for ext in valid_extensions):
+                    count += 1
+                    total_size += content["Size"]
 
             if response.get("NextContinuationToken"):
                 continuation_token = response["NextContinuationToken"]
