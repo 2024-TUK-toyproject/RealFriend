@@ -165,7 +165,8 @@ class Album_service:
             create_date = datetime.now().strftime("%Y-%m-%d"),
             directory = directroy,
             album_thumbnail = f"https://%s.s3.amazonaws.com/albums/default.png" % (Config.s3_bucket), #나중에 바꿔라
-            total_usage = 15360000.0
+            total_usage = 10240000.0, #10GB
+            total_member = 10
         )
 
         self.db.add(new_album)
@@ -359,11 +360,23 @@ class Album_service:
             elif member.autherization == 3:
                 authority = "member"
 
+            album_usage = 0
+            album_picture = self.db.query(models.picture_info).filter(
+                and_(
+                    models.picture_info.album_id == album_id,
+                    models.picture_info.user_id == member.user_id
+                )
+            ).all()
+
+            for picture in album_picture:
+                album_usage += picture.usage
+
             album_member_info.append({
                 "userId": member_info.user_id,
                 "userName": member_info.name,
                 "userProfile": member_info.profile_image,
                 "pictureCount": self.db.query(models.picture_info).filter(models.picture_info.user_id == member.user_id).count(),
+                "usage": round(album_usage/1024 , 2),
                 "authority": authority
             })
         
@@ -380,11 +393,12 @@ class Album_service:
             "albumThumbnail": existing_album.album_thumbnail,
             "albumFounder" : existing_user.name,
             "albumFoundate" : existing_album.create_date,
+            "albumMemberMax" : existing_album.total_member,
             "albumMemberInfo" : album_member_info,
             "albumPictureCount": album_picture_count,
             "albumPictureCountFromCurrentUser": album_picture_count_from_current_user,
             "trashUsage" : 0, #나중에 구현
-            "currentUsage" : round(total_size / 1024,2),
+            "currentUsage" : round(total_size/1024, 2),
             "totalUsage" : existing_album.total_usage
         }
 
