@@ -180,7 +180,7 @@ class Album_member_info_response(BaseModel):
 class Album_info_response(BaseModel):
     status : str = Field("success", example = "success or error")
     message : str = Field("성공메시지 or 오류메시지")
-    content : Dict[str, Optional[Union[str, int, float, List[Dict[str, Optional[Union[str, int, float]]]]]]] = Field({"albumName" : "가족사진", "albumThumbnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "totalUsage" : 10, "albumFoundate" : "2024-07-25", "albumfounder" : "홍길동", "albumMemberMax" : 10,"albumMemberInfo" : [{"userId" : "123456", "userName" : "홍길동", "userProfile" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "pictureCount" : 10, "usage" : 10000.0,"authority" : "manager"}], "albumPictureCount" : 10, "albumPictureCountFromCurrentUser" : 5, "trashUsage" : 0, "currentUsage" : 100000, "totalUsage" : 10000000})   
+    content : Dict[str, Optional[Union[str, int, float, List[Dict[str, Optional[Union[str, int, float]]]]]]] = Field({"albumName" : "가족사진", "albumThumbnail" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "totalUsage" : 10, "albumFoundate" : "2024-07-25", "albumfounder" : "홍길동", "albumMemberMax" : 10,"albumMemberInfo" : [{"userId" : "123456", "userName" : "홍길동", "userProfile" : "https://s3.ap-northeast-2.amazonaws.com/album-app/123456/123456.jpg", "pictureCount" : 10, "usage" : 10000.0,"authority" : "manager"}], "albumPictureCount" : 10, "albumPictureCountFromCurrentUser" : 5, "trashCount" : 0, "currentUsage" : 100000, "totalUsage" : 10000000})   
 
 class Album_picture_response(BaseModel):
     status : str = Field("success", example = "success or error")
