@@ -104,6 +104,8 @@ class picture_info(Base):
     usage = Column(Double)
     date = Column(String(255))
     time = Column(String(255))
+    is_intrash = Column(Boolean)
+    in_trash_date = Column(String(255))
 
 class star_photo_info(Base):
     __tablename__ = 'star_photo_info'
