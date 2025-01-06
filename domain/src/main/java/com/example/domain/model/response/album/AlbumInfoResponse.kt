@@ -9,10 +9,11 @@ data class AlbumInfoResponse(
     val albumThumbnail: String?,
     val albumFounder: String?,
     val albumFoundate: String?,
+    val albumMemberMax: Int?,
     val albumMemberInfo: List<AlbumMemberInfo>?,
     val albumPictureCount: Int?,
     val albumPictureCountFromCurrentUser: Int?,
-    val trashUsage: Int?,
+    val trashCount: Int?,
     val currentUsage: Float?,
     val totalUsage: Float?
 )
@@ -31,10 +32,11 @@ fun AlbumInfoResponse.toEntity() = AlbumInfo(
     albumThumbnail = albumThumbnail ?: "",
     albumFounder = albumFounder ?: "",
     albumFoundDate = albumFoundate ?: "",
+    albumMemberMax = albumMemberMax ?: 0,
     albumMemberInfo = albumMemberInfo ?: emptyList(),
     albumPictureCount = albumPictureCount ?: 0,
     albumPictureCountFromCurrentUser = albumPictureCountFromCurrentUser ?: 0,
-    trashUsage = trashUsage ?: 0,
+    trashCount = trashCount ?: 0,
     currentUsage = currentUsage ?: 0.0f,
     totalUsage = totalUsage ?: 0.0f
 )

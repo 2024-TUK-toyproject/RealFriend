@@ -76,8 +76,7 @@ fun AlbumInfoScreen(
                 image = albumInfoState.albumThumbnail,
                 title = albumInfoState.albumName,
                 memberCount = albumInfoState.albumMemberInfo.size,
-                // TODO(api 수정 후 변경, 멤버 최대 인원)
-                maxMemberCount = 10
+                maxMemberCount = albumInfoState.albumMemberMax
             )
             ColumnSpacer(height = 24.dp)
             AlbumInfoArea(
@@ -86,7 +85,7 @@ fun AlbumInfoScreen(
                 // TODO(api 파라미터 추가 요청, 최대 구성원)
                 totalPhotoQuantity = albumInfoState.albumPictureCount,
                 myPhotoQuantity = albumInfoState.albumPictureCountFromCurrentUser,
-                trashQuantity = albumInfoState.trashUsage,
+                trashQuantity = albumInfoState.trashCount,
                 currentUsage = albumInfoState.currentUsage,
                 // TODO(api 파라미터 추가 요청, 내가 저장한 사진들의 용량)
                 myCurrentUsage = albumInfoState.currentUsage,

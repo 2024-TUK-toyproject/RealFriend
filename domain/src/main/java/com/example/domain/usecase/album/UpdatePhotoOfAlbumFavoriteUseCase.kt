@@ -7,5 +7,4 @@ import javax.inject.Inject
 class UpdatePhotoOfAlbumFavoriteUseCase @Inject constructor(private val albumRepository: AlbumRepository) {
     operator fun invoke(albumId: String) =
         albumRepository.updatePhotoOfAlbumFavorite(albumId)
-
 }

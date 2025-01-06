@@ -57,8 +57,7 @@ interface AlbumApi {
     // 앨범의 사진 삭제
 
     // 앨범의 사진 좋아요 on, off
-    /* TODO("api 수정 이후 url 수정") */
-    @POST("/users/album/star")
+    @POST("/users/album/star/photos")
     suspend fun updatePhotoOfAlbumFavorite(@Query("photoId") photoId: String): DefaultResponse<Unit>
 
     // 앨범의 댓글 작성

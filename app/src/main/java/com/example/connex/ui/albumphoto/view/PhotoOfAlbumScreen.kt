@@ -96,7 +96,7 @@ fun PhotoOfAlbumScreen(
     photo: String?,
     photoId: String?,
 ) {
-    Log.d("daeyoung", "picture: $photo")
+    Log.d("daeyoung", "photoId: $photoId")
 
     var photoOfAlbumScreenState by remember {
         mutableStateOf<PhotoOfAlbumScreenState>(PhotoOfAlbumScreenState.Default())

@@ -25,6 +25,7 @@ import com.example.connex.ui.albumphoto.view.PhotoCommentScreen
 import com.example.connex.ui.albumphoto.view.PhotoOfAlbumScreen
 import com.example.connex.ui.domain.ApplicationState
 import com.example.connex.ui.contact_recommend.view.RecommendContactLoadingScreen
+import com.example.connex.ui.contact_recommend.view.RecommendContactResultScreen
 import com.example.connex.ui.friendinit.view.FriendSyncCompleteScreen
 import com.example.connex.ui.friendinit.view.FriendSyncScreen
 import com.example.connex.ui.home.view.AlbumScreen
@@ -262,10 +263,13 @@ fun NavGraphBuilder.albumSettingGraph(applicationState: ApplicationState) {
 fun NavGraphBuilder.recommendedFriendGraph(applicationState: ApplicationState) {
     navigation(
         route = Constants.RECOMMENDED_CONTACT_GRAPH,
-        startDestination = Constants.RECOMMENDED_CONTACT_LOGGING_ROUTE
+        startDestination = Constants.RECOMMENDED_CONTACT_RESULT_ROUTE
     ) {
         composable(route = Constants.RECOMMENDED_CONTACT_LOGGING_ROUTE) { entry ->
             RecommendContactLoadingScreen()
+        }
+        composable(route = Constants.RECOMMENDED_CONTACT_RESULT_ROUTE) { entry ->
+            RecommendContactResultScreen()
         }
     }
 

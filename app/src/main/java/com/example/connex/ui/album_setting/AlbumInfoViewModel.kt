@@ -1,5 +1,6 @@
 package com.example.connex.ui.album_setting
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.entity.album.AlbumInfo
@@ -16,23 +17,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumInfoViewModel @Inject constructor(
-    val readAlbumInfoUseCase: ReadAlbumInfoUseCase
-): ViewModel() {
+    val readAlbumInfoUseCase: ReadAlbumInfoUseCase,
+) : ViewModel() {
     private val _albumInfo = MutableStateFlow(AlbumInfo())
     val albumInfo: StateFlow<AlbumInfo> = _albumInfo.asStateFlow()
 
     fun fetchReadAlbumInfo(albumId: String) {
         viewModelScope.launch {
-            when(val result = readAlbumInfoUseCase(albumId).first()) {
+            when (val result = readAlbumInfoUseCase(albumId).first()) {
                 is ApiState.Success -> { _albumInfo.update { result.data } }
-                is ApiState.Error -> {  }
+                is ApiState.Error -> {}
                 is ApiState.Loading -> {}
-                is ApiState.NotResponse -> TODO()
+                is ApiState.NotResponse -> { Log.d("daeyoung", "exception: ${result.exception}, message: ${result.message}") }
             }
         }
     }
-
-
 
 
 }

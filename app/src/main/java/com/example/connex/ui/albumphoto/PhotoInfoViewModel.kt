@@ -19,7 +19,6 @@ import javax.inject.Inject
 @HiltViewModel
 class PhotoInfoViewModel @Inject constructor(
     private val readPhotoInfoUseCase: ReadPhotoInfoUseCase,
-
     private val updatePhotoFavoriteUseCase: UpdatePhotoOfAlbumFavoriteUseCase,
 
 ): ViewModel() {

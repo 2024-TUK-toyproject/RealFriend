@@ -63,6 +63,7 @@ object Constants {
     const val ALBUM_INFO_MEMBER_ADD_ROUTE = "nav-album-info-member-add"
 
     const val RECOMMENDED_CONTACT_LOGGING_ROUTE = "nav-recommended-contact-logging"
+    const val RECOMMENDED_CONTACT_RESULT_ROUTE = "nav-recommended-contact-result"
 
 
 

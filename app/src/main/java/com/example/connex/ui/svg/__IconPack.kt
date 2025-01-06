@@ -22,7 +22,9 @@ import com.example.connex.ui.svg.iconpack.IcCalendar
 import com.example.connex.ui.svg.iconpack.IcFile
 import com.example.connex.ui.svg.iconpack.IcImage
 import com.example.connex.ui.svg.iconpack.IcLocation01
+import com.example.connex.ui.svg.iconpack.IcLoudspeaker
 import com.example.connex.ui.svg.iconpack.IcSend
+import com.example.connex.ui.svg.iconpack.IcSmileface
 import com.example.connex.ui.svg.iconpack.ImageGrantedFounder
 import com.example.connex.ui.svg.iconpack.ImageGrantedManager
 import com.example.connex.ui.svg.iconpack.ImageGrantedMember
@@ -56,7 +58,8 @@ public val IconPack.AllIcons: ____KtList<ImageVector>
             IcFavoriteOn,
             IcFavoriteOff,
             IcImage, IcCalendar, IcFile, IcLocation01, IcSend,
-            ImageGrantedFounder, ImageGrantedManager, ImageGrantedMember
+            ImageGrantedFounder, ImageGrantedManager, ImageGrantedMember,
+            IcLoudspeaker, IcCall, IcSmileface
         )
         return __AllIcons!!
     }

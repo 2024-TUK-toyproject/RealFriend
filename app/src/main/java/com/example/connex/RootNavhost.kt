@@ -44,8 +44,8 @@ fun RootNavhost(
         NavHost(
             navController = appState.navController,
 //            startDestination = Constants.LOGIN_GRAPH,
-            startDestination = Constants.SPLASH_ROUTE,
-//            startDestination = Constants.ALBUM_INFO_GRAPH,
+//            startDestination = Constants.SPLASH_ROUTE,
+            startDestination = Constants.RECOMMENDED_CONTACT_GRAPH,
 
             modifier = Modifier
                 .fillMaxSize()
