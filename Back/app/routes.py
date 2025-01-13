@@ -279,6 +279,22 @@ async def star_album_photo(photoId : str, token = Depends(APIKeyHeader(name="Aut
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.get("/users/albums/{albumId}/get/recommend/friends", responses = {200 : {"model" : Album_recommend_invite_response, "description" : "친구 추천 성공"}, 400 : {"model" : Error_response, "description" : "친구 추천 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 공유 친구 추천")
+async def get_album_recommend_friends(albumId : str, token = Depends(APIKeyHeader(name="Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.recommend_invite_album_member(albumId, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/users/albums/invite/friends", responses = {200 : {"model" : CommoneResponse, "description" : "친구 초대 성공"}, 400 : {"model" : Error_response, "description" : "친구 초대 실패"}}, tags = ["User/sharedAlbum"], summary = "앨범 공유 친구 초대")
+async def invite_album_friends(request : Album_invite_request, token = Depends(APIKeyHeader(name="Authorization")), album_service : Album_service = Depends()):
+    try:
+        return await album_service.invite_album_member(request, token)
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
 #User/Album/reply
 @router.post("/users/album/reply", responses = {200 : {"model" : CommoneResponse, "description" : "댓글 작성 성공"}, 400 : {"model" : Error_response, "description" : "댓글 작성 실패"}}, tags = ["User/sharedAlbum/reply"], summary = "댓글 작성")
 async def post_album_reply(request : Album_reply_request, token = Depends(APIKeyHeader(name = "Authorization")), album_service : Album_service = Depends()):
