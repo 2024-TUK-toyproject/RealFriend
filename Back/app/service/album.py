@@ -51,7 +51,8 @@ class Album_service:
             album_member_count = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album.album_id).count()
 
             #엘범 내 사진 수
-            count, total_size = self.count_album_picture(existing_album.directory)
+            #count, total_size = self.count_album_picture(existing_album.directory)
+            count = self.db.query(models.picture_info).filter(and_(models.picture_info.album_id == album.album_id, models.picture_info.is_intrash == False)).count()
             album_data = {
                 "albumId": existing_album.album_id,
                 "albumName": existing_album.album_name,
@@ -371,6 +372,10 @@ class Album_service:
 
             for picture in album_picture:
                 album_usage += picture.usage
+            if member.user_id == user["key"]:
+                current_user_size = album_usage
+            else:
+                pass
 
             album_member_info.append({
                 "userId": member_info.user_id,
@@ -383,6 +388,7 @@ class Album_service:
         
         album_picture_count = self.db.query(models.picture_info).filter(and_(models.picture_info.album_id == album_id, models.picture_info.is_intrash == False)).count()
         album_total_size = self.db.query(models.picture_info).filter(models.picture_info.album_id == album_id).all()
+
         total_size = 0
         for picture in album_total_size:
             total_size += picture.usage
@@ -404,6 +410,7 @@ class Album_service:
             "albumMemberInfo" : album_member_info,
             "albumPictureCount": album_picture_count,
             "albumPictureCountFromCurrentUser": album_picture_count_from_current_user,
+            "albumPictureUsageFromCurrentUser": round(current_user_size/1024, 2),
             "trashCount" : self.db.query(models.picture_info).filter(models.picture_info.is_intrash == True).count(), 
             "currentUsage" : round(total_size/1024, 2),
             "totalUsage" : existing_album.total_usage
@@ -522,6 +529,18 @@ class Album_service:
         photo_info = self.db.query(models.picture_info).filter(models.picture_info.picture_id == photo_id).first()
         if not photo_info:
             raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사진입니다.")
+        
+        is_stared = self.db.query(models.star_photo_info).filter(
+            and_(
+                models.star_photo_info.picture_id == photo_id,
+                models.star_photo_info.star_user_id == user["key"]
+            )
+        ).first()
+        if is_stared:
+            star = True
+        else:
+            star = False
+
         upload_user = self.db.query(models.user_info).filter(models.user_info.user_id == photo_info.user_id).first()
         photo_data = {
             "name": photo_info.name,
@@ -531,7 +550,8 @@ class Album_service:
             "uploadUser": upload_user.name,
             "uploadUserProfile" : upload_user.profile_image,
             "uploadDate": photo_info.upload_date,
-            "uploadTime": photo_info.upload_time
+            "uploadTime": photo_info.upload_time,
+            "isStared" : star
         }
 
         return Album_picture_info_response(status = "success", message = "사진 정보 조회 성공", content = photo_data)
@@ -708,6 +728,103 @@ class Album_service:
         self.db.commit()
 
         return CommoneResponse(status = "success", message = message)
+
+    async def invite_album_member(self, request : Album_invite_request, token : str) -> CommoneResponse:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == request.albumId).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        for friend in request.content:
+            existing_friend = self.db.query(models.user_info).filter(models.user_info.user_id == friend["friendId"]).first()
+            if not existing_friend:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 친구입니다.")
+            
+            existing_album_member = self.db.query(models.album_member_info).filter(
+                and_(
+                    models.album_member_info.album_id == request.albumId,
+                    models.album_member_info.user_id == friend["friendId"]
+                )
+            ).first()
+            if existing_album_member:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="이미 초대된 멤버입니다.")
+            
+            existing_friend = self.db.query(models.is_friend).filter(
+                or_(
+                    and_(
+                        models.is_friend.from_user_id == user["key"],
+                        models.is_friend.to_user_id == friend["friendId"]
+                    ),
+                    and_(
+                        models.is_friend.from_user_id == friend["friendId"],
+                        models.is_friend.to_user_id == user["key"]
+                    )
+                )
+            ).first()
+            if not existing_friend:
+                raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="친구가 아닙니다.")
+            
+            new_album_member = models.album_member_info(
+                album_id = request.albumId,
+                user_id = friend["friendId"],
+                is_stared = False,
+                autherization = 3
+            )
+            self.db.add(new_album_member)
+
+        self.db.commit()
+
+        return CommoneResponse(status = "success", message = "앨범 멤버 초대 성공")
+    
+    async def recommend_invite_album_member(self, album_id : str, token : str) -> Album_recommend_invite_response:
+        user = self.jwt.check_token_expired(token)
+        if not user:
+            raise CustomException2(status_code=status.HTTP_401_UNAUTHORIZED, detail="토큰이 만료되었습니다.")
+        
+        existing_user = self.db.query(models.user_info).filter(models.user_info.user_id == user["key"]).first()
+        if not existing_user:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 사용자입니다.")
+        
+        existing_album = self.db.query(models.album_info).filter(models.album_info.album_id == album_id).first()
+        if not existing_album:
+            raise CustomException(status_code=status.HTTP_400_BAD_REQUEST, detail="존재하지 않는 앨범입니다.")
+        
+        #친구중 초대되지 않은 친구들 추천
+        friend_list = self.db.query(models.is_friend).filter(
+            or_(
+                models.is_friend.from_user_id == user["key"],
+                models.is_friend.to_user_id == user["key"]
+            )
+        ).all()
+        invite_list = self.db.query(models.album_member_info).filter(models.album_member_info.album_id == album_id).all()
+        recommend_list = []
+        for friend in friend_list:
+            if friend.from_user_id == user["key"]:
+                friend_id = friend.to_user_id
+            else:
+                friend_id = friend.from_user_id
+            
+            is_invite = False
+            for invite in invite_list:
+                if invite.user_id == friend_id:
+                    is_invite = True
+                    break
+            if is_invite is False:
+                friend_info = self.db.query(models.user_info).filter(models.user_info.user_id == friend_id).first()
+                recommend_list.append({
+                    "userId": friend_info.user_id,
+                    "userName": friend_info.name,
+                    "userProfile": friend_info.profile_image
+                })
+
+        return Album_recommend_invite_response(status = "success", message = "앨범 멤버 추천 성공", content = recommend_list)
 
     #페이징 사용 -> 1000장 이상가져올 수 있음
     def count_album_picture(self, album_directory : str):
